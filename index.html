@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Update — Foundever Recruitment</title>
+<style>
+  :root {
+    --fd-indigo: #4b4bf9;
+    --fd-midnight: #09092d;
+    --fd-white: #ffffff;
+    --fd-light-grey: #f3f3f7;
+    --fd-lemon: #f9ef77;
+    --fd-coral: #ff8d96;
+    --fd-lavender: #bfa1ff;
+    --fd-mint: #8bf0bb;
+    --fd-card: #0f0f35;
+    --fd-card2: #13133d;
+    --fd-border: rgba(75,75,249,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--fd-midnight);
+    color: var(--fd-white);
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+  }
+
+  .header {
+    width: 100%;
+    max-width: 620px;
+    text-align: center;
+    padding: 32px 0 20px;
+  }
+
+  .header h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+  .header h1 span { color: var(--fd-indigo); }
+  .header .sub { font-size: 0.8rem; color: var(--fd-lavender); margin-bottom: 8px; }
+
+  .date-badge {
+    display: inline-block;
+    background: var(--fd-indigo);
+    color: var(--fd-white);
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* ── UPDATE TYPE SECTION ── */
+  .update-type-section {
+    background: var(--fd-card);
+    border: 1px solid var(--fd-border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    width: 100%;
+    max-width: 620px;
+    margin-top: 16px;
+  }
+
+  .ut-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--fd-lavender);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+
+  .ut-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .ut-option.active {
+    border-color: var(--fd-indigo);
+    background: rgba(75,75,249,0.08);
+  }
+
+  .ut-option.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .ut-option input[type="radio"] {
+    accent-color: var(--fd-indigo);
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .ut-label-wrap { flex: 1; }
+
+  .ut-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--fd-white);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ut-lock-icon { color: var(--fd-lavender); font-size: 0.75rem; }
+
+  .ut-desc {
+    font-size: 0.78rem;
+    color: var(--fd-lavender);
+    font-style: italic;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .ut-lock-hint {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.25);
+    margin-top: 3px;
+  }
+
+  .ut-date-display {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--fd-mint);
+  }
+
+  .ut-date-display .night-note {
+    font-size: 0.72rem;
+    color: var(--fd-lavender);
+    font-weight: 400;
+  }
+
+  /* ── WARNING BANNER ── */
+  .warning-banner {
+    display: none;
+    background: rgba(255,141,150,0.08);
+    border: 1px solid rgba(255,141,150,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--fd-coral);
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .warning-banner.show { display: block; }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: var(--fd-card);
+    border: 1px solid var(--fd-border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    width: 100%;
+    max-width: 620px;
+    margin-top: 12px;
+  }
+
+  .form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--fd-lavender);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .recruiter-select, .acc-select {
+    width: 100%;
+    background: var(--fd-card2);
+    border: 1px solid var(--fd-border);
+    color: var(--fd-white);
+    font-size: 0.95rem;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 14px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    margin-bottom: 20px;
+  }
+
+  .acc-select { margin-bottom: 0; font-size: 0.88rem; }
+
+  .recruiter-select option, .acc-select option {
+    background: var(--fd-card);
+    color: var(--fd-white);
+  }
+
+  .recruiter-select:focus, .acc-select:focus { border-color: var(--fd-indigo); }
+
+  /* ── NO UPDATE ── */
+  .no-update-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px 14px;
+    background: rgba(255,141,150,0.08);
+    border: 1px solid rgba(255,141,150,0.2);
+    border-radius: 10px;
+  }
+
+  .no-update-wrap input { accent-color: var(--fd-coral); width: 16px; height: 16px; cursor: pointer; }
+  .no-update-wrap label { font-size: 0.85rem; color: var(--fd-coral); cursor: pointer; font-weight: 600; }
+
+  /* ── ACCOUNT BLOCKS ── */
+  .account-section { margin-bottom: 16px; }
+
+  .account-block {
+    background: var(--fd-card2);
+    border: 1px solid var(--fd-border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s;
+  }
+
+  .account-block:focus-within { border-color: rgba(75,75,249,0.5); }
+  .account-block.error-block { border-color: var(--fd-coral) !important; animation: shake 0.4s ease; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+  }
+
+  .acc-top-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .acc-select-wrap { flex: 1; min-width: 150px; }
+  .acc-select-wrap select { width: 100%; }
+
+  .acc-custom-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--fd-border);
+    color: var(--fd-white);
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 8px 6px;
+    outline: none;
+    display: none;
+  }
+
+  .acc-custom-input::placeholder { color: rgba(255,255,255,0.3); font-weight: 400; }
+  .acc-custom-input:focus { border-bottom-color: var(--fd-indigo); }
+
+  .start-date-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .start-date-label {
+    font-size: 0.7rem;
+    color: var(--fd-lavender);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .start-date-input {
+    background: rgba(75,75,249,0.1);
+    border: 1px solid var(--fd-border);
+    color: var(--fd-white);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .start-date-input:focus { border-color: var(--fd-indigo); }
+  .start-date-input.error-input { border-color: var(--fd-coral) !important; background: rgba(255,141,150,0.1); }
+
+  .remove-acc-btn {
+    background: transparent;
+    border: none;
+    color: var(--fd-coral);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px 6px;
+    border-radius: 6px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .remove-acc-btn:hover { background: rgba(255,141,150,0.15); }
+
+  .inline-error {
+    font-size: 0.72rem;
+    color: var(--fd-coral);
+    margin-top: 4px;
+    display: none;
+    font-weight: 600;
+  }
+
+  .inline-error.show { display: block; }
+
+  .stage-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .stage-item { display: flex; align-items: center; gap: 4px; }
+  .stage-label { font-size: 0.7rem; color: var(--fd-lavender); font-weight: 600; white-space: nowrap; }
+
+  .stage-input {
+    width: 44px;
+    background: rgba(75,75,249,0.1);
+    border: 1px solid var(--fd-border);
+    border-radius: 6px;
+    color: var(--fd-white);
+    font-size: 0.85rem;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    padding: 6px 4px;
+    outline: none;
+  }
+
+  .stage-input:focus { border-color: var(--fd-indigo); background: rgba(75,75,249,0.2); }
+  .stage-input::-webkit-inner-spin-button,
+  .stage-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  .comment-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--fd-border);
+    color: rgba(255,255,255,0.7);
+    font-size: 0.8rem;
+    font-family: 'Segoe UI', sans-serif;
+    font-style: italic;
+    outline: none;
+    padding: 4px 6px;
+  }
+
+  .comment-input::placeholder { color: rgba(255,255,255,0.2); }
+  .comment-input:focus { border-bottom-color: rgba(75,75,249,0.5); color: var(--fd-white); }
+
+  .add-acc-btn {
+    background: transparent;
+    border: 1px solid var(--fd-border);
+    color: var(--fd-lavender);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    margin-bottom: 20px;
+  }
+
+  .add-acc-btn:hover { border-color: var(--fd-indigo); }
+
+  /* ── SUBMIT ── */
+  .submit-btn {
+    width: 100%;
+    background: var(--fd-mint);
+    color: var(--fd-midnight);
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 800;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .status-msg {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-height: 24px;
+    line-height: 1.5;
+  }
+
+  .status-msg.error   { color: var(--fd-coral); }
+  .status-msg.sending { color: var(--fd-lavender); }
+
+  /* ── SUCCESS CARD ── */
+  .success-card {
+    display: none;
+    background: var(--fd-card);
+    border: 2px solid var(--fd-mint);
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    width: 100%;
+    max-width: 620px;
+    margin-top: 16px;
+  }
+
+  .success-card .big-check { font-size: 3rem; margin-bottom: 12px; }
+  .success-card h2 { color: var(--fd-mint); font-size: 1.15rem; margin-bottom: 8px; }
+  .success-card p { color: var(--fd-lavender); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; }
+
+  .success-card button {
+    background: var(--fd-indigo);
+    color: var(--fd-white);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px 16px;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.2);
+  }
+
+  footer span { color: var(--fd-indigo); font-weight: 700; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--fd-indigo); border-radius: 10px; }
+
+  @media (max-width: 600px) {
+    .acc-top-row { flex-direction: column; align-items: stretch; }
+    .start-date-wrap { margin-top: 6px; }
+    .stage-row { gap: 4px; }
+    .stage-input { width: 40px; padding: 5px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📝 Daily <span>Update</span></h1>
+  <p class="sub">Submit your recruitment numbers</p>
+  <div class="date-badge" id="dateBadge"></div>
+</div>
+
+<!-- ── UPDATE TYPE ── -->
+<div class="update-type-section" id="updateTypeSection">
+  <div class="ut-title">📌 Update Type</div>
+
+  <div class="ut-option active" id="utMorning" onclick="selectUpdateType('Morning')">
+    <input type="radio" name="updateType" value="Morning" checked id="radioMorning"/>
+    <div class="ut-label-wrap">
+      <div class="ut-label">
+        <span id="morningIcon">☀️</span>
+        <span id="morningTitle">Morning Briefing (Main Reference)</span>
+        <span class="ut-lock-icon" id="morningLock" style="display:none">🔒</span>
+      </div>
+      <div class="ut-desc" id="morningDesc">Here you add the offers u got yesterday or OPS interviews that will be booked today</div>
+      <div class="ut-lock-hint" id="morningHint" style="display:none">Closed after 2:00 PM</div>
+    </div>
+  </div>
+
+  <div class="ut-option" id="utMidday" onclick="selectUpdateType('Midday')">
+    <input type="radio" name="updateType" value="Midday" id="radioMidday"/>
+    <div class="ut-label-wrap">
+      <div class="ut-label">
+        🕐 Midday Update (Progress Check)
+        <span class="ut-lock-icon" id="middayLock" style="display:none">🔒</span>
+      </div>
+      <div class="ut-desc">Here you add new offers that weren't mentioned in the briefing or OPS interviews that will be booked today</div>
+      <div class="ut-lock-hint" id="middayHint" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="warning-banner" id="warningBanner">
+    ⚠️ Please note that midday updates are discarded and you need to add them here again.
+  </div>
+
+  <div class="ut-date-display" id="utDateDisplay"></div>
+</div>
+
+<!-- ── MAIN FORM ── -->
+<div class="form-card" id="formCard">
+  <label class="form-label">Your Name</label>
+  <select class="recruiter-select" id="recruiterName">
+    <option value="">— Select your name —</option>
+  </select>
+
+  <div class="no-update-wrap">
+    <input type="checkbox" id="noUpdateCheck" onchange="toggleNoUpdate()"/>
+    <label for="noUpdateCheck">I have no updates till now</label>
+  </div>
+
+  <div id="accountSection" class="account-section">
+    <label class="form-label">Accounts & Numbers</label>
+    <div id="accountList"></div>
+    <button class="add-acc-btn" onclick="addAccount()">＋ Add Another Account</button>
+  </div>
+
+  <button class="submit-btn" id="submitBtn" onclick="submitForm()">✓ Submit My Update</button>
+  <div class="status-msg" id="statusMsg"></div>
+</div>
+
+<!-- ── SUCCESS ── -->
+<div class="success-card" id="successCard">
+  <div class="big-check">✅</div>
+  <h2 id="successTitle">Updates are sent!</h2>
+  <p id="successSub">Great job!</p>
+  <button onclick="resetForm()">Submit Another Update</button>
+</div>
+
+<footer>
+  Foundever Recruitment · Built by <span>Sayyad</span>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════
+const API_URL = 'https://script.google.com/macros/s/AKfycbxU_FeF1eMlDTF9SWw5drr9QmC0BS0Mv7s1-cVd-hOVtBY2gKobNPlFdnA224pkA4h_4w/exec';
+
+const RECRUITER_NAMES = [
+  "Ahmed Amr","Yussuf Hesham","Rana Maawad","Omar Kassem","Aya Mohamed",
+  "Ahmed Abdelfatah","Veronica Nady","Sarah Mohamed","Nouran Abdelmonem",
+  "Nada Bassyouni","Yara Sabry","Ahmed Shahat","Habiba Waleed",
+  "Mostafa Alaaeldin","Mahmoud Elshwadfey","Aya Mostafa","Ghaidaa Hussien",
+  "Shahd Abdelghafar","Gamela Abdelqader","Farah Khalid","Ahmed Ashraf",
+  "Yassmin Ashraf","Nour Waleed"
+];
+
+let ACCOUNT_NAMES = [];
+
+// ── ROTATING SUCCESS MESSAGES ──
+const SUCCESS_MESSAGES = {
+  noUpdate: [
+    "No worries ya {name}, u still have a chance to shine 💪",
+    "All good ya {name}! Tomorrow's a brand new day to crush it 🌅",
+    "No stress ya {name}! The best is yet to come 🚀"
+  ],
+  zeroOffers: [
+    "Great job ya {name} :) Every move counts! 💪",
+    "Nice work ya {name}! The pipeline is building 🔧",
+    "Keep pushing ya {name}! Offers are coming soon 🎯"
+  ],
+  oneOffer: [
+    "Great job ya {name} :) Keep it going! 🔥",
+    "One offer locked in ya {name}! Solid work 💪",
+    "That's how it starts ya {name}! Keep the streak going ⚡"
+  ],
+  twoOffers: [
+    "Two offers ya {name}?! You're on fire! 🚀",
+    "Double offers ya {name}! That's how it's done! 💥",
+    "Ya {name}, two offers in one day? Absolute machine! ⚡"
+  ],
+  threeOrMore: [
+    "{name} is UNSTOPPABLE! {count} offers — absolute legend! 🏆",
+    "{count} offers?! Ya {name} you're carrying the whole team today! 👑",
+    "Someone stop {name}! {count} offers — recruitment royalty! 🎯"
+  ]
+};
+
+function getSuccessMessage(recruiter, totalOffers, isNoUpdate) {
+  let pool;
+  if (isNoUpdate)         pool = SUCCESS_MESSAGES.noUpdate;
+  else if (totalOffers === 0) pool = SUCCESS_MESSAGES.zeroOffers;
+  else if (totalOffers === 1) pool = SUCCESS_MESSAGES.oneOffer;
+  else if (totalOffers === 2) pool = SUCCESS_MESSAGES.twoOffers;
+  else                        pool = SUCCESS_MESSAGES.threeOrMore;
+
+  const msg = pool[Math.floor(Math.random() * pool.length)];
+  return msg.replace(/{name}/g, recruiter).replace(/{count}/g, totalOffers);
+}
+
+// ── TIME-BASED UPDATE TYPE ──
+let currentUpdateType = 'Morning';
+let submissionDate    = '';
+
+function initUpdateType() {
+  const now  = new Date();
+  const hour = now.getHours();
+
+  const morningOpt = document.getElementById('utMorning');
+  const middayOpt  = document.getElementById('utMidday');
+  const morningLock = document.getElementById('morningLock');
+  const morningHint = document.getElementById('morningHint');
+  const middayLock  = document.getElementById('middayLock');
+  const middayHint  = document.getElementById('middayHint');
+  const warningBanner = document.getElementById('warningBanner');
+  const morningTitle  = document.getElementById('morningTitle');
+  const morningIcon   = document.getElementById('morningIcon');
+  const dateDisplay   = document.getElementById('utDateDisplay');
+
+  // Reset
+  morningOpt.classList.remove('locked', 'active');
+  middayOpt.classList.remove('locked', 'active');
+  morningLock.style.display = 'none';
+  morningHint.style.display = 'none';
+  middayLock.style.display  = 'none';
+  middayHint.style.display  = 'none';
+  warningBanner.classList.remove('show');
+
+  if (hour < 14) {
+    // ── BEFORE 2 PM: Morning only ──
+    currentUpdateType = 'Morning';
+    submissionDate = formatDateISO(now);
+
+    morningOpt.classList.add('active');
+    document.getElementById('radioMorning').checked = true;
+
+    middayOpt.classList.add('locked');
+    middayLock.style.display  = 'inline';
+    middayHint.style.display  = 'block';
+    middayHint.textContent    = 'Opens at 2:00 PM';
+
+    morningIcon.textContent  = '☀️';
+    morningTitle.textContent = 'Morning Briefing (Main Reference)';
+
+    dateDisplay.innerHTML = `📅 ${formatDateReadable(now)}`;
+
+  } else if (hour >= 14 && hour < 20) {
+    // ── 2 PM – 8 PM: Midday only ──
+    currentUpdateType = 'Midday';
+    submissionDate = formatDateISO(now);
+
+    middayOpt.classList.add('active');
+    document.getElementById('radioMidday').checked = true;
+
+    morningOpt.classList.add('locked');
+    morningLock.style.display = 'inline';
+    morningHint.style.display = 'block';
+    morningHint.textContent   = 'Closed after 2:00 PM';
+
+    dateDisplay.innerHTML = `📅 ${formatDateReadable(now)}`;
+
+  } else {
+    // ── AFTER 8 PM: Tomorrow's morning ──
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    currentUpdateType = 'Morning';
+    submissionDate = formatDateISO(tomorrow);
+
+    morningOpt.classList.add('active');
+    document.getElementById('radioMorning').checked = true;
+
+    morningIcon.textContent  = '🌙';
+    morningTitle.textContent = "Tomorrow's Morning Briefing Reference 🐦";
+
+    middayOpt.classList.add('locked');
+    middayLock.style.display = 'inline';
+    middayHint.style.display = 'block';
+    middayHint.textContent   = 'Not available for next-day prep';
+
+    warningBanner.classList.add('show');
+
+    dateDisplay.innerHTML = `🌙 ${formatDateReadable(tomorrow)}<br><span class="night-note">Tomorrow's morning reference</span>`;
+  }
+
+  // Update header badge
+  document.getElementById('dateBadge').textContent = formatDateReadable(
+    hour >= 20 ? new Date(new Date().setDate(new Date().getDate() + 1)) : now
+  );
+}
+
+function selectUpdateType(type) {
+  // Only allow if not locked
+  const opt = document.getElementById(type === 'Morning' ? 'utMorning' : 'utMidday');
+  if (opt.classList.contains('locked')) return;
+
+  currentUpdateType = type;
+  document.getElementById('utMorning').classList.toggle('active', type === 'Morning');
+  document.getElementById('utMidday').classList.toggle('active', type === 'Midday');
+  document.getElementById('radioMorning').checked = (type === 'Morning');
+  document.getElementById('radioMidday').checked  = (type === 'Midday');
+}
+
+// ── DATE HELPERS ──
+function formatDateISO(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatDateReadable(d) {
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ── INIT ──
+const sel = document.getElementById('recruiterName');
+RECRUITER_NAMES.sort((a, b) => a.localeCompare(b)).forEach(name => {
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  sel.appendChild(opt);
+});
+
+initUpdateType();
+loadAccounts();
+
+// ── LOAD ACCOUNTS ──
+async function loadAccounts() {
+  try {
+    const response = await fetch(`${API_URL}?action=accounts`);
+    const json = await response.json();
+    if (json.status === 'ok' && json.accounts) {
+      ACCOUNT_NAMES = json.accounts.sort((a, b) => a.localeCompare(b));
+    }
+  } catch (err) {
+    console.warn('Could not load accounts from API.', err);
+  }
+  addAccount();
+}
+
+function buildAccountOptions() {
+  let html = '<option value="">— Select account —</option>';
+  ACCOUNT_NAMES.forEach(name => {
+    html += `<option value="${name}">${name}</option>`;
+  });
+  html += '<option value="__custom__">✏️ Type custom name...</option>';
+  return html;
+}
+
+// ── ADD / REMOVE ACCOUNT ──
+function addAccount() {
+  const list = document.getElementById('accountList');
+  const div  = document.createElement('div');
+  div.className = 'account-block';
+
+  div.innerHTML = `
+    <div class="acc-top-row">
+      <div class="acc-select-wrap">
+        <select class="acc-select" onchange="handleAccountSelect(this)">
+          ${buildAccountOptions()}
+        </select>
+        <input class="acc-custom-input" type="text" placeholder="Type account name..." />
+      </div>
+      <div class="start-date-wrap">
+        <span class="start-date-label">Start Date</span>
+        <input class="start-date-input" type="date" />
+      </div>
+      <button class="remove-acc-btn" onclick="removeAccount(this)" title="Remove">✕</button>
+    </div>
+    <div class="inline-error date-error"> WRONG START DATE ...😵 صحصح وركز كدا</div>
+    <div class="stage-row">
+      <div class="stage-item">
+        <span class="stage-label">Offers</span>
+        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+      </div>
+      <div class="stage-item">
+        <span class="stage-label">Pending Feedback</span>
+        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+      </div>
+      <div class="stage-item">
+        <span class="stage-label">OPS</span>
+        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+      </div>
+      <div class="stage-item">
+        <span class="stage-label">POC</span>
+        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+      </div>
+      <div class="stage-item">
+        <span class="stage-label">HR</span>
+        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+      </div>
+    </div>
+    <input class="comment-input" type="text" placeholder="Optional comment..." />
+  `;
+
+  list.appendChild(div);
+}
+
+function handleAccountSelect(selectEl) {
+  const wrap        = selectEl.closest('.acc-select-wrap');
+  const customInput = wrap.querySelector('.acc-custom-input');
+
+  if (selectEl.value === '__custom__') {
+    selectEl.style.display    = 'none';
+    customInput.style.display = 'block';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+    customInput.value         = '';
+    selectEl.style.display    = 'block';
+  }
+}
+
+function getAccountName(block) {
+  const selectEl    = block.querySelector('.acc-select');
+  const customInput = block.querySelector('.acc-custom-input');
+  if (selectEl.value === '__custom__') return customInput.value.trim();
+  return selectEl.value;
+}
+
+function removeAccount(btn) {
+  const block = btn.closest('.account-block');
+  const list  = document.getElementById('accountList');
+  if (list.children.length > 1) block.remove();
+}
+
+function toggleNoUpdate() {
+  const checked = document.getElementById('noUpdateCheck').checked;
+  const section = document.getElementById('accountSection');
+  section.style.opacity       = checked ? '0.3' : '1';
+  section.style.pointerEvents = checked ? 'none' : 'auto';
+}
+
+// ── VALIDATE START DATE (Monday=1 or Tuesday=2) ──
+function isValidStartDate(dateStr) {
+  if (!dateStr) return false;
+  const d   = new Date(dateStr + 'T00:00:00');
+  const day = d.getDay();
+  return day === 1 || day === 2;
+}
+
+// ── CLEAR ERRORS ──
+function clearErrors() {
+  document.querySelectorAll('.account-block').forEach(block => {
+    block.classList.remove('error-block');
+    const dateInput = block.querySelector('.start-date-input');
+    if (dateInput) dateInput.classList.remove('error-input');
+    const dateError = block.querySelector('.date-error');
+    if (dateError) dateError.classList.remove('show');
+  });
+  document.getElementById('statusMsg').textContent = '';
+}
+
+// ── SUBMIT ──
+async function submitForm() {
+  clearErrors();
+
+  const recruiter = document.getElementById('recruiterName').value;
+  const noUpdate  = document.getElementById('noUpdateCheck').checked;
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // Validation: No name
+  if (!recruiter) {
+    statusMsg.className   = 'status-msg error';
+    statusMsg.textContent = '😅 انت مين يا عم؟ اختار اسمك الأول';
+    return;
+  }
+
+  const entries    = [];
+  let totalOffers  = 0;
+
+  if (noUpdate) {
+    entries.push({
+      date: submissionDate,
+      updatetype: currentUpdateType,
+      recruiter: recruiter,
+      account: '—',
+      startdate: '',
+      offers: 0,
+      pendingfb: 0,
+      ops: 0,
+      poc: 0,
+      hr: 0,
+      comment: 'No update today'
+    });
+  } else {
+    const blocks  = document.querySelectorAll('.account-block');
+    let hasData   = false;
+    let hasError  = false;
+    let firstErrorBlock = null;
+
+    blocks.forEach(block => {
+      const accName    = getAccountName(block);
+      const startDate  = block.querySelector('.start-date-input').value;
+      const inputs     = block.querySelectorAll('.stage-input');
+      const comment    = block.querySelector('.comment-input').value.trim();
+
+      const offers    = parseInt(inputs[0].value) || 0;
+      const pendingfb = parseInt(inputs[1].value) || 0;
+      const ops       = parseInt(inputs[2].value) || 0;
+      const poc       = parseInt(inputs[3].value) || 0;
+      const hr        = parseInt(inputs[4].value) || 0;
+
+      const hasNumbers = (offers + pendingfb + ops + poc + hr > 0 || comment);
+
+      if (accName && hasNumbers) {
+        if (!isValidStartDate(startDate)) {
+          hasError = true;
+          block.classList.add('error-block');
+          block.querySelector('.start-date-input').classList.add('error-input');
+          block.querySelector('.date-error').classList.add('show');
+          if (!firstErrorBlock) firstErrorBlock = block;
+          return;
+        }
+
+        hasData = true;
+        totalOffers += offers;
+        entries.push({
+          date: submissionDate,
+          updatetype: currentUpdateType,
+          recruiter: recruiter,
+          account: accName,
+          startdate: startDate,
+          offers, pendingfb, ops, poc, hr,
+          comment: comment
+        });
+      }
+    });
+
+    if (hasError && firstErrorBlock) {
+      firstErrorBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      statusMsg.className   = 'status-msg error';
+      statusMsg.textContent = '😵 WRONG START DATE ... صحصح وركز كدا يا باشا';
+      return;
+    }
+
+    if (!hasData) {
+      statusMsg.className   = 'status-msg error';
+      statusMsg.textContent = '🤨 فين الأرقام يا وحش؟ حط حاجة واحدة على الأقل!';
+      return;
+    }
+  }
+
+  // Send
+  submitBtn.disabled    = true;
+  statusMsg.className   = 'status-msg sending';
+  statusMsg.textContent = '⏳ One moment... submitting your numbers';
+
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entries)
+    });
+
+    // Dynamic success message
+    const successMsg = getSuccessMessage(recruiter, totalOffers, noUpdate);
+    document.getElementById('successTitle').textContent = 'Updates are sent!';
+    document.getElementById('successSub').textContent   = successMsg;
+    document.getElementById('formCard').style.display          = 'none';
+    document.getElementById('updateTypeSection').style.display = 'none';
+    document.getElementById('successCard').style.display        = 'block';
+
+  } catch (err) {
+    statusMsg.className   = 'status-msg error';
+    statusMsg.textContent = '❌ Something went wrong while sending. Please check your connection and try again.';
+    submitBtn.disabled    = false;
+  }
+}
+
+function resetForm() {
+  document.getElementById('formCard').style.display          = 'block';
+  document.getElementById('updateTypeSection').style.display = 'block';
+  document.getElementById('successCard').style.display        = 'none';
+  document.getElementById('recruiterName').value              = '';
+  document.getElementById('noUpdateCheck').checked            = false;
+  document.getElementById('statusMsg').textContent            = '';
+  document.getElementById('submitBtn').disabled               = false;
+
+  const section = document.getElementById('accountSection');
+  section.style.opacity       = '1';
+  section.style.pointerEvents = 'auto';
+
+  document.getElementById('accountList').innerHTML = '';
+  addAccount();
+  initUpdateType();
+}
+</script>
+</body>
+</html>

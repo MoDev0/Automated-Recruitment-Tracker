@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Recruitment Tracker</title>
+<style>
+  :root {
+    --fd-indigo: #4b4bf9;
+    --fd-midnight: #09092d;
+    --fd-white: #ffffff;
+    --fd-light-grey: #f3f3f7;
+    --fd-lemon: #f9ef77;
+    --fd-coral: #ff8d96;
+    --fd-lavender: #bfa1ff;
+    --fd-mint: #8bf0bb;
+    --fd-card: #0f0f35;
+    --fd-card2: #13133d;
+    --fd-border: rgba(75,75,249,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--fd-midnight);
+    color: var(--fd-white);
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  /* ── PASSWORD GATE ── */
+  .pw-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--fd-midnight);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pw-overlay.hidden { display: none; }
+
+  .pw-box {
+    background: var(--fd-card);
+    border: 1px solid var(--fd-border);
+    border-radius: 16px;
+    padding: 40px 32px;
+    text-align: center;
+    width: 90%;
+    max-width: 380px;
+  }
+
+  .pw-box .pw-icon { font-size: 2.5rem; margin-bottom: 14px; }
+
+  .pw-box h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--fd-white);
+    margin-bottom: 6px;
+  }
+
+  .pw-box h2 span { color: var(--fd-indigo); }
+
+  .pw-box .pw-sub {
+    font-size: 0.78rem;
+    color: var(--fd-lavender);
+    margin-bottom: 20px;
+  }
+
+  .pw-input {
+    width: 100%;
+    background: var(--fd-card2);
+    border: 1px solid var(--fd-border);
+    color: var(--fd-white);
+    font-size: 0.95rem;
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 10px;
+    padding: 12px 14px;
+    outline: none;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+
+  .pw-input:focus { border-color: var(--fd-indigo); }
+
+  .pw-input.error {
+    border-color: var(--fd-coral);
+    animation: shake 0.4s ease;
+  }
+
+  .pw-btn {
+    width: 100%;
+    background: var(--fd-indigo);
+    color: var(--fd-white);
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .pw-btn:hover { opacity: 0.85; }
+
+  .pw-error-msg {
+    font-size: 0.78rem;
+    color: var(--fd-coral);
+    margin-top: 10px;
+    min-height: 20px;
+    font-weight: 600;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+
+  /* ── DASHBOARD HIDDEN UNTIL AUTH ── */
+  .dashboard-content { display: none; }
+  .dashboard-content.visible { display: block; }
+
+  .header {
+    background: var(--fd-card);
+    border-bottom: 2px solid var(--fd-indigo);
+    padding: 18px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 { font-size: 1.2rem; font-weight: 700; }
+  .header h1 span { color: var(--fd-indigo); }
+
+  .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  .date-input, .type-select {
+    background: var(--fd-card2);
+    border: 1px solid var(--fd-border);
+    color: var(--fd-white);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.82rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    outline: none;
+  }
+
+  .date-input:focus, .type-select:focus { border-color: var(--fd-indigo); }
+  .type-select option { background: var(--fd-card); color: var(--fd-white); }
+
+  .btn-refresh {
+    background: var(--fd-indigo);
+    color: var(--fd-white);
+    border: none;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .btn-refresh:hover { opacity: 0.85; }
+
+  .type-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .type-badge.morning { background: rgba(249,239,119,0.15); color: var(--fd-lemon); }
+  .type-badge.midday  { background: rgba(191,161,255,0.15); color: var(--fd-lavender); }
+
+  .status-bar {
+    padding: 8px 28px;
+    font-size: 0.75rem;
+    color: var(--fd-lavender);
+    background: var(--fd-card2);
+    border-bottom: 1px solid var(--fd-border);
+  }
+
+  .summary-section { padding: 20px 28px 0; }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .card {
+    background: var(--fd-card);
+    border: 1px solid var(--fd-border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .card .c-label {
+    font-size: 0.68rem;
+    color: var(--fd-lavender);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .card .c-value { font-size: 1.7rem; font-weight: 800; color: var(--fd-white); line-height: 1; }
+  .card.c-offers { border-color: var(--fd-mint); }
+  .card.c-offers .c-value { color: var(--fd-mint); }
+  .card.c-pending { border-color: var(--fd-lemon); }
+  .card.c-pending .c-value { color: var(--fd-lemon); }
+  .card.c-top { border-color: var(--fd-lemon); }
+  .card.c-top .c-value { color: var(--fd-lemon); font-size: 0.95rem; padding-top: 4px; line-height: 1.3; }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--fd-lavender);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+  }
+
+  .breakdown-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+
+  .acc-chip {
+    background: var(--fd-card2);
+    border: 1px solid var(--fd-border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    color: var(--fd-white);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .acc-chip .acc-name { color: var(--fd-lavender); font-weight: 600; }
+  .acc-chip .acc-stat { color: var(--fd-mint); }
+  .acc-chip .acc-stat-fb { color: var(--fd-lemon); }
+
+  .divider { height: 1px; background: var(--fd-border); margin: 20px 0; }
+
+  .main { padding: 20px 28px; }
+
+  .rec-table-wrap { overflow-x: auto; margin-bottom: 20px; }
+  .rec-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+
+  .rec-table th {
+    background: var(--fd-card2);
+    color: var(--fd-lavender);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--fd-border);
+    white-space: nowrap;
+  }
+
+  .rec-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(75,75,249,0.1);
+    vertical-align: top;
+  }
+
+  .rec-table tr:hover td { background: rgba(75,75,249,0.06); }
+  .rec-table .num { text-align: center; font-weight: 700; }
+  .rec-table .num.highlight { color: var(--fd-mint); }
+  .rec-table .num.highlight-fb { color: var(--fd-lemon); }
+  .rec-table .no-upd { color: var(--fd-coral); font-style: italic; }
+  .rec-table .comment-cell { color: rgba(255,255,255,0.5); font-style: italic; font-size: 0.75rem; }
+  .rec-name { font-weight: 700; }
+  .rec-acc { color: var(--fd-lavender); font-size: 0.78rem; }
+  .rec-date { color: rgba(255,255,255,0.4); font-size: 0.72rem; }
+
+  .missing-section {
+    background: rgba(255,141,150,0.06);
+    border: 1px solid rgba(255,141,150,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .missing-section .section-label { color: var(--fd-coral); }
+  .missing-list { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .missing-chip {
+    background: rgba(255,141,150,0.1);
+    border: 1px solid rgba(255,141,150,0.2);
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    color: var(--fd-coral);
+    font-weight: 600;
+  }
+
+  .all-submitted {
+    background: rgba(139,240,187,0.06);
+    border: 1px solid rgba(139,240,187,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--fd-mint);
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  .post-box {
+    background: var(--fd-card);
+    border: 1px solid var(--fd-border);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 0.82rem;
+    line-height: 1.75;
+    color: #c8c8ff;
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+
+  .excel-export-box {
+    background: var(--fd-card);
+    border: 1px solid rgba(139,240,187,0.3);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 0.82rem;
+    line-height: 1.75;
+    color: #b0ffda;
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+
+  .copy-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+
+  .btn-action {
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-family: 'Segoe UI', sans-serif;
+    transition: opacity 0.18s;
+  }
+
+  .btn-action:hover { opacity: 0.85; }
+  .btn-lemon    { background: var(--fd-lemon);    color: var(--fd-midnight); }
+  .btn-mint     { background: var(--fd-mint);      color: var(--fd-midnight); }
+  .btn-lavender { background: var(--fd-lavender);  color: var(--fd-midnight); }
+
+  .copy-ok {
+    font-size: 0.78rem;
+    color: var(--fd-mint);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(9,9,45,0.85);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .loading-overlay.show { display: flex; }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--fd-border);
+    border-top-color: var(--fd-indigo);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay p { color: var(--fd-lavender); font-size: 0.85rem; }
+
+  footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.2);
+  }
+
+  footer span { color: var(--fd-indigo); font-weight: 700; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--fd-indigo); border-radius: 10px; }
+
+  @media (max-width: 600px) {
+    .header { padding: 14px 16px; }
+    .summary-section, .main { padding: 14px 16px; }
+    .status-bar { padding: 8px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ -->
+<!-- PASSWORD GATE -->
+<!-- ══════════════════════════════════════ -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-box">
+    <div class="pw-icon">🔒</div>
+    <h2>Admin <span>Access</span></h2>
+    <p class="pw-sub">Enter your password to unlock the dashboard</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="••••••••" autocomplete="off" />
+    <button class="pw-btn" id="pwBtn" onclick="checkPassword()">Unlock Dashboard</button>
+    <div class="pw-error-msg" id="pwError"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- DASHBOARD (hidden until authenticated) -->
+<!-- ══════════════════════════════════════ -->
+<div class="dashboard-content" id="dashboardContent">
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p>⏳ Fetching data, please wait...</p>
+</div>
+
+<div class="header">
+  <h1>📊 Admin <span>Dashboard</span></h1>
+  <div class="header-right">
+    <input type="date" class="date-input" id="dateInput" />
+    <select class="type-select" id="typeFilter">
+      <option value="Morning">☀️ Morning</option>
+      <option value="Midday">🕐 Midday</option>
+      <option value="Both">📋 Both</option>
+    </select>
+    <button class="btn-refresh" onclick="loadData()">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="status-bar" id="statusBar">Ready — select a date and view type, then refresh.</div>
+
+<div class="summary-section">
+  <div class="summary-grid">
+    <div class="card">
+      <div class="c-label">Submitted</div>
+      <div class="c-value" id="s-submitted">0</div>
+    </div>
+    <div class="card">
+      <div class="c-label">No Update</div>
+      <div class="c-value" id="s-noupdate">0</div>
+    </div>
+    <div class="card c-offers">
+      <div class="c-label">Total Offers</div>
+      <div class="c-value" id="s-offers">0</div>
+    </div>
+    <div class="card c-pending">
+      <div class="c-label">Pending Feedback</div>
+      <div class="c-value" id="s-pendingfb">0</div>
+    </div>
+    <div class="card">
+      <div class="c-label">Total OPS</div>
+      <div class="c-value" id="s-ops">0</div>
+    </div>
+    <div class="card">
+      <div class="c-label">Total POC</div>
+      <div class="c-value" id="s-poc">0</div>
+    </div>
+    <div class="card">
+      <div class="c-label">Total HR</div>
+      <div class="c-value" id="s-hr">0</div>
+    </div>
+    <div class="card c-top">
+      <div class="c-label">⭐ Top Contributor</div>
+      <div class="c-value" id="s-top">—</div>
+    </div>
+  </div>
+
+  <div class="section-label">Account Breakdown</div>
+  <div class="breakdown-grid" id="breakdownGrid">
+    <span style="font-size:0.75rem;color:rgba(255,255,255,0.25)">No data yet...</span>
+  </div>
+  <div class="divider"></div>
+</div>
+
+<div class="main">
+
+  <div class="all-submitted" id="allSubmittedBanner">🎉 All recruiters have submitted their updates.</div>
+
+  <div class="missing-section" id="missingSection" style="display:none;">
+    <div class="section-label">⚠️ Pending Submissions — The following recruiters have not submitted yet:</div>
+    <div class="missing-list" id="missingList"></div>
+  </div>
+
+  <div class="section-label">Recruiter Details</div>
+  <div class="rec-table-wrap">
+    <table class="rec-table">
+      <thead>
+        <tr>
+          <th>Recruiter</th>
+          <th>Account</th>
+          <th>Start Date</th>
+          <th>Type</th>
+          <th>Offers</th>
+          <th>Pending FB</th>
+          <th>OPS</th>
+          <th>POC</th>
+          <th>HR</th>
+          <th>Comment</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="recTableBody">
+        <tr><td colspan="11" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found for this date.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Teams Post Preview</div>
+  <div class="post-box" id="postBox">Load data first...</div>
+  <div class="copy-row">
+    <button class="btn-action btn-lemon" onclick="copyText('postBox')">📋 Copy for Teams</button>
+    <span class="copy-ok" id="copyOkPost">✅ Copied!</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">📊 Excel Export</div>
+  <div class="excel-export-box" id="excelBox">Load data first...</div>
+  <div class="copy-row">
+    <button class="btn-action btn-lavender" onclick="copyExcel()">📋 Copy for Excel</button>
+    <span class="copy-ok" id="copyOkExcel">✅ Copied!</span>
+  </div>
+</div>
+
+<footer>
+  <small>Powered by EverGPT</small><br>
+  Admin Dashboard · Built by <span>Sayyad</span>
+</footer>
+
+</div><!-- end dashboard-content -->
+
+<script>
+// ═══════════════════════════════════════════════
+// 🔒 PASSWORD GATE — SHA-256 HASH VERIFICATION
+// ═══════════════════════════════════════════════
+
+// 🔒 PASTE YOUR SHA-256 HASH BELOW
+// Generate at: https://emn178.github.io/online-tools/sha256.html
+// Type your password → copy the hash → paste here
+const ADMIN_HASH = '7ce76d69ab731a4c7e7814f798a6f4038a0147d701931e7639b78a7c48a260e4';
+
+// Allow Enter key to submit
+document.addEventListener('DOMContentLoaded', () => {
+  const pwInput = document.getElementById('pwInput');
+  pwInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  // Check if already authenticated this session
+  if (sessionStorage.getItem('dashAuth') === 'true') {
+    unlockDashboard();
+  } else {
+    pwInput.focus();
+  }
+});
+
+async function checkPassword() {
+  const input   = document.getElementById('pwInput').value;
+  const errorEl = document.getElementById('pwError');
+  const inputEl = document.getElementById('pwInput');
+
+  if (!input) {
+    errorEl.textContent = 'Please enter a password';
+    inputEl.classList.add('error');
+    setTimeout(() => inputEl.classList.remove('error'), 500);
+    return;
+  }
+
+  // Hash the input using SHA-256
+  const encoded = new TextEncoder().encode(input);
+  const buffer  = await crypto.subtle.digest('SHA-256', encoded);
+  const hex     = Array.from(new Uint8Array(buffer))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+
+  if (hex === ADMIN_HASH) {
+    // ✅ Correct — save session and unlock
+    sessionStorage.setItem('dashAuth', 'true');
+    unlockDashboard();
+  } else {
+    // ❌ Wrong password
+    errorEl.textContent = '❌ Wrong password. Try again.';
+    inputEl.value = '';
+    inputEl.classList.add('error');
+    setTimeout(() => inputEl.classList.remove('error'), 500);
+    inputEl.focus();
+  }
+}
+
+function unlockDashboard() {
+  document.getElementById('pwOverlay').classList.add('hidden');
+  document.getElementById('dashboardContent').classList.add('visible');
+  initDashboard();
+}
+
+// ═══════════════════════════════════════════════
+// DASHBOARD LOGIC (runs only after authentication)
+// ═══════════════════════════════════════════════
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbxU_FeF1eMlDTF9SWw5drr9QmC0BS0Mv7s1-cVd-hOVtBY2gKobNPlFdnA224pkA4h_4w/exec';
+
+const RECRUITER_NAMES = [
+  "Ahmed Amr","Yussuf Hesham","Rana Maawad","Omar Kassem","Aya Mohamed",
+  "Ahmed Abdelfatah","Veronica Nady","Sarah Mohamed","Nouran Abdelmonem",
+  "Nada Bassyouni","Yara Sabry","Ahmed Shahat","Habiba Waleed",
+  "Mostafa Alaaeldin","Mahmoud Elshwadfey","Aya Mostafa","Ghaidaa Hussien",
+  "Shahd Abdelghafar","Gamela Abdelqader","Farah Khalid","Ahmed Ashraf",
+  "Yassmin Ashraf","Nour Waleed"
+];
+
+function initDashboard() {
+  const today     = new Date();
+  const dateInput = document.getElementById('dateInput');
+  dateInput.value = formatDateISO(today);
+  loadData();
+}
+
+function formatDateISO(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatStartDate(sd) {
+  if (!sd) return '';
+  try {
+    const d = new Date(sd + 'T00:00:00');
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch { return sd; }
+}
+
+function formatTimestamp(ts) {
+  if (!ts) return '';
+  try {
+    const d = new Date(ts);
+    return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  } catch { return ''; }
+}
+
+// ── LATEST WINS LOGIC ──
+function filterLatestPerRecruiter(rows) {
+  const groups = {};
+
+  rows.forEach(row => {
+    const key = `${(row.Recruiter || '').trim()}|||${(row.UpdateType || '').trim()}`;
+    const ts  = new Date(row.Timestamp || 0).getTime();
+
+    if (!groups[key]) groups[key] = { maxTs: ts, rows: [row] };
+    else if (ts > groups[key].maxTs) { groups[key] = { maxTs: ts, rows: [row] }; }
+    else if (ts === groups[key].maxTs) { groups[key].rows.push(row); }
+  });
+
+  const result = [];
+  Object.values(groups).forEach(g => result.push(...g.rows));
+  return result;
+}
+
+// ── LOAD DATA ──
+async function loadData() {
+  const selectedDate = document.getElementById('dateInput').value;
+  const selectedType = document.getElementById('typeFilter').value;
+  if (!selectedDate) return;
+
+  const overlay   = document.getElementById('loadingOverlay');
+  const statusBar = document.getElementById('statusBar');
+
+  overlay.classList.add('show');
+  statusBar.textContent = '⏳ Fetching data, please wait...';
+
+  try {
+    let url = `${API_URL}?date=${selectedDate}`;
+    if (selectedType !== 'Both') url += `&type=${selectedType}`;
+
+    const response = await fetch(url);
+    const json     = await response.json();
+
+    if (json.status === 'ok') {
+      const filtered = filterLatestPerRecruiter(json.data);
+      processData(filtered, selectedDate, selectedType);
+      const count = filtered.length;
+      if (count === 0) {
+        statusBar.textContent = `📭 No submissions found for ${selectedDate} (${selectedType}).`;
+      } else {
+        statusBar.textContent = `✅ Data loaded successfully — ${count} row(s) for ${selectedDate} · View: ${selectedType} · Last refresh: ${new Date().toLocaleTimeString()}`;
+      }
+    } else {
+      statusBar.textContent = `⚠️ Error: ${json.message || 'Unknown error'}`;
+    }
+  } catch (err) {
+    statusBar.textContent = '❌ Failed to retrieve data. Please verify your connection and API configuration.';
+    console.error(err);
+  }
+
+  overlay.classList.remove('show');
+}
+
+function processData(rows, selectedDate, selectedType) {
+  let totalOffers = 0, totalPFB = 0, totalOPS = 0, totalPOC = 0, totalHR = 0;
+  let submittedNames = new Set();
+  let noUpdateNames  = new Set();
+  const recruiterMap = {};
+  const accountMap   = {};
+
+  rows.forEach(row => {
+    const name       = (row.Recruiter  || '').trim();
+    const account    = (row.Account    || '').trim();
+    const startDate  = (row.StartDate  || '').toString().trim();
+    const updateType = (row.UpdateType || '').trim();
+    const offers     = parseInt(row.Offers)    || 0;
+    const pendingfb  = parseInt(row.PendingFB) || 0;
+    const ops        = parseInt(row.OPS)       || 0;
+    const poc        = parseInt(row.POC)       || 0;
+    const hr         = parseInt(row.HR)        || 0;
+    const comment    = (row.Comment || '').trim();
+    const ts         = row.Timestamp || '';
+
+    if (!name) return;
+    submittedNames.add(name);
+
+    if (comment.toLowerCase() === 'no update today' && account === '—') {
+      noUpdateNames.add(name);
+      if (!recruiterMap[name]) recruiterMap[name] = [];
+      recruiterMap[name].push({ account: '—', startDate: '', updateType, offers: 0, pendingfb: 0, ops: 0, poc: 0, hr: 0, comment: 'No update today', ts });
+      return;
+    }
+
+    totalOffers += offers;
+    totalPFB    += pendingfb;
+    totalOPS    += ops;
+    totalPOC    += poc;
+    totalHR     += hr;
+
+    if (!recruiterMap[name]) recruiterMap[name] = [];
+    recruiterMap[name].push({ account, startDate, updateType, offers, pendingfb, ops, poc, hr, comment, ts });
+
+    if (account && account !== '—') {
+      const key = account.toLowerCase();
+      if (!accountMap[key]) accountMap[key] = { display: account, offer: 0, pfb: 0, ops: 0, poc: 0, hr: 0 };
+      accountMap[key].offer += offers;
+      accountMap[key].pfb   += pendingfb;
+      accountMap[key].ops   += ops;
+      accountMap[key].poc   += poc;
+      accountMap[key].hr    += hr;
+    }
+  });
+
+  // Top contributor
+  let maxOffers = 0, topNames = [];
+  Object.keys(recruiterMap).forEach(name => {
+    if (noUpdateNames.has(name)) return;
+    const total = recruiterMap[name].reduce((s, r) => s + r.offers, 0);
+    if (total > maxOffers)       { maxOffers = total; topNames = [name]; }
+    else if (total === maxOffers && total > 0) topNames.push(name);
+  });
+
+  // Summary cards
+  document.getElementById('s-submitted').textContent = submittedNames.size;
+  document.getElementById('s-noupdate').textContent  = noUpdateNames.size;
+  document.getElementById('s-offers').textContent    = totalOffers;
+  document.getElementById('s-pendingfb').textContent = totalPFB;
+  document.getElementById('s-ops').textContent       = totalOPS;
+  document.getElementById('s-poc').textContent       = totalPOC;
+  document.getElementById('s-hr').textContent        = totalHR;
+  document.getElementById('s-top').textContent       =
+    topNames.length ? topNames.join(' · ') + (maxOffers > 0 ? ` (${maxOffers})` : '') : '—';
+
+  // Account breakdown
+  const grid    = document.getElementById('breakdownGrid');
+  const entries = Object.values(accountMap).filter(a => (a.offer + a.pfb + a.ops + a.poc + a.hr) > 0);
+
+  if (entries.length === 0) {
+    grid.innerHTML = `<span style="font-size:0.75rem;color:rgba(255,255,255,0.25)">No data yet...</span>`;
+  } else {
+    grid.innerHTML = entries.map(a => {
+      const parts = [];
+      if (a.offer) parts.push(`<span class="acc-stat">${a.offer} Offer</span>`);
+      if (a.pfb)   parts.push(`<span class="acc-stat-fb">${a.pfb} PFB</span>`);
+      if (a.ops)   parts.push(`<span class="acc-stat">${a.ops} OPS</span>`);
+      if (a.poc)   parts.push(`<span class="acc-stat">${a.poc} POC</span>`);
+      if (a.hr)    parts.push(`<span class="acc-stat">${a.hr} HR</span>`);
+      return `<div class="acc-chip"><span class="acc-name">${a.display}</span>${parts.join('')}</div>`;
+    }).join('');
+  }
+
+  // Missing / All submitted
+  const missingNames   = RECRUITER_NAMES.filter(n => !submittedNames.has(n));
+  const missingSection = document.getElementById('missingSection');
+  const missingList    = document.getElementById('missingList');
+  const allBanner      = document.getElementById('allSubmittedBanner');
+
+  if (missingNames.length > 0) {
+    missingSection.style.display = 'block';
+    allBanner.style.display      = 'none';
+    missingList.innerHTML = missingNames.map(n => `<span class="missing-chip">${n}</span>`).join('');
+  } else if (submittedNames.size > 0) {
+    missingSection.style.display = 'none';
+    allBanner.style.display      = 'block';
+  } else {
+    missingSection.style.display = 'none';
+    allBanner.style.display      = 'none';
+  }
+
+  // Table
+  const tbody       = document.getElementById('recTableBody');
+  const sortedNames = Object.keys(recruiterMap).sort((a,b) => a.localeCompare(b));
+
+  if (sortedNames.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found for this date.</td></tr>`;
+  } else {
+    let html = '';
+    sortedNames.forEach(name => {
+      const ents = recruiterMap[name];
+      ents.forEach((entry, i) => {
+        const isNoUpd   = entry.comment.toLowerCase() === 'no update today';
+        const typeBadge = entry.updateType === 'Morning'
+          ? '<span class="type-badge morning">Morning</span>'
+          : '<span class="type-badge midday">Midday</span>';
+
+        html += `<tr>
+          <td class="rec-name">${i === 0 ? name : ''}</td>
+          <td class="${isNoUpd ? 'no-upd' : 'rec-acc'}">${entry.account}</td>
+          <td class="rec-date">${isNoUpd ? '—' : formatStartDate(entry.startDate)}</td>
+          <td>${typeBadge}</td>
+          <td class="num ${entry.offers > 0 ? 'highlight' : ''}">${isNoUpd ? '—' : entry.offers}</td>
+          <td class="num ${entry.pendingfb > 0 ? 'highlight-fb' : ''}">${isNoUpd ? '—' : entry.pendingfb}</td>
+          <td class="num">${isNoUpd ? '—' : entry.ops}</td>
+          <td class="num">${isNoUpd ? '—' : entry.poc}</td>
+          <td class="num">${isNoUpd ? '—' : entry.hr}</td>
+          <td class="comment-cell">${entry.comment || ''}</td>
+          <td style="font-size:0.72rem;color:rgba(255,255,255,0.3);white-space:nowrap;">${formatTimestamp(entry.ts)}</td>
+        </tr>`;
+      });
+    });
+    tbody.innerHTML = html;
+  }
+
+  generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers, selectedDate);
+  generateExcelExport(recruiterMap, noUpdateNames, selectedDate);
+}
+
+// ── TEAMS POST ──
+function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers, dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const readableDate = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const sep = '─'.repeat(42);
+
+  let post = `📋 DAILY RECRUITMENT UPDATE\n${readableDate}\n${sep}\n\n👥 TEAM UPDATES\n`;
+
+  const sortedNames = Object.keys(recruiterMap).sort((a,b) => a.localeCompare(b));
+
+  sortedNames.forEach(name => {
+    if (noUpdateNames.has(name)) {
+      post += `  • ${name}: No update today\n`;
+      return;
+    }
+
+    const entries  = recruiterMap[name];
+    const accGroup = {};
+
+    entries.forEach(e => {
+      if (!e.account || e.account === '—') return;
+      const label = e.startDate ? `${e.account} (${formatStartDate(e.startDate)})` : e.account;
+      const key   = `${e.account.toLowerCase()}_${e.startDate || ''}`;
+      if (!accGroup[key]) accGroup[key] = { display: label, offer: 0, pfb: 0, ops: 0, poc: 0, hr: 0, comments: [] };
+      accGroup[key].offer += e.offers;
+      accGroup[key].pfb   += e.pendingfb;
+      accGroup[key].ops   += e.ops;
+      accGroup[key].poc   += e.poc;
+      accGroup[key].hr    += e.hr;
+      if (e.comment) accGroup[key].comments.push(e.comment);
+    });
+
+    const parts = [];
+    Object.values(accGroup).forEach(a => {
+      const sp = [];
+      if (a.offer) sp.push(`${a.offer} Offer`);
+      if (a.pfb)   sp.push(`${a.pfb} Pending Feedback`);
+      if (a.ops)   sp.push(`${a.ops} OPS`);
+      if (a.poc)   sp.push(`${a.poc} POC`);
+      if (a.hr)    sp.push(`${a.hr} HR`);
+      if (sp.length === 0) return;
+      let line = `${a.display}: ${sp.join(' · ')}`;
+      if (a.comments.length) line += ` (${a.comments.join(', ')})`;
+      parts.push(line);
+    });
+
+    if (parts.length) {
+      post += `  • ${name}:\n      ${parts.join('\n      ')}\n`;
+    } else {
+      post += `  • ${name}: No moves recorded\n`;
+    }
+  });
+
+  post += `\n📊 BY ACCOUNT\n`;
+  Object.values(accountMap).forEach(a => {
+    const parts = [];
+    if (a.offer) parts.push(`${a.offer} Offer`);
+    if (a.pfb)   parts.push(`${a.pfb} Pending Feedback`);
+    if (a.ops)   parts.push(`${a.ops} OPS`);
+    if (a.poc)   parts.push(`${a.poc} POC`);
+    if (a.hr)    parts.push(`${a.hr} HR`);
+    if (parts.length) post += `  ${a.display}: ${parts.join(' · ')}\n`;
+  });
+
+  post += `\n📈 TOTALS\n`;
+  if (totalOffers) post += `  Offers              : ${totalOffers}\n`;
+  if (totalPFB)    post += `  Pending Feedback    : ${totalPFB}\n`;
+  if (totalOPS)    post += `  OPS                 : ${totalOPS}\n`;
+  if (totalPOC)    post += `  POC                 : ${totalPOC}\n`;
+  if (totalHR)     post += `  HR Interviews       : ${totalHR}\n`;
+
+  if (topNames.length) {
+    post += `\n⭐ TOP CONTRIBUTOR${topNames.length > 1 ? 'S' : ''}\n`;
+    post += `  ${topNames.join(' · ')}`;
+    if (maxOffers > 0) post += ` — ${maxOffers} Offer${maxOffers > 1 ? 's' : ''}`;
+    post += '\n';
+  }
+
+  post += `\n${sep}\n`;
+  document.getElementById('postBox').textContent = post;
+}
+
+// ── EXCEL EXPORT ──
+function generateExcelExport(recruiterMap, noUpdateNames, dateStr) {
+  const sortedRecruiters = [...RECRUITER_NAMES].sort((a,b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+  const d          = new Date(dateStr + 'T00:00:00');
+  const excelDate  = `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`;
+  const readDate   = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const copyLines = [excelDate];
+  let dayTotal = 0;
+
+  sortedRecruiters.forEach(name => {
+    let offers = 0;
+    if (recruiterMap[name] && !noUpdateNames.has(name)) {
+      offers = recruiterMap[name].reduce((s, e) => s + e.offers, 0);
+    }
+    dayTotal += offers;
+    copyLines.push(`${offers}`);
+  });
+
+  const sep = '─'.repeat(40);
+  let preview = `📊 Excel Export — ${readDate}\n${sep}\n📋 Copyable Column:\n\n${copyLines.join('\n')}`;
+  preview += `\n\n${sep}\nDay Total: ${dayTotal}\n${sep}\n\n`;
+  preview += `👁️ Verification:\n\nDate: ${excelDate}\n`;
+
+  sortedRecruiters.forEach(name => {
+    let offers = 0;
+    if (recruiterMap[name] && !noUpdateNames.has(name)) {
+      offers = recruiterMap[name].reduce((s, e) => s + e.offers, 0);
+    }
+    preview += `${name.padEnd(22)} → ${offers}\n`;
+  });
+
+  document.getElementById('excelBox').textContent    = preview;
+  document.getElementById('excelBox').dataset.copyData = copyLines.join('\n');
+}
+
+function copyText(elementId) {
+  const text = document.getElementById(elementId).textContent;
+  if (!text || text.startsWith('Load')) return;
+  navigator.clipboard.writeText(text).then(() => flashCopy('copyOkPost'));
+}
+
+function copyExcel() {
+  const data = document.getElementById('excelBox').dataset.copyData || '';
+  if (!data) return;
+  navigator.clipboard.writeText(data).then(() => flashCopy('copyOkExcel'));
+}
+
+function flashCopy(id) {
+  const el = document.getElementById(id);
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 2500);
+}
+</script>
+</body>
+</html>
