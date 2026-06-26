@@ -367,20 +367,26 @@
   .comment-input::placeholder { color: rgba(255,255,255,0.2); }
   .comment-input:focus { border-bottom-color: rgba(75,75,249,0.5); color: var(--fd-white); }
 
+  /* ── ADD ACCOUNT BUTTON ── */
   .add-acc-btn {
-    background: transparent;
-    border: 1px solid var(--fd-border);
+    width: 100%;
+    background: rgba(75,75,249,0.08);
+    border: 1px dashed var(--fd-indigo);
     color: var(--fd-lavender);
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
     font-family: 'Segoe UI', sans-serif;
     margin-bottom: 20px;
+    transition: background 0.2s, border-color 0.2s;
   }
 
-  .add-acc-btn:hover { border-color: var(--fd-indigo); }
+  .add-acc-btn:hover {
+    background: rgba(75,75,249,0.15);
+    border-color: var(--fd-lavender);
+  }
 
   /* ── SUBMIT ── */
   .submit-btn {
@@ -428,7 +434,18 @@
 
   .success-card .big-check { font-size: 3rem; margin-bottom: 12px; }
   .success-card h2 { color: var(--fd-mint); font-size: 1.15rem; margin-bottom: 8px; }
-  .success-card p { color: var(--fd-lavender); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; }
+  .success-card .motivational { color: var(--fd-lavender); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.5; }
+
+  .success-card .summary {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.78rem;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    text-align: left;
+    background: rgba(75,75,249,0.06);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
 
   .success-card button {
     background: var(--fd-indigo);
@@ -483,7 +500,7 @@
         <span id="morningTitle">Morning Briefing (Main Reference)</span>
         <span class="ut-lock-icon" id="morningLock" style="display:none">🔒</span>
       </div>
-      <div class="ut-desc" id="morningDesc">Here you add your new offers or updates that will be used as a reference for the briefing call </div>
+      <div class="ut-desc" id="morningDesc">Here you add your new offers or updates that will be used as a reference for the briefing call</div>
       <div class="ut-lock-hint" id="morningHint" style="display:none">Closed after 2:00 PM</div>
     </div>
   </div>
@@ -533,7 +550,8 @@
 <div class="success-card" id="successCard">
   <div class="big-check">✅</div>
   <h2 id="successTitle">Updates are sent!</h2>
-  <p id="successSub">Great job!</p>
+  <p class="motivational" id="successMotivational"></p>
+  <div class="summary" id="successSummary" style="display:none;"></div>
   <button onclick="resetForm()">Submit Another Update</button>
 </div>
 
@@ -558,7 +576,9 @@ const RECRUITER_NAMES = [
 
 let ACCOUNT_NAMES = [];
 
-// ── ROTATING SUCCESS MESSAGES ──
+// ═══════════════════════════════════════════════
+// ROTATING SUCCESS MESSAGES
+// ═══════════════════════════════════════════════
 const SUCCESS_MESSAGES = {
   noUpdate: [
     "No worries ya {name}, u still have a chance to shine 💪",
@@ -589,7 +609,7 @@ const SUCCESS_MESSAGES = {
 
 function getSuccessMessage(recruiter, totalOffers, isNoUpdate) {
   let pool;
-  if (isNoUpdate)         pool = SUCCESS_MESSAGES.noUpdate;
+  if (isNoUpdate)             pool = SUCCESS_MESSAGES.noUpdate;
   else if (totalOffers === 0) pool = SUCCESS_MESSAGES.zeroOffers;
   else if (totalOffers === 1) pool = SUCCESS_MESSAGES.oneOffer;
   else if (totalOffers === 2) pool = SUCCESS_MESSAGES.twoOffers;
@@ -599,7 +619,9 @@ function getSuccessMessage(recruiter, totalOffers, isNoUpdate) {
   return msg.replace(/{name}/g, recruiter).replace(/{count}/g, totalOffers);
 }
 
-// ── TIME-BASED UPDATE TYPE ──
+// ═══════════════════════════════════════════════
+// TIME-BASED UPDATE TYPE
+// ═══════════════════════════════════════════════
 let currentUpdateType = 'Morning';
 let submissionDate    = '';
 
@@ -607,18 +629,17 @@ function initUpdateType() {
   const now  = new Date();
   const hour = now.getHours();
 
-  const morningOpt = document.getElementById('utMorning');
-  const middayOpt  = document.getElementById('utMidday');
-  const morningLock = document.getElementById('morningLock');
-  const morningHint = document.getElementById('morningHint');
-  const middayLock  = document.getElementById('middayLock');
-  const middayHint  = document.getElementById('middayHint');
+  const morningOpt    = document.getElementById('utMorning');
+  const middayOpt     = document.getElementById('utMidday');
+  const morningLock   = document.getElementById('morningLock');
+  const morningHint   = document.getElementById('morningHint');
+  const middayLock    = document.getElementById('middayLock');
+  const middayHint    = document.getElementById('middayHint');
   const warningBanner = document.getElementById('warningBanner');
   const morningTitle  = document.getElementById('morningTitle');
   const morningIcon   = document.getElementById('morningIcon');
   const dateDisplay   = document.getElementById('utDateDisplay');
 
-  // Reset
   morningOpt.classList.remove('locked', 'active');
   middayOpt.classList.remove('locked', 'active');
   morningLock.style.display = 'none';
@@ -628,70 +649,52 @@ function initUpdateType() {
   warningBanner.classList.remove('show');
 
   if (hour < 14) {
-    // ── BEFORE 2 PM: Morning only ──
     currentUpdateType = 'Morning';
     submissionDate = formatDateISO(now);
-
     morningOpt.classList.add('active');
     document.getElementById('radioMorning').checked = true;
-
     middayOpt.classList.add('locked');
     middayLock.style.display  = 'inline';
     middayHint.style.display  = 'block';
     middayHint.textContent    = 'Opens at 2:00 PM';
-
-    morningIcon.textContent  = '☀️';
-    morningTitle.textContent = 'Morning Briefing (Main Reference)';
-
-    dateDisplay.innerHTML = `📅 ${formatDateReadable(now)}`;
+    morningIcon.textContent   = '☀️';
+    morningTitle.textContent  = 'Morning Briefing (Main Reference)';
+    dateDisplay.innerHTML     = `📅 ${formatDateReadable(now)}`;
 
   } else if (hour >= 14 && hour < 20) {
-    // ── 2 PM – 8 PM: Midday only ──
     currentUpdateType = 'Midday';
     submissionDate = formatDateISO(now);
-
     middayOpt.classList.add('active');
     document.getElementById('radioMidday').checked = true;
-
     morningOpt.classList.add('locked');
     morningLock.style.display = 'inline';
     morningHint.style.display = 'block';
     morningHint.textContent   = 'Closed after 2:00 PM';
-
-    dateDisplay.innerHTML = `📅 ${formatDateReadable(now)}`;
+    dateDisplay.innerHTML     = `📅 ${formatDateReadable(now)}`;
 
   } else {
-    // ── AFTER 8 PM: Tomorrow's morning ──
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
-
     currentUpdateType = 'Morning';
     submissionDate = formatDateISO(tomorrow);
-
     morningOpt.classList.add('active');
     document.getElementById('radioMorning').checked = true;
-
     morningIcon.textContent  = '🌙';
     morningTitle.textContent = "Tomorrow's Morning Briefing Reference 🐦";
-
     middayOpt.classList.add('locked');
     middayLock.style.display = 'inline';
     middayHint.style.display = 'block';
     middayHint.textContent   = 'Not available for next-day prep';
-
     warningBanner.classList.add('show');
-
     dateDisplay.innerHTML = `🌙 ${formatDateReadable(tomorrow)}<br><span class="night-note">Tomorrow's morning reference</span>`;
   }
 
-  // Update header badge
   document.getElementById('dateBadge').textContent = formatDateReadable(
     hour >= 20 ? new Date(new Date().setDate(new Date().getDate() + 1)) : now
   );
 }
 
 function selectUpdateType(type) {
-  // Only allow if not locked
   const opt = document.getElementById(type === 'Morning' ? 'utMorning' : 'utMidday');
   if (opt.classList.contains('locked')) return;
 
@@ -702,7 +705,9 @@ function selectUpdateType(type) {
   document.getElementById('radioMidday').checked  = (type === 'Midday');
 }
 
-// ── DATE HELPERS ──
+// ═══════════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════════
 function formatDateISO(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
@@ -711,7 +716,9 @@ function formatDateReadable(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-// ── INIT ──
+// ═══════════════════════════════════════════════
+// FEATURE 1: REMEMBER RECRUITER NAME
+// ═══════════════════════════════════════════════
 const sel = document.getElementById('recruiterName');
 RECRUITER_NAMES.sort((a, b) => a.localeCompare(b)).forEach(name => {
   const opt = document.createElement('option');
@@ -720,6 +727,34 @@ RECRUITER_NAMES.sort((a, b) => a.localeCompare(b)).forEach(name => {
   sel.appendChild(opt);
 });
 
+const savedRecruiter = localStorage.getItem('recruiterName');
+if (savedRecruiter && RECRUITER_NAMES.includes(savedRecruiter)) {
+  sel.value = savedRecruiter;
+}
+
+sel.addEventListener('change', function() {
+  if (this.value) localStorage.setItem('recruiterName', this.value);
+});
+
+// ═══════════════════════════════════════════════
+// FEATURE 3: PREVENT NEGATIVES + EMPTY DEFAULTS
+// ═══════════════════════════════════════════════
+document.addEventListener('input', function(e) {
+  if (e.target.classList.contains('stage-input')) {
+    const val = parseInt(e.target.value);
+    if (val < 0) e.target.value = '';
+  }
+});
+
+document.addEventListener('focus', function(e) {
+  if (e.target.classList.contains('stage-input')) {
+    if (e.target.value === '0') e.target.value = '';
+  }
+}, true);
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
 initUpdateType();
 loadAccounts();
 
@@ -770,23 +805,23 @@ function addAccount() {
     <div class="stage-row">
       <div class="stage-item">
         <span class="stage-label">Offers</span>
-        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+        <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
       <div class="stage-item">
         <span class="stage-label">Pending Feedback</span>
-        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+        <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
       <div class="stage-item">
         <span class="stage-label">OPS</span>
-        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+        <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
       <div class="stage-item">
         <span class="stage-label">POC</span>
-        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+        <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
       <div class="stage-item">
         <span class="stage-label">HR</span>
-        <input class="stage-input" type="number" min="0" value="0" onwheel="this.blur()"/>
+        <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
     </div>
     <input class="comment-input" type="text" placeholder="Optional comment..." />
@@ -833,9 +868,19 @@ function toggleNoUpdate() {
 // ── VALIDATE START DATE (Monday=1 or Tuesday=2) ──
 function isValidStartDate(dateStr) {
   if (!dateStr) return false;
-  const d   = new Date(dateStr + 'T00:00:00');
+  const d     = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const day = d.getDay();
-  return day === 1 || day === 2;
+
+  // Must be Monday or Tuesday
+  if (day !== 1 && day !== 2) return false;
+
+  // Must be a future date (not today or past)
+  if (d <= today) return false;
+
+  return true;
 }
 
 // ── CLEAR ERRORS ──
@@ -850,7 +895,9 @@ function clearErrors() {
   document.getElementById('statusMsg').textContent = '';
 }
 
-// ── SUBMIT ──
+// ═══════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════
 async function submitForm() {
   clearErrors();
 
@@ -859,7 +906,6 @@ async function submitForm() {
   const statusMsg = document.getElementById('statusMsg');
   const submitBtn = document.getElementById('submitBtn');
 
-  // Validation: No name
   if (!recruiter) {
     statusMsg.className   = 'status-msg error';
     statusMsg.textContent = '😅 انت مين يا عم؟ اختار اسمك الأول';
@@ -954,10 +1000,34 @@ async function submitForm() {
       body: JSON.stringify(entries)
     });
 
-    // Dynamic success message
+    // Motivational message
     const successMsg = getSuccessMessage(recruiter, totalOffers, noUpdate);
-    document.getElementById('successTitle').textContent = 'Updates are sent!';
-    document.getElementById('successSub').textContent   = successMsg;
+    document.getElementById('successTitle').textContent        = 'Updates are sent!';
+    document.getElementById('successMotivational').textContent = successMsg;
+
+    // Summary
+    const summaryEl = document.getElementById('successSummary');
+    if (!noUpdate && entries.length > 0) {
+      let summaryHTML = '<strong style="color:var(--fd-lavender);">📊 What you submitted:</strong><br><br>';
+      entries.forEach(e => {
+        const parts = [];
+        if (e.offers)    parts.push(`${e.offers} Offer${e.offers > 1 ? 's' : ''}`);
+        if (e.pendingfb) parts.push(`${e.pendingfb} PFB`);
+        if (e.ops)       parts.push(`${e.ops} OPS`);
+        if (e.poc)       parts.push(`${e.poc} POC`);
+        if (e.hr)        parts.push(`${e.hr} HR`);
+        summaryHTML += `• <strong>${e.account}</strong>: ${parts.join(' · ') || 'Comment only'}`;
+        if (e.comment && e.comment !== 'No update today') {
+          summaryHTML += ` <em style="color:var(--fd-lavender);">"${e.comment}"</em>`;
+        }
+        summaryHTML += '<br>';
+      });
+      summaryEl.innerHTML     = summaryHTML;
+      summaryEl.style.display = 'block';
+    } else {
+      summaryEl.style.display = 'none';
+    }
+
     document.getElementById('formCard').style.display          = 'none';
     document.getElementById('updateTypeSection').style.display = 'none';
     document.getElementById('successCard').style.display        = 'block';
@@ -969,14 +1039,21 @@ async function submitForm() {
   }
 }
 
+// ═══════════════════════════════════════════════
+// RESET FORM
+// ═══════════════════════════════════════════════
 function resetForm() {
   document.getElementById('formCard').style.display          = 'block';
   document.getElementById('updateTypeSection').style.display = 'block';
   document.getElementById('successCard').style.display        = 'none';
-  document.getElementById('recruiterName').value              = '';
-  document.getElementById('noUpdateCheck').checked            = false;
   document.getElementById('statusMsg').textContent            = '';
   document.getElementById('submitBtn').disabled               = false;
+
+  // Keep remembered name
+  const saved = localStorage.getItem('recruiterName');
+  document.getElementById('recruiterName').value = saved || '';
+
+  document.getElementById('noUpdateCheck').checked = false;
 
   const section = document.getElementById('accountSection');
   section.style.opacity       = '1';
