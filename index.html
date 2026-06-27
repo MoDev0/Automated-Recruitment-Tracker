@@ -603,7 +603,7 @@ const SUCCESS_MESSAGES = {
   threeOrMore: [
     "{name} is UNSTOPPABLE! {count} offers — absolute legend! 🏆",
     "{count} offers?! Ya {name} you're carrying the whole team today! 👑",
-    "Someone stop {name}! {count} offers — recruitment royalty! 🎯"
+    "Someone stop {name}! {count} offers, Recruitment Expert! 🎯"
   ]
 };
 
@@ -640,6 +640,7 @@ function initUpdateType() {
   const morningIcon   = document.getElementById('morningIcon');
   const dateDisplay   = document.getElementById('utDateDisplay');
 
+  // Reset all
   morningOpt.classList.remove('locked', 'active');
   middayOpt.classList.remove('locked', 'active');
   morningLock.style.display = 'none';
@@ -648,50 +649,37 @@ function initUpdateType() {
   middayHint.style.display  = 'none';
   warningBanner.classList.remove('show');
 
-  if (hour < 14) {
+  // Always today
+  submissionDate = formatDateISO(now);
+
+  if (hour < 13) {
+    // ── BEFORE 1 PM: Morning ──
     currentUpdateType = 'Morning';
-    submissionDate = formatDateISO(now);
     morningOpt.classList.add('active');
     document.getElementById('radioMorning').checked = true;
-    middayOpt.classList.add('locked');
-    middayLock.style.display  = 'inline';
-    middayHint.style.display  = 'block';
-    middayHint.textContent    = 'Opens at 2:00 PM';
-    morningIcon.textContent   = '☀️';
-    morningTitle.textContent  = 'Morning Briefing (Main Reference)';
-    dateDisplay.innerHTML     = `📅 ${formatDateReadable(now)}`;
 
-  } else if (hour >= 14 && hour < 20) {
-    currentUpdateType = 'Midday';
-    submissionDate = formatDateISO(now);
-    middayOpt.classList.add('active');
-    document.getElementById('radioMidday').checked = true;
-    morningOpt.classList.add('locked');
-    morningLock.style.display = 'inline';
-    morningHint.style.display = 'block';
-    morningHint.textContent   = 'Closed after 2:00 PM';
-    dateDisplay.innerHTML     = `📅 ${formatDateReadable(now)}`;
-
-  } else {
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    currentUpdateType = 'Morning';
-    submissionDate = formatDateISO(tomorrow);
-    morningOpt.classList.add('active');
-    document.getElementById('radioMorning').checked = true;
-    morningIcon.textContent  = '🌙';
-    morningTitle.textContent = "Tomorrow's Morning Briefing Reference 🐦";
     middayOpt.classList.add('locked');
     middayLock.style.display = 'inline';
     middayHint.style.display = 'block';
-    middayHint.textContent   = 'Not available for next-day prep';
-    warningBanner.classList.add('show');
-    dateDisplay.innerHTML = `🌙 ${formatDateReadable(tomorrow)}<br><span class="night-note">Tomorrow's morning reference</span>`;
+    middayHint.textContent   = 'Opens at 2:00 PM';
+
+    morningIcon.textContent  = '☀️';
+    morningTitle.textContent = 'Morning Briefing (Main Reference)';
+
+  } else {
+    // ── 2 PM ONWARDS: Midday ──
+    currentUpdateType = 'Midday';
+    middayOpt.classList.add('active');
+    document.getElementById('radioMidday').checked = true;
+
+    morningOpt.classList.add('locked');
+    morningLock.style.display = 'inline';
+    morningHint.style.display = 'block';
+    morningHint.textContent   = 'Closed after 1:00 PM';
   }
 
-  document.getElementById('dateBadge').textContent = formatDateReadable(
-    hour >= 20 ? new Date(new Date().setDate(new Date().getDate() + 1)) : now
-  );
+  dateDisplay.innerHTML = `📅 ${formatDateReadable(now)}`;
+  document.getElementById('dateBadge').textContent = formatDateReadable(now);
 }
 
 function selectUpdateType(type) {
