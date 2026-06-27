@@ -518,8 +518,8 @@
   </div>
 
   <div class="warning-banner" id="warningBanner">
-    ⚠️ Please note that midday updates are discarded and you need to add them here again.
-  </div>
+  ⚠️ Please note that (Offers / OPS) from yesterday's Updates call are discarded and you need to add them here again if they are still valid.
+</div>
 
   <div class="ut-date-display" id="utDateDisplay"></div>
 </div>
@@ -661,13 +661,14 @@ function initUpdateType() {
     middayOpt.classList.add('locked');
     middayLock.style.display = 'inline';
     middayHint.style.display = 'block';
-    middayHint.textContent   = 'Opens at 2:00 PM';
+    middayHint.textContent   = 'Opens at 1:00 PM';
+     warningBanner.classList.add('show');
 
     morningIcon.textContent  = '☀️';
     morningTitle.textContent = 'Morning Briefing (Main Reference)';
 
   } else {
-    // ── 2 PM ONWARDS: Midday ──
+    // ── 1 PM ONWARDS: Midday ──
     currentUpdateType = 'Midday';
     middayOpt.classList.add('active');
     document.getElementById('radioMidday').checked = true;
