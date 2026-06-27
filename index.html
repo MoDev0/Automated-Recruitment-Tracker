@@ -982,12 +982,18 @@ async function submitForm() {
   statusMsg.textContent = '⏳ One moment... submitting your numbers';
 
   try {
-    await fetch(API_URL, {
+  
+    const response = await fetch(API_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(entries)
     });
+
+    const result = await response.json();
+
+    if (result.status !== 'ok') {
+      throw new Error(result.message || 'Server rejected the submission');
+    }
 
     // Motivational message
     const successMsg = getSuccessMessage(recruiter, totalOffers, noUpdate);
