@@ -399,17 +399,8 @@
       <button class="btn-action btn-lemon" onclick="copyText('postBox')">📋 Copy for Teams</button>
       <span class="copy-ok" id="copyOkPost">✅ Copied!</span>
     </div>
-    <div class="divider"></div>
-  </div>
 
-  <!-- DAILY: Excel Export -->
-  <div id="dailyExcelSection">
-    <div class="section-label">📊 Excel Export</div>
-    <div class="excel-export-box" id="excelBox">Load data first...</div>
-    <div class="copy-row">
-      <button class="btn-action btn-lavender" onclick="copyExcel()">📋 Copy for Excel</button>
-      <span class="copy-ok" id="copyOkExcel">✅ Copied!</span>
-    </div>
+    <div class="divider"></div>
   </div>
 
   <!-- WEEKLY/MONTHLY: Summary Export -->
@@ -424,7 +415,6 @@
 </div>
 
 <footer>
-  <small>Powered by EverGPT</small><br>
   Admin Dashboard · Built by <span>Sayyad</span>
 </footer>
 
@@ -493,6 +483,26 @@ let knownDates   = [];
 let pickersReady = false;
 
 // ═══════════════════════════════════════════════
+// FETCH WITH TIMEOUT (10 seconds)
+// ═══════════════════════════════════════════════
+async function fetchWithTimeout(url, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+    return response;
+  } catch (err) {
+    clearTimeout(timeout);
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
+    throw err;
+  }
+}
+
+// ═══════════════════════════════════════════════
 // INIT — Parallel load: getDates + daily data
 // ═══════════════════════════════════════════════
 async function initDashboard() {
@@ -504,8 +514,8 @@ async function initDashboard() {
 
   try {
     const [datesRes, dataRes] = await Promise.all([
-      fetch(`${API_URL}?action=getDates`).then(r => r.json()),
-      fetch(`${API_URL}?date=${formatDateISO(today)}&type=Morning`).then(r => r.json())
+      fetchWithTimeout(`${API_URL}?action=getDates`).then(r => r.json()),
+      fetchWithTimeout(`${API_URL}?date=${formatDateISO(today)}&type=Morning`).then(r => r.json())
     ]);
 
     if (datesRes.status === 'ok') {
@@ -524,7 +534,7 @@ async function initDashboard() {
         : `✅ Loaded ${count} row(s) for ${formatDateISO(today)} · Morning · ${new Date().toLocaleTimeString()}`;
     }
   } catch (err) {
-    document.getElementById('statusBar').textContent = '❌ Failed to initialize dashboard.';
+    document.getElementById('statusBar').textContent = `❌ ${err.message || 'Failed to initialize dashboard.'}`;
     console.error(err);
   }
 
@@ -614,7 +624,7 @@ function buildMonthPicker(dates) {
 }
 
 // ═══════════════════════════════════════════════
-// ✅ REPLACED: VIEW TOGGLE — No extra API calls
+// VIEW TOGGLE
 // ═══════════════════════════════════════════════
 function switchView(view) {
   currentView = view;
@@ -633,40 +643,35 @@ function switchView(view) {
   monthSelect.classList.toggle('hidden', view !== 'monthly');
 
   const dailyPost  = document.getElementById('dailyPostSection');
-  const dailyExcel = document.getElementById('dailyExcelSection');
   const aggExport  = document.getElementById('aggExportSection');
   const missSect   = document.getElementById('missingSection');
   const allBanner  = document.getElementById('allSubmittedBanner');
 
   if (view === 'daily') {
     dailyPost.classList.remove('hidden');
-    dailyExcel.classList.remove('hidden');
     aggExport.classList.add('hidden');
   } else {
     dailyPost.classList.add('hidden');
-    dailyExcel.classList.add('hidden');
     aggExport.classList.remove('hidden');
     missSect.style.display = 'none';
     allBanner.style.display = 'none';
   }
 
-  // Only fetch data — pickers already built on init
   if (view === 'daily') loadData();
   else if (view === 'weekly') loadRangeData('weekly');
   else if (view === 'monthly') loadRangeData('monthly');
 }
 
 // ═══════════════════════════════════════════════
-// ✅ REPLACED: REFRESH — Rebuilds pickers only on manual click
+// REFRESH
 // ═══════════════════════════════════════════════
 async function handleRefresh() {
   const overlay = document.getElementById('loadingOverlay');
   overlay.classList.add('show');
 
-  // Refresh pickers (catches new data since last load)
   if (currentView !== 'daily') {
     try {
-      const res = await fetch(`${API_URL}?action=getDates`);
+      const res  = await fetchWithTimeout(`${API_URL}?action=getDates`);
       const json = await res.json();
       if (json.status === 'ok') {
         knownDates = json.dates || [];
@@ -674,11 +679,13 @@ async function handleRefresh() {
         if (currentView === 'monthly') buildMonthPicker(knownDates);
       }
     } catch (err) {
-      console.error('Failed to refresh dates:', err);
+      document.getElementById('statusBar').textContent = `❌ ${err.message || 'Failed to refresh dates.'}`;
+      console.error(err);
+      overlay.classList.remove('show');
+      return;
     }
   }
 
-  // Then fetch view data
   if (currentView === 'daily') await loadData();
   else if (currentView === 'weekly') await loadRangeData('weekly');
   else if (currentView === 'monthly') await loadRangeData('monthly');
@@ -745,7 +752,7 @@ function filterLatestPerRecruiter(rows) {
 }
 
 // ═══════════════════════════════════════════════
-// ✅ REPLACED: DAILY DATA LOAD — Smart spinner handling
+// DAILY DATA LOAD
 // ═══════════════════════════════════════════════
 async function loadData() {
   const selectedDate = document.getElementById('dateInput').value;
@@ -763,7 +770,7 @@ async function loadData() {
     let url = `${API_URL}?date=${selectedDate}`;
     if (selectedType !== 'Both') url += `&type=${selectedType}`;
 
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     const json     = await response.json();
 
     if (json.status === 'ok') {
@@ -777,7 +784,7 @@ async function loadData() {
       statusBar.textContent = `⚠️ Error: ${json.message || 'Unknown'}`;
     }
   } catch (err) {
-    statusBar.textContent = '❌ Failed to retrieve data.';
+    statusBar.textContent = `❌ ${err.message || 'Failed to retrieve data.'}`;
     console.error(err);
   }
 
@@ -785,7 +792,7 @@ async function loadData() {
 }
 
 // ═══════════════════════════════════════════════
-// ✅ REPLACED: RANGE DATA LOAD — Smart spinner handling
+// RANGE DATA LOAD (weekly / monthly)
 // ═══════════════════════════════════════════════
 async function loadRangeData(mode) {
   const selector = mode === 'weekly' ? 'weekSelect' : 'monthSelect';
@@ -802,7 +809,7 @@ async function loadRangeData(mode) {
 
   try {
     const url      = `${API_URL}?startDate=${startDate}&endDate=${endDate}&type=Morning`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     const json     = await response.json();
 
     if (json.status === 'ok') {
@@ -816,7 +823,7 @@ async function loadRangeData(mode) {
       statusBar.textContent = `⚠️ Error: ${json.message || 'Unknown'}`;
     }
   } catch (err) {
-    statusBar.textContent = '❌ Failed to retrieve data.';
+    statusBar.textContent = `❌ ${err.message || 'Failed to retrieve data.'}`;
     console.error(err);
   }
 
@@ -923,7 +930,7 @@ function processDailyData(rows, selectedDate, selectedType) {
   }
 
   generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers, selectedDate);
-  generateExcelExport(recruiterMap, noUpdateNames, selectedDate);
+ 
 }
 
 // ═══════════════════════════════════════════════
@@ -1205,34 +1212,7 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
   document.getElementById('postBox').textContent=post;
 }
 
-// ═══════════════════════════════════════════════
-// EXCEL EXPORT (daily only)
-// ═══════════════════════════════════════════════
-function generateExcelExport(recruiterMap, noUpdateNames, dateStr) {
-  const sortedRecruiters=[...RECRUITER_NAMES].sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
-  const d=new Date(dateStr+'T00:00:00');
-  const excelDate=`${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`;
-  const readDate=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const copyLines=[excelDate];
-  let dayTotal=0;
-  sortedRecruiters.forEach(name=>{
-    let offers=0;
-    if(recruiterMap[name]&&!noUpdateNames.has(name)){offers=recruiterMap[name].reduce((s,e)=>s+e.offers,0);}
-    dayTotal+=offers;
-    copyLines.push(`${offers}`);
-  });
-  const sep='─'.repeat(40);
-  let preview=`📊 Excel Export — ${readDate}\n${sep}\n📋 Copyable Column:\n\n${copyLines.join('\n')}`;
-  preview+=`\n\n${sep}\nDay Total: ${dayTotal}\n${sep}\n\n`;
-  preview+=`👁️ Verification:\n\nDate: ${excelDate}\n`;
-  sortedRecruiters.forEach(name=>{
-    let offers=0;
-    if(recruiterMap[name]&&!noUpdateNames.has(name)){offers=recruiterMap[name].reduce((s,e)=>s+e.offers,0);}
-    preview+=`${name.padEnd(22)} → ${offers}\n`;
-  });
-  document.getElementById('excelBox').textContent=preview;
-  document.getElementById('excelBox').dataset.copyData=copyLines.join('\n');
-}
+
 
 // ═══════════════════════════════════════════════
 // COPY HELPERS
@@ -1243,11 +1223,7 @@ function copyText(elementId) {
   navigator.clipboard.writeText(text).then(()=>flashCopy('copyOkPost'));
 }
 
-function copyExcel() {
-  const data=document.getElementById('excelBox').dataset.copyData||'';
-  if(!data)return;
-  navigator.clipboard.writeText(data).then(()=>flashCopy('copyOkExcel'));
-}
+
 
 function flashCopy(id) {
   const el=document.getElementById(id);
