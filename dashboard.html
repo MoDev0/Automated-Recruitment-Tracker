@@ -113,6 +113,15 @@
   .type-badge.morning { background: rgba(249,239,119,0.15); color: var(--fd-lemon); }
   .type-badge.midday  { background: rgba(191,161,255,0.15); color: var(--fd-lavender); }
 
+  .lang-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.03em;
+    background: rgba(191,161,255,0.12); color: var(--fd-lavender);
+  }
+  .lang-badge.non-english {
+    background: rgba(249,239,119,0.12); color: var(--fd-lemon);
+  }
+
   .status-bar {
     padding: 8px 28px; font-size: 0.75rem; color: var(--fd-lavender);
     background: var(--fd-card2); border-bottom: 1px solid var(--fd-border);
@@ -143,15 +152,128 @@
     font-size: 0.75rem; font-weight: 700; color: var(--fd-lavender);
     text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
   }
-  .breakdown-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-  .acc-chip {
-    background: var(--fd-card2); border: 1px solid var(--fd-border);
-    border-radius: 20px; padding: 5px 12px; font-size: 0.75rem;
-    color: var(--fd-white); display: flex; gap: 8px; align-items: center;
+
+  /* ✅ CHANGED: breakdown-grid now column layout for date groups */
+  .breakdown-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 8px;
   }
-  .acc-chip .acc-name { color: var(--fd-lavender); font-weight: 600; }
-  .acc-chip .acc-stat { color: var(--fd-mint); }
-  .acc-chip .acc-stat-fb { color: var(--fd-lemon); }
+
+  /* ✅ NEW: Start date group headers */
+  .breakdown-date-group {
+    width: 100%;
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+
+  .breakdown-date-group:first-child {
+    margin-top: 0;
+  }
+
+  .breakdown-date-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(75,75,249,0.12);
+    margin-bottom: 8px;
+  }
+
+  /* ✅ NEW: Clickable account chips */
+  .acc-chip-copy {
+    background: var(--fd-card2);
+    border: 1px solid var(--fd-border);
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    color: var(--fd-white);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    user-select: none;
+  }
+
+  .acc-chip-copy:hover {
+    border-color: var(--fd-indigo);
+    background: rgba(75,75,249,0.08);
+  }
+
+  .acc-chip-copy:active {
+    transform: scale(0.98);
+  }
+
+  .acc-chip-copy .acc-name {
+    color: var(--fd-lavender);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .acc-chip-copy .acc-lang {
+    color: var(--fd-lemon);
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .acc-chip-copy .acc-updates {
+    color: var(--fd-mint);
+    flex: 1;
+    font-weight: 600;
+  }
+
+  .acc-chip-copy .acc-offers-badge {
+    background: rgba(139,240,187,0.1);
+    border: 1px solid rgba(139,240,187,0.25);
+    color: var(--fd-mint);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  .acc-chip-copy .acc-offers-badge.zero {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.3);
+  }
+
+  .acc-chip-copy .copy-icon {
+    color: rgba(255,255,255,0.25);
+    font-size: 0.75rem;
+    transition: color 0.2s;
+  }
+
+  .acc-chip-copy:hover .copy-icon {
+    color: var(--fd-indigo);
+  }
+
+  .acc-chip-copy .chip-copied {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: var(--fd-mint);
+    color: var(--fd-midnight);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .acc-chip-copy .chip-copied.flash {
+    opacity: 1;
+  }
+  /* ✅ END NEW STYLES */
 
   .divider { height: 1px; background: var(--fd-border); margin: 20px 0; }
   .main { padding: 20px 28px; }
@@ -265,6 +387,8 @@
     .header { padding: 14px 16px; }
     .summary-section, .main { padding: 14px 16px; }
     .status-bar { padding: 8px 16px; }
+    /* ✅ NEW: Stack chip contents on mobile */
+    .acc-chip-copy { flex-wrap: wrap; gap: 6px; }
   }
 </style>
 </head>
@@ -358,7 +482,8 @@
       <div class="c-value" id="s-top">—</div>
     </div>
   </div>
-  <div class="section-label">Account Breakdown</div>
+  <!-- ✅ CHANGED: Updated section label hint -->
+  <div class="section-label">Account Breakdown <span style="font-weight:400;font-size:0.65rem;color:rgba(255,255,255,0.3);text-transform:none;">(click to copy hiring update)</span></div>
   <div class="breakdown-grid" id="breakdownGrid">
     <span style="font-size:0.75rem;color:rgba(255,255,255,0.25)">No data yet...</span>
   </div>
@@ -378,13 +503,13 @@
     <table class="rec-table">
       <thead id="recTableHead">
         <tr>
-          <th>Recruiter</th><th>Account</th><th>Start Date</th><th>Type</th>
+          <th>Recruiter</th><th>Account</th><th>Language</th><th>Start Date</th><th>Type</th>
           <th>Offers</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
           <th>Comment</th><th>Time</th>
         </tr>
       </thead>
       <tbody id="recTableBody">
-        <tr><td colspan="11" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>
+        <tr><td colspan="12" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>
       </tbody>
     </table>
   </div>
@@ -835,7 +960,7 @@ async function loadRangeData(mode) {
 // ═══════════════════════════════════════════════
 function processDailyData(rows, selectedDate, selectedType) {
   document.getElementById('recTableHead').innerHTML = `<tr>
-    <th>Recruiter</th><th>Account</th><th>Start Date</th><th>Type</th>
+    <th>Recruiter</th><th>Account</th><th>Language</th><th>Start Date</th><th>Type</th>
     <th>Offers</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
     <th>Comment</th><th>Time</th>
   </tr>`;
@@ -848,6 +973,7 @@ function processDailyData(rows, selectedDate, selectedType) {
   rows.forEach(row => {
     const name=row.Recruiter?.trim()||'', account=row.Account?.trim()||'';
     const startDate=(row.StartDate||'').toString().trim(), updateType=row.UpdateType?.trim()||'';
+    const language=(row.Language||'English').toString().trim();
     const offers=parseInt(row.Offers)||0, pendingfb=parseInt(row.PendingFB)||0;
     const ops=parseInt(row.OPS)||0, poc=parseInt(row.POC)||0, hr=parseInt(row.HR)||0;
     const comment=(row.Comment||'').trim(), ts=row.Timestamp||'';
@@ -857,17 +983,18 @@ function processDailyData(rows, selectedDate, selectedType) {
     if (comment.toLowerCase()==='no update today' && account==='—') {
       noUpdateNames.add(name);
       if (!recruiterMap[name]) recruiterMap[name]=[];
-      recruiterMap[name].push({account:'—',startDate:'',updateType,offers:0,pendingfb:0,ops:0,poc:0,hr:0,comment:'No update today',ts});
+      recruiterMap[name].push({account:'—',startDate:'',language:'',updateType,offers:0,pendingfb:0,ops:0,poc:0,hr:0,comment:'No update today',ts});
       return;
     }
 
     totalOffers+=offers; totalPFB+=pendingfb; totalOPS+=ops; totalPOC+=poc; totalHR+=hr;
     if (!recruiterMap[name]) recruiterMap[name]=[];
-    recruiterMap[name].push({account,startDate,updateType,offers,pendingfb,ops,poc,hr,comment,ts});
+    recruiterMap[name].push({account,startDate,language,updateType,offers,pendingfb,ops,poc,hr,comment,ts});
 
     if (account && account!=='—') {
-      const key=account.toLowerCase();
-      if (!accountMap[key]) accountMap[key]={display:account,offer:0,pfb:0,ops:0,poc:0,hr:0};
+      // ✅ CHANGED: Key includes startDate for grouping
+      const key=`${account.toLowerCase()}__${language.toLowerCase()}__${startDate}`;
+      if (!accountMap[key]) accountMap[key]={display:account,language:language,startDate:startDate,offer:0,pfb:0,ops:0,poc:0,hr:0};
       accountMap[key].offer+=offers; accountMap[key].pfb+=pendingfb;
       accountMap[key].ops+=ops; accountMap[key].poc+=poc; accountMap[key].hr+=hr;
     }
@@ -902,7 +1029,7 @@ function processDailyData(rows, selectedDate, selectedType) {
   const sortedNames=Object.keys(recruiterMap).sort((a,b)=>a.localeCompare(b));
 
   if (sortedNames.length===0) {
-    tbody.innerHTML=`<tr><td colspan="11" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>`;
   } else {
     let html='';
     sortedNames.forEach(name => {
@@ -911,9 +1038,11 @@ function processDailyData(rows, selectedDate, selectedType) {
         const typeBadge=entry.updateType==='Morning'
           ?'<span class="type-badge morning">Morning</span>'
           :'<span class="type-badge midday">Midday</span>';
+        const langBadge = isNoUpd ? '—' : `<span class="lang-badge ${entry.language!=='English'?'non-english':''}">${entry.language}</span>`;
         html+=`<tr>
           <td class="rec-name">${i===0?name:''}</td>
           <td class="${isNoUpd?'no-upd':'rec-acc'}">${entry.account}</td>
+          <td>${langBadge}</td>
           <td class="rec-date">${isNoUpd?'—':formatStartDate(entry.startDate)}</td>
           <td>${typeBadge}</td>
           <td class="num ${entry.offers>0?'highlight':''}">${isNoUpd?'—':entry.offers}</td>
@@ -930,7 +1059,6 @@ function processDailyData(rows, selectedDate, selectedType) {
   }
 
   generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers, selectedDate);
- 
 }
 
 // ═══════════════════════════════════════════════
@@ -952,6 +1080,8 @@ function processAggregatedData(rows, startDate, endDate, mode) {
 
   rows.forEach(row => {
     const name=row.Recruiter?.trim()||'', account=row.Account?.trim()||'';
+    const language=(row.Language||'English').toString().trim();
+    const rowStartDate=(row.StartDate||'').toString().trim();  // ✅ NEW: capture startDate
     const offers=parseInt(row.Offers)||0, pendingfb=parseInt(row.PendingFB)||0;
     const ops=parseInt(row.OPS)||0, poc=parseInt(row.POC)||0, hr=parseInt(row.HR)||0;
     const comment=(row.Comment||'').trim();
@@ -973,9 +1103,10 @@ function processAggregatedData(rows, startDate, endDate, mode) {
     recruiterAgg[name].hr+=hr;
 
     if (account && account!=='—') {
-      const accKey=account.toLowerCase();
+      // ✅ CHANGED: Key includes startDate
+      const accKey=`${account.toLowerCase()}__${language.toLowerCase()}__${rowStartDate}`;
       if (!recruiterAgg[name].accounts[accKey]) {
-        recruiterAgg[name].accounts[accKey]={display:account,offers:0,pfb:0,ops:0,poc:0,hr:0};
+        recruiterAgg[name].accounts[accKey]={display:account,language:language,startDate:rowStartDate,offers:0,pfb:0,ops:0,poc:0,hr:0};
       }
       recruiterAgg[name].accounts[accKey].offers+=offers;
       recruiterAgg[name].accounts[accKey].pfb+=pendingfb;
@@ -983,7 +1114,8 @@ function processAggregatedData(rows, startDate, endDate, mode) {
       recruiterAgg[name].accounts[accKey].poc+=poc;
       recruiterAgg[name].accounts[accKey].hr+=hr;
 
-      if (!accountMap[accKey]) accountMap[accKey]={display:account,offer:0,pfb:0,ops:0,poc:0,hr:0};
+      // ✅ CHANGED: Key includes startDate
+      if (!accountMap[accKey]) accountMap[accKey]={display:account,language:language,startDate:rowStartDate,offer:0,pfb:0,ops:0,poc:0,hr:0};
       accountMap[accKey].offer+=offers; accountMap[accKey].pfb+=pendingfb;
       accountMap[accKey].ops+=ops; accountMap[accKey].poc+=poc; accountMap[accKey].hr+=hr;
     }
@@ -1034,9 +1166,10 @@ function processAggregatedData(rows, startDate, endDate, mode) {
 
       if (hasAccounts) {
         Object.values(r.accounts).forEach(acc => {
+          const langNote = acc.language && acc.language !== 'English' ? ` [${acc.language}]` : '';
           html+=`<tr class="detail-row" data-parent="${rowId}">
             <td></td>
-            <td class="acc-label">└─ ${acc.display}</td>
+            <td class="acc-label">└─ ${acc.display}${langNote}</td>
             <td class="num ${acc.offers>0?'highlight':''}">${acc.offers}</td>
             <td class="num ${acc.pfb>0?'highlight-fb':''}">${acc.pfb}</td>
             <td class="num">${acc.ops}</td>
@@ -1091,22 +1224,98 @@ function updateSummaryCards(submitted, noupdate, offers, pfb, ops, poc, hr, topN
     topNames.length?topNames.join(' · ')+(maxOffers>0?` (${maxOffers})`:''):'—';
 }
 
+// ✅ REPLACED: Clickable chips grouped by start date, copies hiring update text
 function updateAccountBreakdown(accountMap) {
-  const grid=document.getElementById('breakdownGrid');
-  const entries=Object.values(accountMap).filter(a=>(a.offer+a.pfb+a.ops+a.poc+a.hr)>0);
-  if (entries.length===0) {
-    grid.innerHTML=`<span style="font-size:0.75rem;color:rgba(255,255,255,0.25)">No data yet...</span>`;
-  } else {
-    grid.innerHTML=entries.map(a=>{
-      const parts=[];
-      if (a.offer) parts.push(`<span class="acc-stat">${a.offer} Offer</span>`);
-      if (a.pfb) parts.push(`<span class="acc-stat-fb">${a.pfb} PFB</span>`);
-      if (a.ops) parts.push(`<span class="acc-stat">${a.ops} OPS</span>`);
-      if (a.poc) parts.push(`<span class="acc-stat">${a.poc} POC</span>`);
-      if (a.hr) parts.push(`<span class="acc-stat">${a.hr} HR</span>`);
-      return `<div class="acc-chip"><span class="acc-name">${a.display}</span>${parts.join('')}</div>`;
-    }).join('');
+  const grid = document.getElementById('breakdownGrid');
+  
+  // Filter out accounts with zero activity
+  const entries = Object.values(accountMap).filter(a => 
+    (a.offer + a.pfb + a.ops + a.poc + a.hr) > 0
+  );
+
+  if (entries.length === 0) {
+    grid.innerHTML = `<span style="font-size:0.75rem;color:rgba(255,255,255,0.25)">No data yet...</span>`;
+    return;
   }
+
+  // Group by start date
+  const dateGroups = {};
+  entries.forEach(a => {
+    const sd = a.startDate || 'No Start Date';
+    if (!dateGroups[sd]) dateGroups[sd] = [];
+    dateGroups[sd].push(a);
+  });
+
+  // Sort date groups (oldest first)
+  const sortedDates = Object.keys(dateGroups).sort((a, b) => {
+    if (a === 'No Start Date') return 1;
+    if (b === 'No Start Date') return -1;
+    return a.localeCompare(b);
+  });
+
+  let html = '';
+
+  sortedDates.forEach(dateKey => {
+    const readableDate = dateKey === 'No Start Date' ? 'No Start Date' : formatStartDate(dateKey);
+    html += `<div class="breakdown-date-group">
+      <div class="breakdown-date-label">📅 ${readableDate}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">`;
+
+    // Sort accounts within each date group alphabetically
+    dateGroups[dateKey].sort((a, b) => a.display.localeCompare(b.display));
+
+    dateGroups[dateKey].forEach(a => {
+      // Build hiring updates text (for clipboard — Excel wording)
+      const updateParts = [];
+      if (a.ops) updateParts.push(`${a.ops} Ops interviews`);
+      if (a.poc) updateParts.push(`${a.poc} POC`);
+      if (a.hr) updateParts.push(`${a.hr} HR Interview`);
+      if (a.pfb) updateParts.push(`${a.pfb} Pending Feedback`);
+      const updateText = updateParts.join(' - ');
+
+      // Display text (shorter for chip)
+      const displayParts = [];
+      if (a.ops) displayParts.push(`${a.ops} OPS`);
+      if (a.poc) displayParts.push(`${a.poc} POC`);
+      if (a.hr) displayParts.push(`${a.hr} HR`);
+      if (a.pfb) displayParts.push(`${a.pfb} PFB`);
+      const displayText = displayParts.join(' · ') || 'No hiring updates';
+
+      // Language tag
+      const langTag = a.language && a.language !== 'English' ? a.language : '';
+
+      // Offers badge
+      const offerClass = a.offer > 0 ? '' : 'zero';
+      const offerLabel = `${a.offer} Offer${a.offer !== 1 ? 's' : ''}`;
+
+      // Escape updateText for HTML attribute
+      const escapedUpdate = updateText.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+
+      html += `<div class="acc-chip-copy" onclick="copyChipUpdate(this, '${escapedUpdate}')" title="Click to copy hiring update">
+        <span class="acc-name">${a.display}</span>
+        ${langTag ? `<span class="acc-lang">${langTag}</span>` : ''}
+        <span class="acc-updates">${displayText}</span>
+        <span class="acc-offers-badge ${offerClass}">${offerLabel}</span>
+        <span class="copy-icon">📋</span>
+        <span class="chip-copied">✅ Copied!</span>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  grid.innerHTML = html;
+}
+
+// ✅ NEW: Copy chip hiring update text to clipboard
+function copyChipUpdate(chipEl, text) {
+  if (!text) return;  // Nothing to copy if no updates
+
+  navigator.clipboard.writeText(text).then(() => {
+    const badge = chipEl.querySelector('.chip-copied');
+    badge.classList.add('flash');
+    setTimeout(() => badge.classList.remove('flash'), 1500);
+  });
 }
 
 // ═══════════════════════════════════════════════
@@ -1167,8 +1376,9 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
     const accGroup={};
     entries.forEach(e=>{
       if(!e.account||e.account==='—')return;
-      const label=e.startDate?`${e.account} (${formatStartDate(e.startDate)})`:e.account;
-      const key=`${e.account.toLowerCase()}_${e.startDate||''}`;
+      const langSuffix = e.language && e.language !== 'English' ? ` [${e.language}]` : '';
+      const label=e.startDate?`${e.account}${langSuffix} (${formatStartDate(e.startDate)})`:`${e.account}${langSuffix}`;
+      const key=`${e.account.toLowerCase()}_${e.language?.toLowerCase()||'english'}_${e.startDate||''}`;
       if(!accGroup[key])accGroup[key]={display:label,offer:0,pfb:0,ops:0,poc:0,hr:0,comments:[]};
       accGroup[key].offer+=e.offers;accGroup[key].pfb+=e.pendingfb;
       accGroup[key].ops+=e.ops;accGroup[key].poc+=e.poc;accGroup[key].hr+=e.hr;
@@ -1193,7 +1403,8 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
     const parts=[];
     if(a.offer)parts.push(`${a.offer} Offer`);if(a.pfb)parts.push(`${a.pfb} Pending Feedback`);
     if(a.ops)parts.push(`${a.ops} OPS`);if(a.poc)parts.push(`${a.poc} POC`);if(a.hr)parts.push(`${a.hr} HR`);
-    if(parts.length)post+=`  ${a.display}: ${parts.join(' · ')}\n`;
+    const langSuffix = a.language && a.language !== 'English' ? ` [${a.language}]` : '';
+    if(parts.length)post+=`  ${a.display}${langSuffix}: ${parts.join(' · ')}\n`;
   });
 
   post+=`\n📈 TOTALS\n`;
@@ -1212,8 +1423,6 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
   document.getElementById('postBox').textContent=post;
 }
 
-
-
 // ═══════════════════════════════════════════════
 // COPY HELPERS
 // ═══════════════════════════════════════════════
@@ -1222,8 +1431,6 @@ function copyText(elementId) {
   if(!text||text.startsWith('Load'))return;
   navigator.clipboard.writeText(text).then(()=>flashCopy('copyOkPost'));
 }
-
-
 
 function flashCopy(id) {
   const el=document.getElementById(id);
