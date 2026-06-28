@@ -208,6 +208,60 @@
 
   .recruiter-select:focus, .acc-select:focus { border-color: var(--fd-indigo); }
 
+  /* ✅ NEW: Language select styling */
+  .lang-select {
+    background: rgba(75,75,249,0.1);
+    border: 1px solid var(--fd-border);
+    color: var(--fd-white);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .lang-select option {
+    background: var(--fd-card);
+    color: var(--fd-white);
+  }
+
+  .lang-select:focus { border-color: var(--fd-indigo); }
+
+  .lang-custom-input {
+    background: rgba(75,75,249,0.1);
+    border: 1px solid var(--fd-border);
+    color: var(--fd-white);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+    outline: none;
+    display: none;
+    width: 100px;
+  }
+
+  .lang-custom-input::placeholder { color: rgba(255,255,255,0.3); font-weight: 400; }
+  .lang-custom-input:focus { border-color: var(--fd-indigo); }
+
+  .lang-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lang-label {
+    font-size: 0.7rem;
+    color: var(--fd-lavender);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  /* ✅ END NEW STYLES */
+
   /* ── NO UPDATE ── */
   .no-update-wrap {
     display: flex;
@@ -271,6 +325,14 @@
 
   .acc-custom-input::placeholder { color: rgba(255,255,255,0.3); font-weight: 400; }
   .acc-custom-input:focus { border-bottom-color: var(--fd-indigo); }
+
+  /* ✅ CHANGED: Renamed from start-date-wrap to acc-meta-row for grouping */
+  .acc-meta-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 
   .start-date-wrap {
     display: flex;
@@ -459,6 +521,20 @@
     font-family: 'Segoe UI', sans-serif;
   }
 
+  /* ✅ NEW: Override notice styling */
+  .override-notice {
+    display: inline-block;
+    background: rgba(249,239,119,0.1);
+    border: 1px solid rgba(249,239,119,0.3);
+    color: var(--fd-lemon);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  /* ✅ END NEW STYLE */
+
   footer {
     text-align: center;
     padding: 24px 16px;
@@ -474,7 +550,9 @@
 
   @media (max-width: 600px) {
     .acc-top-row { flex-direction: column; align-items: stretch; }
+    .acc-meta-row { flex-direction: column; align-items: stretch; }  /* ✅ NEW */
     .start-date-wrap { margin-top: 6px; }
+    .lang-wrap { margin-top: 6px; }  /* ✅ NEW */
     .stage-row { gap: 4px; }
     .stage-input { width: 40px; padding: 5px 2px; }
   }
@@ -549,6 +627,7 @@
 <!-- ── SUCCESS ── -->
 <div class="success-card" id="successCard">
   <div class="big-check">✅</div>
+  <div class="override-notice" id="overrideNotice" style="display:none">🔄 Updated your previous submission</div>  <!-- ✅ NEW -->
   <h2 id="successTitle">Updates are sent!</h2>
   <p class="motivational" id="successMotivational"></p>
   <div class="summary" id="successSummary" style="display:none;"></div>
@@ -573,6 +652,9 @@ const RECRUITER_NAMES = [
   "Shahd Abdelghafar","Gamela Abdelqader","Farah Khalid","Ahmed Ashraf",
   "Yassmin Ashraf","Nour Waleed"
 ];
+
+// ✅ NEW: Hardcoded language list
+const LANGUAGES = ["English", "German", "Italian", "French", "Spanish", "Dutch"];
 
 let ACCOUNT_NAMES = [];
 
@@ -770,7 +852,43 @@ function buildAccountOptions() {
   return html;
 }
 
+// ✅ NEW: Build language options (hardcoded)
+function buildLanguageOptions() {
+  let html = '';
+  LANGUAGES.forEach(lang => {
+    html += `<option value="${lang}" ${lang === 'English' ? 'selected' : ''}>${lang}</option>`;
+  });
+  html += '<option value="__other__">Other...</option>';
+  return html;
+}
+
+// ✅ NEW: Handle language select change
+function handleLanguageSelect(selectEl) {
+  const wrap = selectEl.closest('.lang-wrap');
+  const customInput = wrap.querySelector('.lang-custom-input');
+
+  if (selectEl.value === '__other__') {
+    customInput.style.display = 'block';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+    customInput.value = '';
+  }
+}
+
+// ✅ NEW: Get language value from a block
+function getLanguage(block) {
+  const selectEl = block.querySelector('.lang-select');
+  const customInput = block.querySelector('.lang-custom-input');
+  if (selectEl.value === '__other__') {
+    const custom = customInput.value.trim();
+    return custom || 'English';  // Fallback to English if empty
+  }
+  return selectEl.value;
+}
+
 // ── ADD / REMOVE ACCOUNT ──
+// ✅ CHANGED: Added language dropdown row
 function addAccount() {
   const list = document.getElementById('accountList');
   const div  = document.createElement('div');
@@ -784,13 +902,23 @@ function addAccount() {
         </select>
         <input class="acc-custom-input" type="text" placeholder="Type account name..." />
       </div>
+      <button class="remove-acc-btn" onclick="removeAccount(this)" title="Remove">✕</button>
+    </div>
+    <div class="acc-meta-row">
       <div class="start-date-wrap">
         <span class="start-date-label">Start Date</span>
         <input class="start-date-input" type="date" />
       </div>
-      <button class="remove-acc-btn" onclick="removeAccount(this)" title="Remove">✕</button>
+      <div class="lang-wrap">
+        <span class="lang-label">Language</span>
+        <select class="lang-select" onchange="handleLanguageSelect(this)">
+          ${buildLanguageOptions()}
+        </select>
+        <input class="lang-custom-input" type="text" placeholder="Type..." />
+      </div>
     </div>
     <div class="inline-error date-error"> WRONG START DATE ...😵 صحصح وركز كدا</div>
+    <div class="inline-error duplicate-error">⚠️ Duplicate! Same account + start date + language already added above</div>
     <div class="stage-row">
       <div class="stage-item">
         <span class="stage-label">Offers</span>
@@ -873,6 +1001,7 @@ function isValidStartDate(dateStr) {
 }
 
 // ── CLEAR ERRORS ──
+// ✅ CHANGED: Added duplicate error clearing
 function clearErrors() {
   document.querySelectorAll('.account-block').forEach(block => {
     block.classList.remove('error-block');
@@ -880,6 +1009,8 @@ function clearErrors() {
     if (dateInput) dateInput.classList.remove('error-input');
     const dateError = block.querySelector('.date-error');
     if (dateError) dateError.classList.remove('show');
+    const dupError = block.querySelector('.duplicate-error');    // ✅ NEW
+    if (dupError) dupError.classList.remove('show');              // ✅ NEW
   });
   document.getElementById('statusMsg').textContent = '';
 }
@@ -887,6 +1018,7 @@ function clearErrors() {
 // ═══════════════════════════════════════════════
 // SUBMIT
 // ═══════════════════════════════════════════════
+// ✅ CHANGED: Added language to payload + duplicate check + override notice
 async function submitForm() {
   clearErrors();
 
@@ -910,6 +1042,7 @@ async function submitForm() {
       updatetype: currentUpdateType,
       recruiter: recruiter,
       account: '—',
+      language: 'English',  // ✅ NEW
       startdate: '',
       offers: 0,
       pendingfb: 0,
@@ -924,9 +1057,13 @@ async function submitForm() {
     let hasError  = false;
     let firstErrorBlock = null;
 
+    // ✅ NEW: Track seen combos for duplicate check
+    const seenCombos = new Set();
+
     blocks.forEach(block => {
       const accName    = getAccountName(block);
       const startDate  = block.querySelector('.start-date-input').value;
+      const language   = getLanguage(block);  // ✅ NEW
       const inputs     = block.querySelectorAll('.stage-input');
       const comment    = block.querySelector('.comment-input').value.trim();
 
@@ -948,6 +1085,18 @@ async function submitForm() {
           return;
         }
 
+        // ✅ NEW: Check for duplicate (account + startdate + language)
+        const comboKey = `${accName.toLowerCase()}|${startDate}|${language.toLowerCase()}`;
+        if (seenCombos.has(comboKey)) {
+          hasError = true;
+          block.classList.add('error-block');
+          block.querySelector('.duplicate-error').classList.add('show');
+          if (!firstErrorBlock) firstErrorBlock = block;
+          return;
+        }
+        seenCombos.add(comboKey);
+        // ✅ END DUPLICATE CHECK
+
         hasData = true;
         totalOffers += offers;
         entries.push({
@@ -955,6 +1104,7 @@ async function submitForm() {
           updatetype: currentUpdateType,
           recruiter: recruiter,
           account: accName,
+          language: language,  // ✅ NEW
           startdate: startDate,
           offers, pendingfb, ops, poc, hr,
           comment: comment
@@ -965,7 +1115,7 @@ async function submitForm() {
     if (hasError && firstErrorBlock) {
       firstErrorBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
       statusMsg.className   = 'status-msg error';
-      statusMsg.textContent = '😵 WRONG START DATE ... صحصح وركز كدا يا باشا';
+      statusMsg.textContent = '⚠️ Please fix the errors above before submitting';  // ✅ CHANGED: Generic message since errors can be date or duplicate now
       return;
     }
 
@@ -995,6 +1145,15 @@ async function submitForm() {
       throw new Error(result.message || 'Server rejected the submission');
     }
 
+    // ✅ NEW: Show override notice if applicable
+    const overrideNotice = document.getElementById('overrideNotice');
+    if (result.override) {
+      overrideNotice.style.display = 'inline-block';
+    } else {
+      overrideNotice.style.display = 'none';
+    }
+    // ✅ END OVERRIDE NOTICE
+
     // Motivational message
     const successMsg = getSuccessMessage(recruiter, totalOffers, noUpdate);
     document.getElementById('successTitle').textContent        = 'Updates are sent!';
@@ -1011,7 +1170,9 @@ async function submitForm() {
         if (e.ops)       parts.push(`${e.ops} OPS`);
         if (e.poc)       parts.push(`${e.poc} POC`);
         if (e.hr)        parts.push(`${e.hr} HR`);
-        summaryHTML += `• <strong>${e.account}</strong>: ${parts.join(' · ') || 'Comment only'}`;
+        // ✅ CHANGED: Added language to summary
+        const langTag = e.language !== 'English' ? ` <span style="color:var(--fd-lemon);">[${e.language}]</span>` : '';
+        summaryHTML += `• <strong>${e.account}</strong>${langTag}: ${parts.join(' · ') || 'Comment only'}`;
         if (e.comment && e.comment !== 'No update today') {
           summaryHTML += ` <em style="color:var(--fd-lavender);">"${e.comment}"</em>`;
         }
@@ -1037,10 +1198,12 @@ async function submitForm() {
 // ═══════════════════════════════════════════════
 // RESET FORM
 // ═══════════════════════════════════════════════
+// ✅ CHANGED: Added override notice reset
 function resetForm() {
   document.getElementById('formCard').style.display          = 'block';
   document.getElementById('updateTypeSection').style.display = 'block';
   document.getElementById('successCard').style.display        = 'none';
+  document.getElementById('overrideNotice').style.display     = 'none';  // ✅ NEW
   document.getElementById('statusMsg').textContent            = '';
   document.getElementById('submitBtn').disabled               = false;
 
