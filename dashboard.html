@@ -153,7 +153,6 @@
     text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
   }
 
-  /* ✅ CHANGED: breakdown-grid now column layout for date groups */
   .breakdown-grid {
     display: flex;
     flex-direction: column;
@@ -161,7 +160,6 @@
     margin-bottom: 8px;
   }
 
-  /* ✅ NEW: Start date group headers */
   .breakdown-date-group {
     width: 100%;
     margin-top: 14px;
@@ -183,7 +181,6 @@
     margin-bottom: 8px;
   }
 
-  /* ✅ NEW: Clickable account chips */
   .acc-chip-copy {
     background: var(--fd-card2);
     border: 1px solid var(--fd-border);
@@ -273,7 +270,77 @@
   .acc-chip-copy .chip-copied.flash {
     opacity: 1;
   }
-  /* ✅ END NEW STYLES */
+
+  /* ✅ NEW: Recruiter Tooltip on Hover */
+  .chip-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a4a;
+    border: 1px solid var(--fd-indigo);
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-width: 220px;
+    max-width: 340px;
+    z-index: 50;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    pointer-events: none;
+  }
+
+  .acc-chip-copy:hover .chip-tooltip {
+    display: block;
+  }
+
+  .chip-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--fd-indigo);
+  }
+
+  .tooltip-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--fd-indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(75,75,249,0.2);
+    padding-bottom: 4px;
+  }
+
+  .tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 3px 0;
+    font-size: 0.73rem;
+  }
+
+  .tooltip-row:not(:last-child) {
+    border-bottom: 1px solid rgba(75,75,249,0.08);
+  }
+
+  .tooltip-recruiter {
+    color: var(--fd-lavender);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .tooltip-metrics {
+    color: var(--fd-mint);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+  /* ✅ END: Recruiter Tooltip Styles */
 
   .divider { height: 1px; background: var(--fd-border); margin: 20px 0; }
   .main { padding: 20px 28px; }
@@ -387,8 +454,17 @@
     .header { padding: 14px 16px; }
     .summary-section, .main { padding: 14px 16px; }
     .status-bar { padding: 8px 16px; }
-    /* ✅ NEW: Stack chip contents on mobile */
     .acc-chip-copy { flex-wrap: wrap; gap: 6px; }
+    /* ✅ NEW: Tooltip responsive — left align on mobile */
+    .chip-tooltip {
+      left: 0;
+      transform: translateX(0);
+      min-width: 200px;
+    }
+    .chip-tooltip::after {
+      left: 20px;
+      transform: none;
+    }
   }
 </style>
 </head>
@@ -482,8 +558,7 @@
       <div class="c-value" id="s-top">—</div>
     </div>
   </div>
-  <!-- ✅ CHANGED: Updated section label hint -->
-  <div class="section-label">Account Breakdown <span style="font-weight:400;font-size:0.65rem;color:rgba(255,255,255,0.3);text-transform:none;">(click to copy hiring update)</span></div>
+  <div class="section-label">Account Breakdown <span style="font-weight:400;font-size:0.65rem;color:rgba(255,255,255,0.3);text-transform:none;">(click to copy · hover for recruiter breakdown)</span></div>
   <div class="breakdown-grid" id="breakdownGrid">
     <span style="font-size:0.75rem;color:rgba(255,255,255,0.25)">No data yet...</span>
   </div>
@@ -992,11 +1067,19 @@ function processDailyData(rows, selectedDate, selectedType) {
     recruiterMap[name].push({account,startDate,language,updateType,offers,pendingfb,ops,poc,hr,comment,ts});
 
     if (account && account!=='—') {
-      // ✅ CHANGED: Key includes startDate for grouping
       const key=`${account.toLowerCase()}__${language.toLowerCase()}__${startDate}`;
-      if (!accountMap[key]) accountMap[key]={display:account,language:language,startDate:startDate,offer:0,pfb:0,ops:0,poc:0,hr:0};
+      // ✅ CHANGED: Added recruiters object to accountMap entries
+      if (!accountMap[key]) accountMap[key]={display:account,language:language,startDate:startDate,offer:0,pfb:0,ops:0,poc:0,hr:0,recruiters:{}};
       accountMap[key].offer+=offers; accountMap[key].pfb+=pendingfb;
       accountMap[key].ops+=ops; accountMap[key].poc+=poc; accountMap[key].hr+=hr;
+
+      // ✅ NEW: Track per-recruiter contributions
+      if (!accountMap[key].recruiters[name]) accountMap[key].recruiters[name]={offers:0,pfb:0,ops:0,poc:0,hr:0};
+      accountMap[key].recruiters[name].offers+=offers;
+      accountMap[key].recruiters[name].pfb+=pendingfb;
+      accountMap[key].recruiters[name].ops+=ops;
+      accountMap[key].recruiters[name].poc+=poc;
+      accountMap[key].recruiters[name].hr+=hr;
     }
   });
 
@@ -1081,7 +1164,7 @@ function processAggregatedData(rows, startDate, endDate, mode) {
   rows.forEach(row => {
     const name=row.Recruiter?.trim()||'', account=row.Account?.trim()||'';
     const language=(row.Language||'English').toString().trim();
-    const rowStartDate=(row.StartDate||'').toString().trim();  // ✅ NEW: capture startDate
+    const rowStartDate=(row.StartDate||'').toString().trim();
     const offers=parseInt(row.Offers)||0, pendingfb=parseInt(row.PendingFB)||0;
     const ops=parseInt(row.OPS)||0, poc=parseInt(row.POC)||0, hr=parseInt(row.HR)||0;
     const comment=(row.Comment||'').trim();
@@ -1103,7 +1186,6 @@ function processAggregatedData(rows, startDate, endDate, mode) {
     recruiterAgg[name].hr+=hr;
 
     if (account && account!=='—') {
-      // ✅ CHANGED: Key includes startDate
       const accKey=`${account.toLowerCase()}__${language.toLowerCase()}__${rowStartDate}`;
       if (!recruiterAgg[name].accounts[accKey]) {
         recruiterAgg[name].accounts[accKey]={display:account,language:language,startDate:rowStartDate,offers:0,pfb:0,ops:0,poc:0,hr:0};
@@ -1114,10 +1196,18 @@ function processAggregatedData(rows, startDate, endDate, mode) {
       recruiterAgg[name].accounts[accKey].poc+=poc;
       recruiterAgg[name].accounts[accKey].hr+=hr;
 
-      // ✅ CHANGED: Key includes startDate
-      if (!accountMap[accKey]) accountMap[accKey]={display:account,language:language,startDate:rowStartDate,offer:0,pfb:0,ops:0,poc:0,hr:0};
+      // ✅ CHANGED: Added recruiters object to accountMap entries
+      if (!accountMap[accKey]) accountMap[accKey]={display:account,language:language,startDate:rowStartDate,offer:0,pfb:0,ops:0,poc:0,hr:0,recruiters:{}};
       accountMap[accKey].offer+=offers; accountMap[accKey].pfb+=pendingfb;
       accountMap[accKey].ops+=ops; accountMap[accKey].poc+=poc; accountMap[accKey].hr+=hr;
+
+      // ✅ NEW: Track per-recruiter contributions
+      if (!accountMap[accKey].recruiters[name]) accountMap[accKey].recruiters[name]={offers:0,pfb:0,ops:0,poc:0,hr:0};
+      accountMap[accKey].recruiters[name].offers+=offers;
+      accountMap[accKey].recruiters[name].pfb+=pendingfb;
+      accountMap[accKey].recruiters[name].ops+=ops;
+      accountMap[accKey].recruiters[name].poc+=poc;
+      accountMap[accKey].recruiters[name].hr+=hr;
     }
   });
 
@@ -1224,11 +1314,10 @@ function updateSummaryCards(submitted, noupdate, offers, pfb, ops, poc, hr, topN
     topNames.length?topNames.join(' · ')+(maxOffers>0?` (${maxOffers})`:''):'—';
 }
 
-// ✅ REPLACED: Clickable chips grouped by start date, copies hiring update text
+// ✅ CHANGED: Added recruiter tooltip to each account chip
 function updateAccountBreakdown(accountMap) {
   const grid = document.getElementById('breakdownGrid');
   
-  // Filter out accounts with zero activity
   const entries = Object.values(accountMap).filter(a => 
     (a.offer + a.pfb + a.ops + a.poc + a.hr) > 0
   );
@@ -1238,7 +1327,6 @@ function updateAccountBreakdown(accountMap) {
     return;
   }
 
-  // Group by start date
   const dateGroups = {};
   entries.forEach(a => {
     const sd = a.startDate || 'No Start Date';
@@ -1246,7 +1334,6 @@ function updateAccountBreakdown(accountMap) {
     dateGroups[sd].push(a);
   });
 
-  // Sort date groups (oldest first)
   const sortedDates = Object.keys(dateGroups).sort((a, b) => {
     if (a === 'No Start Date') return 1;
     if (b === 'No Start Date') return -1;
@@ -1261,11 +1348,9 @@ function updateAccountBreakdown(accountMap) {
       <div class="breakdown-date-label">📅 ${readableDate}</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;">`;
 
-    // Sort accounts within each date group alphabetically
     dateGroups[dateKey].sort((a, b) => a.display.localeCompare(b.display));
 
     dateGroups[dateKey].forEach(a => {
-      // Build hiring updates text (for clipboard — Excel wording)
       const updateParts = [];
       if (a.ops) updateParts.push(`${a.ops} Ops interviews`);
       if (a.poc) updateParts.push(`${a.poc} POC`);
@@ -1273,7 +1358,6 @@ function updateAccountBreakdown(accountMap) {
       if (a.pfb) updateParts.push(`${a.pfb} Pending Feedback`);
       const updateText = updateParts.join(' - ');
 
-      // Display text (shorter for chip)
       const displayParts = [];
       if (a.ops) displayParts.push(`${a.ops} OPS`);
       if (a.poc) displayParts.push(`${a.poc} POC`);
@@ -1281,15 +1365,36 @@ function updateAccountBreakdown(accountMap) {
       if (a.pfb) displayParts.push(`${a.pfb} PFB`);
       const displayText = displayParts.join(' · ') || 'No hiring updates';
 
-      // Language tag
       const langTag = a.language && a.language !== 'English' ? a.language : '';
 
-      // Offers badge
       const offerClass = a.offer > 0 ? '' : 'zero';
       const offerLabel = `${a.offer} Offer${a.offer !== 1 ? 's' : ''}`;
 
-      // Escape updateText for HTML attribute
       const escapedUpdate = updateText.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+
+      // ✅ NEW: Build recruiter tooltip HTML
+      let tooltipHTML = '';
+      if (a.recruiters && Object.keys(a.recruiters).length > 0) {
+        tooltipHTML = `<div class="chip-tooltip"><div class="tooltip-title">👥 Recruiter Breakdown</div>`;
+        const sortedRecruiters = Object.keys(a.recruiters).sort((x, y) => x.localeCompare(y));
+        sortedRecruiters.forEach(recName => {
+          const r = a.recruiters[recName];
+          const metricParts = [];
+          if (r.offers) metricParts.push(`${r.offers} Offer${r.offers > 1 ? 's' : ''}`);
+          if (r.pfb) metricParts.push(`${r.pfb} PFB`);
+          if (r.ops) metricParts.push(`${r.ops} OPS`);
+          if (r.poc) metricParts.push(`${r.poc} POC`);
+          if (r.hr) metricParts.push(`${r.hr} HR`);
+          if (metricParts.length > 0) {
+            tooltipHTML += `<div class="tooltip-row">
+              <span class="tooltip-recruiter">👤 ${recName}</span>
+              <span class="tooltip-metrics">${metricParts.join(' · ')}</span>
+            </div>`;
+          }
+        });
+        tooltipHTML += `</div>`;
+      }
+      // ✅ END: Tooltip HTML
 
       html += `<div class="acc-chip-copy" onclick="copyChipUpdate(this, '${escapedUpdate}')" title="Click to copy hiring update">
         <span class="acc-name">${a.display}</span>
@@ -1298,6 +1403,7 @@ function updateAccountBreakdown(accountMap) {
         <span class="acc-offers-badge ${offerClass}">${offerLabel}</span>
         <span class="copy-icon">📋</span>
         <span class="chip-copied">✅ Copied!</span>
+        ${tooltipHTML}
       </div>`;
     });
 
@@ -1307,9 +1413,8 @@ function updateAccountBreakdown(accountMap) {
   grid.innerHTML = html;
 }
 
-// ✅ NEW: Copy chip hiring update text to clipboard
 function copyChipUpdate(chipEl, text) {
-  if (!text) return;  // Nothing to copy if no updates
+  if (!text) return;
 
   navigator.clipboard.writeText(text).then(() => {
     const badge = chipEl.querySelector('.chip-copied');
