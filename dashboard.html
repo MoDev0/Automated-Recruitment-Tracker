@@ -507,15 +507,14 @@
       <option value="Both">📋 Both</option>
     </select>
 
-    <!-- WEEKLY CONTROLS -->
-    <select class="week-select hidden" id="weekSelect">
+    <select class="week-select hidden" id="weekSelect" onchange="loadRangeData('weekly')">
       <option value="">Loading weeks...</option>
     </select>
 
-    <!-- MONTHLY CONTROLS -->
-    <select class="month-select hidden" id="monthSelect">
-      <option value="">Loading months...</option>
-    </select>
+<!-- MONTHLY CONTROLS -->
+<select class="month-select hidden" id="monthSelect" onchange="loadRangeData('monthly')">
+  <option value="">Loading months...</option>
+</select>
 
     <button class="btn-refresh" onclick="handleRefresh()">🔄 Refresh</button>
   </div>
@@ -869,6 +868,10 @@ async function handleRefresh() {
   const overlay = document.getElementById('loadingOverlay');
   overlay.classList.add('show');
 
+  // ✅ NEW: Save current dropdown selections before rebuilding
+  const savedWeekVal = document.getElementById('weekSelect').value;
+  const savedMonthVal = document.getElementById('monthSelect').value;
+
   if (currentView !== 'daily') {
     try {
       const res  = await fetchWithTimeout(`${API_URL}?action=getDates`);
@@ -883,6 +886,18 @@ async function handleRefresh() {
       console.error(err);
       overlay.classList.remove('show');
       return;
+    }
+
+    // ✅ NEW: Restore previous selection if it still exists after rebuild
+    const weekSelect = document.getElementById('weekSelect');
+    const monthSelect = document.getElementById('monthSelect');
+
+    if (savedWeekVal && [...weekSelect.options].some(o => o.value === savedWeekVal)) {
+      weekSelect.value = savedWeekVal;
+    }
+
+    if (savedMonthVal && [...monthSelect.options].some(o => o.value === savedMonthVal)) {
+      monthSelect.value = savedMonthVal;
     }
   }
 
