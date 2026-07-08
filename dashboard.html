@@ -281,17 +281,27 @@
     background: #1a1a4a;
     border: 1px solid var(--fd-indigo);
     border-radius: 10px;
-    padding: 10px 14px;
+    padding: 0;
     min-width: 220px;
     max-width: 340px;
     z-index: 50;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    pointer-events: none;
+    pointer-events: auto;
+    overflow: visible;
+  }
+  .chip-tooltip-inner {
+    padding: 10px 14px;
+    max-height: 50vh;
+    overflow-y: auto;
   }
 
-  .acc-chip-copy:hover .chip-tooltip {
+  
+
+  .chip-tooltip.visible {
     display: block;
   }
+
+  
 
   .chip-tooltip::after {
     content: '';
@@ -301,6 +311,16 @@
     transform: translateX(-50%);
     border: 6px solid transparent;
     border-top-color: var(--fd-indigo);
+  }
+
+  .chip-tooltip::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 16px;
+    background: transparent;
   }
 
   .tooltip-title {
@@ -1390,7 +1410,7 @@ function updateAccountBreakdown(accountMap) {
       // ✅ NEW: Build recruiter tooltip HTML
       let tooltipHTML = '';
       if (a.recruiters && Object.keys(a.recruiters).length > 0) {
-        tooltipHTML = `<div class="chip-tooltip"><div class="tooltip-title">👥 Recruiter Breakdown</div>`;
+        tooltipHTML = `<div class="chip-tooltip"><div class="chip-tooltip-inner"><div class="tooltip-title">👥 Recruiter Breakdown</div>`;
         const sortedRecruiters = Object.keys(a.recruiters).sort((x, y) => x.localeCompare(y));
         sortedRecruiters.forEach(recName => {
           const r = a.recruiters[recName];
@@ -1407,7 +1427,7 @@ function updateAccountBreakdown(accountMap) {
             </div>`;
           }
         });
-        tooltipHTML += `</div>`;
+        tooltipHTML += `</div></div>`;
       }
       // ✅ END: Tooltip HTML
 
@@ -1557,6 +1577,103 @@ function flashCopy(id) {
   el.style.opacity='1';
   setTimeout(()=>el.style.opacity='0',2500);
 }
+
+
+// ═══════════════════════════════════════════════
+// TOOLTIP: JS-controlled hover with delay
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// TOOLTIP: JS-controlled hover with delay
+// ═══════════════════════════════════════════════
+(function initTooltips() {
+  let hideTimeout = null;
+  let activeTooltip = null;
+
+  function showTooltip(chip) {
+    const tooltip = chip.querySelector('.chip-tooltip');
+    if (!tooltip) return;
+
+    clearTimeout(hideTimeout);
+
+    // Hide any other visible tooltip
+    if (activeTooltip && activeTooltip !== tooltip) {
+      activeTooltip.classList.remove('visible');
+    }
+
+    tooltip.classList.add('visible');
+    activeTooltip = tooltip;
+  }
+
+  function scheduleHide(chip) {
+    hideTimeout = setTimeout(() => {
+      const tooltip = chip.querySelector('.chip-tooltip');
+      if (tooltip) {
+        tooltip.classList.remove('visible');
+        if (activeTooltip === tooltip) activeTooltip = null;
+      }
+    }, 200);
+  }
+
+  function cancelHide() {
+    clearTimeout(hideTimeout);
+  }
+
+  // Mouse enters the chip
+  document.addEventListener('mouseenter', function(e) {
+    const chip = e.target.closest('.acc-chip-copy');
+    if (chip) {
+      showTooltip(chip);
+      return;
+    }
+
+    // Mouse enters the tooltip or its inner scrollable area
+    const tooltip = e.target.closest('.chip-tooltip');
+    if (tooltip) {
+      cancelHide();
+    }
+  }, true);
+
+  // Mouse leaves the chip
+  document.addEventListener('mouseleave', function(e) {
+    const chip = e.target.closest('.acc-chip-copy');
+    if (chip) {
+      const related = e.relatedTarget;
+      const tooltip = chip.querySelector('.chip-tooltip');
+
+      // Don't hide if cursor moved into the tooltip
+      if (related && tooltip && (related === tooltip || tooltip.contains(related))) {
+        cancelHide();
+        return;
+      }
+
+      scheduleHide(chip);
+      return;
+    }
+
+    // Mouse leaves the tooltip
+    const tooltip = e.target.closest('.chip-tooltip');
+    if (tooltip) {
+      const chip = tooltip.closest('.acc-chip-copy');
+      const related = e.relatedTarget;
+
+      // Don't hide if cursor went back to chip
+      if (related && chip && chip.contains(related)) {
+        cancelHide();
+        return;
+      }
+
+      // Don't hide if cursor is still inside tooltip children
+      if (related && tooltip.contains(related)) {
+        cancelHide();
+        return;
+      }
+
+      if (chip) scheduleHide(chip);
+    }
+  }, true);
+})();
+
+
 </script>
 </body>
 </html>
