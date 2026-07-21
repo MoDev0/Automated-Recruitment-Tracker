@@ -555,7 +555,7 @@
     .stage-input { width: 40px; padding: 5px 2px; }
   }
 
-  /* ✅ NEW: Theme Toggle Button */
+  /* ✅ Theme Toggle Button */
   .theme-toggle {
     position: fixed;
     top: 16px;
@@ -589,7 +589,7 @@
     transform: rotate(20deg);
   }
 
-  /* ✅ NEW: Dark Mode — All Overrides */
+  /* ✅ Dark Mode — All Overrides */
   body.dark-mode {
     --fd-card: #0f0f35;
     --fd-card2: #13133d;
@@ -729,15 +729,154 @@
   }
 
   body.dark-mode ::-webkit-scrollbar-track { background: transparent; }
-  /* ✅ END: Dark Mode Overrides */
+
+  /* ✅ NEW: Monday Confirmation Modal */
+  .monday-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(9,9,45,0.7);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .monday-modal-overlay.show {
+    display: flex;
+  }
+
+  .monday-modal {
+    background: var(--fd-white);
+    border: 2px solid var(--fd-coral);
+    border-radius: 16px;
+    padding: 32px 28px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(9,9,45,0.25);
+    animation: modalPop 0.3s ease;
+  }
+
+  @keyframes modalPop {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .monday-modal-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+
+  .monday-modal-text {
+    direction: rtl;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--fd-midnight);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .monday-modal-accounts {
+    direction: rtl;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--fd-indigo);
+    font-weight: 700;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  .monday-modal-warning {
+    direction: rtl;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--fd-coral);
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+
+  .monday-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .monday-btn-yes {
+    background: var(--fd-mint);
+    color: var(--fd-midnight);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .monday-btn-yes:hover { opacity: 0.85; }
+  .monday-btn-yes:active { transform: scale(0.96); }
+
+  .monday-btn-no {
+    background: transparent;
+    color: var(--fd-coral);
+    border: 2px solid var(--fd-coral);
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .monday-btn-no:hover { background: rgba(255,141,150,0.08); }
+  .monday-btn-no:active { transform: scale(0.96); }
+
+  /* Dark mode modal overrides */
+  body.dark-mode .monday-modal {
+    background: #0f0f35;
+    border-color: var(--fd-coral);
+  }
+
+  body.dark-mode .monday-modal-text { color: var(--fd-white); }
+  body.dark-mode .monday-modal-accounts { color: var(--fd-lavender); }
+  body.dark-mode .monday-modal-warning { color: var(--fd-coral); }
+
+  body.dark-mode .monday-btn-no {
+    color: var(--fd-coral);
+    border-color: var(--fd-coral);
+  }
+
+  body.dark-mode .monday-btn-no:hover { background: rgba(255,141,150,0.12); }
+  /* ✅ END: Monday Modal Styles */
   </style>
 </head>
 <body>
 
-<!-- ✅ NEW: Dark Mode Toggle Button -->
+<!-- ✅ Dark Mode Toggle Button -->
 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
   <span class="theme-toggle-icon">🌙</span>
 </button>
+
+<!-- ✅ NEW: Monday Confirmation Modal -->
+<div class="monday-modal-overlay" id="mondayModal">
+  <div class="monday-modal">
+    <div class="monday-modal-icon">⚠️</div>
+    <div class="monday-modal-text" id="mondayModalText"></div>
+    <div class="monday-modal-accounts" id="mondayModalAccounts"></div>
+    <div class="monday-modal-warning">لو بتهبد انا عارفك وهجيبك 😤</div>
+    <div class="monday-modal-buttons">
+      <button class="monday-btn-yes" onclick="confirmMondaySubmit()">آه متأكد ✅</button>
+      <button class="monday-btn-no" onclick="cancelMondaySubmit()">آسف بالغلط 🙏</button>
+    </div>
+  </div>
+</div>
 
 <div class="header">
   <h1>📝 Daily <span>Update</span></h1>
@@ -832,10 +971,73 @@ const RECRUITER_NAMES = [
   "Yassmin Ashraf","Nour Waleed"
 ];
 
-
 const LANGUAGES = ["English", "German", "Italian", "French", "Spanish", "Dutch"];
 
 let ACCOUNT_NAMES = [];
+
+// ✅ NEW: Pending submission data for Monday modal
+let pendingSubmitData = null;
+
+// ═══════════════════════════════════════════════
+// SMART FETCH: Timeout + Retry + Backoff
+// ═══════════════════════════════════════════════
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timeout);
+    return response;
+  } catch (err) {
+    clearTimeout(timeout);
+    if (err.name === 'AbortError') {
+      throw new Error('TIMEOUT');
+    }
+    throw err;
+  }
+}
+
+async function smartFetch(url, fetchOptions = {}, retryOpts = {}) {
+  const {
+    maxRetries = 3,
+    baseTimeout = 15000,
+    timeoutGrowth = 5000,
+    onRetry = null
+  } = retryOpts;
+
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const timeout = baseTimeout + (attempt - 1) * timeoutGrowth;
+
+    try {
+      const response = await fetchWithTimeout(url, fetchOptions, timeout);
+      const json = await response.json();
+      return json;
+    } catch (err) {
+      lastError = err;
+      const isTimeout = err.message === 'TIMEOUT';
+      const isNetwork = err.message?.includes('Failed to fetch') || err.name === 'TypeError';
+
+      if (attempt < maxRetries && (isTimeout || isNetwork)) {
+        const waitMs = attempt * 2000;
+        if (onRetry) onRetry(attempt, maxRetries, waitMs, isTimeout ? 'timeout' : 'network');
+        await new Promise(resolve => setTimeout(resolve, waitMs));
+      } else {
+        break;
+      }
+    }
+  }
+
+  if (lastError?.message === 'TIMEOUT') {
+    throw new Error('Server is taking too long to respond. Please try again in a moment.');
+  } else if (lastError?.message?.includes('Failed to fetch') || lastError?.name === 'TypeError') {
+    throw new Error('Unable to reach the server. Please check your connection and try again.');
+  } else {
+    throw lastError || new Error('Unknown error occurred.');
+  }
+}
 
 // ═══════════════════════════════════════════════
 // ROTATING SUCCESS MESSAGES
@@ -1004,20 +1206,33 @@ document.addEventListener('focus', function(e) {
 initUpdateType();
 loadAccounts();
 
+// ✅ CHANGED: Uses smartFetch with retry
 async function loadAccounts() {
+  const statusMsg = document.getElementById('statusMsg');
   try {
-    const response = await fetch(`${API_URL}?action=accounts`);
-    const json = await response.json();
+    const retryHandler = (attempt, max, waitMs, reason) => {
+      statusMsg.className   = 'status-msg sending';
+      statusMsg.textContent = `⏳ ${reason === 'timeout' ? 'Server warming up' : 'Connection issue'} — Retry ${attempt}/${max - 1}...`;
+    };
+
+    const json = await smartFetch(
+      `${API_URL}?action=accounts`,
+      {},
+      { maxRetries: 3, onRetry: retryHandler }
+    );
+
     if (json.status === 'ok' && json.accounts) {
       ACCOUNT_NAMES = json.accounts.sort((a, b) => a.localeCompare(b));
     }
+    statusMsg.textContent = '';
   } catch (err) {
     console.warn('Could not load accounts from API.', err);
+    statusMsg.className   = 'status-msg error';
+    statusMsg.textContent = '⚠️ Could not load accounts. Please refresh the page.';
   }
   addAccount();
 }
 
-// ✅ CHANGED: Removed custom account option
 function buildAccountOptions() {
   let html = '<option value="">— Select account —</option>';
   ACCOUNT_NAMES.forEach(name => {
@@ -1058,7 +1273,6 @@ function getLanguage(block) {
   return selectEl.value;
 }
 
-// ✅ CHANGED: Removed custom account input + removed onchange from select
 function addAccount() {
   const list = document.getElementById('accountList');
   const div  = document.createElement('div');
@@ -1116,12 +1330,10 @@ function addAccount() {
   list.appendChild(div);
 }
 
-// ✅ CHANGED: Simplified — no custom account input handling needed
 function handleAccountSelect(selectEl) {
   // No custom option anymore — nothing to handle
 }
 
-// ✅ CHANGED: Simplified — always read from select directly
 function getAccountName(block) {
   return block.querySelector('.acc-select').value;
 }
@@ -1139,7 +1351,7 @@ function toggleNoUpdate() {
   section.style.pointerEvents = checked ? 'none' : 'auto';
 }
 
-// ✅ CHANGED: Only future Mondays allowed (removed Tuesday)
+// ✅ CHANGED: Updated start date validation — allows today if Monday (with prompt)
 function isValidStartDate(dateStr) {
   if (!dateStr) return false;
   const d     = new Date(dateStr + 'T00:00:00');
@@ -1151,10 +1363,20 @@ function isValidStartDate(dateStr) {
   // Must be Monday only (day === 1)
   if (day !== 1) return false;
 
-  // Must be a future date (not today or past)
-  if (d <= today) return false;
+  // Must be today or future (not past)
+  if (d < today) return false;
 
   return true;
+}
+
+// ✅ NEW: Check if a start date is today AND today is Monday
+function isTodayMonday(dateStr) {
+  if (!dateStr) return false;
+  const d     = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return d.getTime() === today.getTime() && today.getDay() === 1;
 }
 
 function clearErrors() {
@@ -1171,12 +1393,61 @@ function clearErrors() {
 }
 
 // ═══════════════════════════════════════════════
-// SUBMIT
+// MONDAY MODAL LOGIC
+// ═══════════════════════════════════════════════
+
+// ✅ NEW: Show the Monday confirmation modal
+function showMondayModal(recruiterName, accountNames, submitData) {
+  pendingSubmitData = submitData;
+
+  const modalText = document.getElementById('mondayModalText');
+  const modalAccounts = document.getElementById('mondayModalAccounts');
+
+  // Build RTL text with LTR spans for English words
+  modalText.innerHTML = `متأكد ان الـ <span dir="ltr" style="display:inline-block">Start Date</span> صح بتاريخ النهارده .. ولا بتهبد يا <span dir="ltr" style="display:inline-block">${recruiterName}</span>؟`;
+
+  // Build account list
+  let accHTML = '';
+  accountNames.forEach(name => {
+    accHTML += `• <span dir="ltr" style="display:inline-block">${name}</span><br>`;
+  });
+  modalAccounts.innerHTML = accHTML;
+
+  document.getElementById('mondayModal').classList.add('show');
+}
+
+// ✅ NEW: User confirmed — proceed with submission
+function confirmMondaySubmit() {
+  document.getElementById('mondayModal').classList.remove('show');
+
+  if (pendingSubmitData) {
+    executeSubmission(pendingSubmitData.entries, pendingSubmitData.recruiter, pendingSubmitData.totalOffers, pendingSubmitData.noUpdate);
+    pendingSubmitData = null;
+  }
+}
+
+// ✅ NEW: User cancelled — scroll to first affected block
+function cancelMondaySubmit() {
+  document.getElementById('mondayModal').classList.remove('show');
+  document.getElementById('submitBtn').disabled = false;
+
+  if (pendingSubmitData && pendingSubmitData.mondayBlocks.length > 0) {
+    const firstBlock = pendingSubmitData.mondayBlocks[0];
+    firstBlock.classList.add('error-block');
+    firstBlock.querySelector('.start-date-input').classList.add('error-input');
+    firstBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  pendingSubmitData = null;
+}
+
+// ═══════════════════════════════════════════════
+// SUBMIT (Refactored for Monday modal flow)
 // ═══════════════════════════════════════════════
 async function submitForm() {
   clearErrors();
 
-  // ✅ NEW: Refresh date + update type at submit time to prevent stale data from old tabs
+  // Refresh date + update type at submit time
   submissionDate = formatDateISO(new Date());
   initUpdateType();
 
@@ -1281,18 +1552,74 @@ async function submitForm() {
     }
   }
 
+  // ✅ NEW: Check for Monday start dates before submitting
+  if (!noUpdate) {
+    const mondayAccounts = [];
+    const mondayBlocks   = [];
+    const blocks = document.querySelectorAll('.account-block');
+
+    blocks.forEach(block => {
+      const accName   = getAccountName(block);
+      const startDate = block.querySelector('.start-date-input').value;
+      const inputs    = block.querySelectorAll('.stage-input');
+      const comment   = block.querySelector('.comment-input').value.trim();
+
+      const offers    = parseInt(inputs[0].value) || 0;
+      const pendingfb = parseInt(inputs[1].value) || 0;
+      const ops       = parseInt(inputs[2].value) || 0;
+      const poc       = parseInt(inputs[3].value) || 0;
+      const hr        = parseInt(inputs[4].value) || 0;
+
+      const hasNumbers = (offers + pendingfb + ops + poc + hr > 0 || comment);
+
+      if (accName && hasNumbers && isTodayMonday(startDate)) {
+        mondayAccounts.push(accName);
+        mondayBlocks.push(block);
+      }
+    });
+
+    if (mondayAccounts.length > 0) {
+      submitBtn.disabled = true;
+      showMondayModal(recruiter, mondayAccounts, {
+        entries,
+        recruiter,
+        totalOffers,
+        noUpdate,
+        mondayBlocks
+      });
+      return;
+    }
+  }
+
+  // No Monday issue — submit directly
+  await executeSubmission(entries, recruiter, totalOffers, noUpdate);
+}
+
+// ✅ NEW: Extracted submission logic into separate function
+async function executeSubmission(entries, recruiter, totalOffers, noUpdate) {
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
   submitBtn.disabled    = true;
   statusMsg.className   = 'status-msg sending';
   statusMsg.textContent = '⏳ One moment... submitting your numbers';
 
   try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(entries)
-    });
+    // ✅ CHANGED: Uses smartFetch with retry
+    const retryHandler = (attempt, max, waitMs, reason) => {
+      statusMsg.className   = 'status-msg sending';
+      statusMsg.textContent = `⏳ ${reason === 'timeout' ? 'Server is busy' : 'Connection issue'} — Retry ${attempt}/${max - 1}...`;
+    };
 
-    const result = await response.json();
+    const result = await smartFetch(
+      API_URL,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(entries)
+      },
+      { maxRetries: 3, baseTimeout: 20000, onRetry: retryHandler }
+    );
 
     if (result.status !== 'ok') {
       throw new Error(result.message || 'Server rejected the submission');
@@ -1338,7 +1665,7 @@ async function submitForm() {
 
   } catch (err) {
     statusMsg.className   = 'status-msg error';
-    statusMsg.textContent = '❌ Something went wrong while sending. Please check your connection and try again.';
+    statusMsg.textContent = '❌ ' + err.message;
     submitBtn.disabled    = false;
   }
 }
@@ -1368,7 +1695,7 @@ function resetForm() {
   initUpdateType();
 }
 
-// ✅ NEW: Dark Mode Toggle with LocalStorage
+// Dark Mode Toggle with LocalStorage
 function toggleTheme() {
   document.body.classList.toggle('dark-mode');
   const isDark = document.body.classList.contains('dark-mode');
@@ -1376,7 +1703,7 @@ function toggleTheme() {
   document.querySelector('.theme-toggle-icon').textContent = isDark ? '☀️' : '🌙';
 }
 
-// ✅ NEW: Load saved theme on page load
+// Load saved theme on page load
 (function loadSavedTheme() {
   const saved = localStorage.getItem('fd-theme');
   if (saved === 'dark') {
