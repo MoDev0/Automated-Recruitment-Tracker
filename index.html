@@ -1491,8 +1491,7 @@ function showFinalConfirmModal(submitData) {
   noteEl.innerHTML = `لو معاك <span dir="ltr" style="display:inline-block">Offer Withdraw</span> قول متتكسفش عادي احنا أهل 🤝`;
 
   if (!submitData.noUpdate && submitData.entries.length > 0) {
-    summaryEl.innerHTML = `<strong>📊 <span dir="ltr" style="display:inline-block">Updates</span> بتاعتك:</strong><br><br>` + buildEntrySummaryHTML(submitData.entries);
-    summaryEl.style.display = 'block';
+    summaryEl.innerHTML = `<strong>📊 Your current update:</strong><br><br>` + buildEntrySummaryHTML(submitData.entries);    summaryEl.style.display = 'block';
   } else {
     summaryEl.innerHTML = '<strong>📊 No updates today</strong>';
     summaryEl.style.display = 'block';
