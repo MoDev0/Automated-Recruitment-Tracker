@@ -148,6 +148,15 @@
   .card.c-top { border-color: var(--fd-lemon); }
   .card.c-top .c-value { color: var(--fd-lemon); font-size: 0.95rem; padding-top: 4px; line-height: 1.3; }
 
+  /* Withdrawals card */
+  .card.c-withdrawals { border-color: var(--fd-coral); }
+  .card.c-withdrawals .c-value { color: var(--fd-coral); }
+
+  /* Net Offers card */
+  .card.c-net { border-color: var(--fd-indigo); }
+  .card.c-net .c-value { color: var(--fd-indigo); }
+  .card.c-net .c-value.negative { color: var(--fd-coral); }
+
   .section-label {
     font-size: 0.75rem; font-weight: 700; color: var(--fd-lavender);
     text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
@@ -242,6 +251,18 @@
     color: rgba(255,255,255,0.3);
   }
 
+  /* Withdrawal badge in account chips */
+  .acc-chip-copy .acc-withdraw-badge {
+    background: rgba(255,141,150,0.1);
+    border: 1px solid rgba(255,141,150,0.25);
+    color: var(--fd-coral);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
   .acc-chip-copy .copy-icon {
     color: rgba(255,255,255,0.25);
     font-size: 0.75rem;
@@ -271,7 +292,7 @@
     opacity: 1;
   }
 
-  /* ✅ NEW: Recruiter Tooltip on Hover */
+  /* Recruiter Tooltip on Hover */
   .chip-tooltip {
     display: none;
     position: absolute;
@@ -295,13 +316,9 @@
     overflow-y: auto;
   }
 
-  
-
   .chip-tooltip.visible {
     display: block;
   }
-
-  
 
   .chip-tooltip::after {
     content: '';
@@ -360,7 +377,11 @@
     text-align: right;
     white-space: nowrap;
   }
-  /* ✅ END: Recruiter Tooltip Styles */
+
+  /* Coral color for withdrawal metrics in tooltip */
+  .tooltip-metrics .wd-metric {
+    color: var(--fd-coral);
+  }
 
   .divider { height: 1px; background: var(--fd-border); margin: 20px 0; }
   .main { padding: 20px 28px; }
@@ -378,6 +399,9 @@
   .rec-table .num { text-align: center; font-weight: 700; }
   .rec-table .num.highlight { color: var(--fd-mint); }
   .rec-table .num.highlight-fb { color: var(--fd-lemon); }
+  .rec-table .num.highlight-wd { color: var(--fd-coral); }
+  .rec-table .num.highlight-net { color: var(--fd-indigo); }
+  .rec-table .num.highlight-net-neg { color: var(--fd-coral); }
   .rec-table .no-upd { color: var(--fd-coral); font-style: italic; }
   .rec-table .comment-cell { color: rgba(255,255,255,0.5); font-style: italic; font-size: 0.75rem; }
   .rec-name { font-weight: 700; }
@@ -475,7 +499,6 @@
     .summary-section, .main { padding: 14px 16px; }
     .status-bar { padding: 8px 16px; }
     .acc-chip-copy { flex-wrap: wrap; gap: 6px; }
-    /* ✅ NEW: Tooltip responsive — left align on mobile */
     .chip-tooltip {
       left: 0;
       transform: translateX(0);
@@ -531,10 +554,10 @@
       <option value="">Loading weeks...</option>
     </select>
 
-<!-- MONTHLY CONTROLS -->
-<select class="month-select hidden" id="monthSelect" onchange="loadRangeData('monthly')">
-  <option value="">Loading months...</option>
-</select>
+    <!-- MONTHLY CONTROLS -->
+    <select class="month-select hidden" id="monthSelect" onchange="loadRangeData('monthly')">
+      <option value="">Loading months...</option>
+    </select>
 
     <button class="btn-refresh" onclick="handleRefresh()">🔄 Refresh</button>
   </div>
@@ -543,7 +566,7 @@
 <div class="status-bar" id="statusBar">Ready — select a view and refresh.</div>
 
 <div class="summary-section">
-  <div class="summary-grid">
+  <div class="summary-grid" id="summaryGrid">
     <div class="card">
       <div class="c-label">Submitted</div>
       <div class="c-value" id="s-submitted">0</div>
@@ -555,6 +578,14 @@
     <div class="card c-offers">
       <div class="c-label">Total Offers</div>
       <div class="c-value" id="s-offers">0</div>
+    </div>
+    <div class="card c-withdrawals">
+      <div class="c-label">❌ Withdrawals</div>
+      <div class="c-value" id="s-withdrawals">0</div>
+    </div>
+    <div class="card c-net" id="netCard" style="display:none;">
+      <div class="c-label">📊 Net Offers</div>
+      <div class="c-value" id="s-net">0</div>
     </div>
     <div class="card c-pending">
       <div class="c-label">Pending Feedback</div>
@@ -598,12 +629,12 @@
       <thead id="recTableHead">
         <tr>
           <th>Recruiter</th><th>Account</th><th>Language</th><th>Start Date</th><th>Type</th>
-          <th>Offers</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
+          <th>Offers</th><th>❌ WD</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
           <th>Comment</th><th>Time</th>
         </tr>
       </thead>
       <tbody id="recTableBody">
-        <tr><td colspan="12" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>
+        <tr><td colspan="13" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>
       </tbody>
     </table>
   </div>
@@ -697,33 +728,29 @@ const RECRUITER_NAMES = [
   "Yassmin Ashraf","Nour Waleed"
 ];
 
-
 let currentView  = 'daily';
 let knownDates   = [];
 let pickersReady = false;
 
 // ═══════════════════════════════════════════════
-// FETCH WITH TIMEOUT (10 seconds)
+// FETCH WITH TIMEOUT
 // ═══════════════════════════════════════════════
 async function fetchWithTimeout(url, timeoutMs = 10000) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
   try {
     const response = await fetch(url, { signal: controller.signal });
     clearTimeout(timeout);
     return response;
   } catch (err) {
     clearTimeout(timeout);
-    if (err.name === 'AbortError') {
-      throw new Error('Request timed out. Please try again.');
-    }
+    if (err.name === 'AbortError') throw new Error('Request timed out. Please try again.');
     throw err;
   }
 }
 
 // ═══════════════════════════════════════════════
-// INIT — Parallel load: getDates + daily data
+// INIT
 // ═══════════════════════════════════════════════
 async function initDashboard() {
   const today = new Date();
@@ -762,41 +789,21 @@ async function initDashboard() {
 }
 
 // ═══════════════════════════════════════════════
-// BUILD WEEK PICKER (data-driven)
+// BUILD WEEK PICKER
 // ═══════════════════════════════════════════════
 function buildWeekPicker(dates) {
   const select = document.getElementById('weekSelect');
   select.innerHTML = '';
-
-  if (dates.length === 0) {
-    select.innerHTML = '<option value="">No data available</option>';
-    return;
-  }
-
+  if (dates.length === 0) { select.innerHTML = '<option value="">No data available</option>'; return; }
   const weekMap = {};
-
   dates.forEach(dateStr => {
-    const d      = new Date(dateStr + 'T00:00:00');
+    const d = new Date(dateStr + 'T00:00:00');
     const monday = getMonday(d);
-    const friday = new Date(monday);
-    friday.setDate(friday.getDate() + 4);
+    const friday = new Date(monday); friday.setDate(friday.getDate() + 4);
     const key = formatDateISO(monday);
-
-    if (!weekMap[key]) {
-      weekMap[key] = {
-        monday: monday,
-        friday: friday,
-        weekNum: getWeekNumber(monday),
-        year: monday.getFullYear()
-      };
-    }
+    if (!weekMap[key]) weekMap[key] = { monday, friday, weekNum: getWeekNumber(monday), year: monday.getFullYear() };
   });
-
-  const sortedWeeks = Object.values(weekMap).sort((a, b) =>
-    b.monday.getTime() - a.monday.getTime()
-  );
-
-  sortedWeeks.forEach(w => {
+  Object.values(weekMap).sort((a, b) => b.monday.getTime() - a.monday.getTime()).forEach(w => {
     const opt = document.createElement('option');
     opt.value = `${formatDateISO(w.monday)}|${formatDateISO(w.friday)}`;
     opt.textContent = `Week ${w.weekNum} · ${formatShort(w.monday)} – ${formatShort(w.friday)}, ${w.year}`;
@@ -805,37 +812,23 @@ function buildWeekPicker(dates) {
 }
 
 // ═══════════════════════════════════════════════
-// BUILD MONTH PICKER (data-driven)
+// BUILD MONTH PICKER
 // ═══════════════════════════════════════════════
 function buildMonthPicker(dates) {
   const select = document.getElementById('monthSelect');
   select.innerHTML = '';
-
-  if (dates.length === 0) {
-    select.innerHTML = '<option value="">No data available</option>';
-    return;
-  }
-
+  if (dates.length === 0) { select.innerHTML = '<option value="">No data available</option>'; return; }
   const monthMap = {};
-
   dates.forEach(dateStr => {
-    const d   = new Date(dateStr + 'T00:00:00');
+    const d = new Date(dateStr + 'T00:00:00');
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-
     if (!monthMap[key]) {
       const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
-      const lastDay  = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-      monthMap[key] = {
-        firstDay: firstDay,
-        lastDay: lastDay,
-        label: firstDay.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
-      };
+      const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+      monthMap[key] = { firstDay, lastDay, label: firstDay.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) };
     }
   });
-
-  const sortedMonths = Object.entries(monthMap).sort((a, b) => b[0].localeCompare(a[0]));
-
-  sortedMonths.forEach(([key, m]) => {
+  Object.entries(monthMap).sort((a, b) => b[0].localeCompare(a[0])).forEach(([key, m]) => {
     const opt = document.createElement('option');
     opt.value = `${formatDateISO(m.firstDay)}|${formatDateISO(m.lastDay)}`;
     opt.textContent = m.label;
@@ -848,24 +841,21 @@ function buildMonthPicker(dates) {
 // ═══════════════════════════════════════════════
 function switchView(view) {
   currentView = view;
-
   document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.view-btn[data-view="${view}"]`).classList.add('active');
 
-  const dateInput   = document.getElementById('dateInput');
-  const typeFilter  = document.getElementById('typeFilter');
-  const weekSelect  = document.getElementById('weekSelect');
-  const monthSelect = document.getElementById('monthSelect');
+  document.getElementById('dateInput').classList.toggle('hidden', view !== 'daily');
+  document.getElementById('typeFilter').classList.toggle('hidden', view !== 'daily');
+  document.getElementById('weekSelect').classList.toggle('hidden', view !== 'weekly');
+  document.getElementById('monthSelect').classList.toggle('hidden', view !== 'monthly');
 
-  dateInput.classList.toggle('hidden', view !== 'daily');
-  typeFilter.classList.toggle('hidden', view !== 'daily');
-  weekSelect.classList.toggle('hidden', view !== 'weekly');
-  monthSelect.classList.toggle('hidden', view !== 'monthly');
+  const dailyPost = document.getElementById('dailyPostSection');
+  const aggExport = document.getElementById('aggExportSection');
+  const missSect  = document.getElementById('missingSection');
+  const allBanner = document.getElementById('allSubmittedBanner');
 
-  const dailyPost  = document.getElementById('dailyPostSection');
-  const aggExport  = document.getElementById('aggExportSection');
-  const missSect   = document.getElementById('missingSection');
-  const allBanner  = document.getElementById('allSubmittedBanner');
+  // Show/hide Net Offers card based on view
+  document.getElementById('netCard').style.display = (view === 'daily') ? 'none' : '';
 
   if (view === 'daily') {
     dailyPost.classList.remove('hidden');
@@ -889,17 +879,16 @@ async function handleRefresh() {
   const overlay = document.getElementById('loadingOverlay');
   overlay.classList.add('show');
 
-  // ✅ NEW: Save current dropdown selections before rebuilding
   const savedWeekVal = document.getElementById('weekSelect').value;
   const savedMonthVal = document.getElementById('monthSelect').value;
 
   if (currentView !== 'daily') {
     try {
-      const res  = await fetchWithTimeout(`${API_URL}?action=getDates`);
+      const res = await fetchWithTimeout(`${API_URL}?action=getDates`);
       const json = await res.json();
       if (json.status === 'ok') {
         knownDates = json.dates || [];
-        if (currentView === 'weekly')  buildWeekPicker(knownDates);
+        if (currentView === 'weekly') buildWeekPicker(knownDates);
         if (currentView === 'monthly') buildMonthPicker(knownDates);
       }
     } catch (err) {
@@ -908,18 +897,10 @@ async function handleRefresh() {
       overlay.classList.remove('show');
       return;
     }
-
-    // ✅ NEW: Restore previous selection if it still exists after rebuild
     const weekSelect = document.getElementById('weekSelect');
     const monthSelect = document.getElementById('monthSelect');
-
-    if (savedWeekVal && [...weekSelect.options].some(o => o.value === savedWeekVal)) {
-      weekSelect.value = savedWeekVal;
-    }
-
-    if (savedMonthVal && [...monthSelect.options].some(o => o.value === savedMonthVal)) {
-      monthSelect.value = savedMonthVal;
-    }
+    if (savedWeekVal && [...weekSelect.options].some(o => o.value === savedWeekVal)) weekSelect.value = savedWeekVal;
+    if (savedMonthVal && [...monthSelect.options].some(o => o.value === savedMonthVal)) monthSelect.value = savedMonthVal;
   }
 
   if (currentView === 'daily') await loadData();
@@ -938,32 +919,27 @@ function formatDateISO(d) {
 
 function formatStartDate(sd) {
   if (!sd) return '';
-  try {
-    const d = new Date(sd + 'T00:00:00');
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-  } catch { return sd; }
+  try { const d = new Date(sd + 'T00:00:00'); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+  catch { return sd; }
 }
 
 function formatTimestamp(ts) {
   if (!ts) return '';
-  try {
-    const d = new Date(ts);
-    return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  } catch { return ''; }
+  try { const d = new Date(ts); return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
+  catch { return ''; }
 }
 
 function getMonday(d) {
   const date = new Date(d);
-  const day  = date.getDay();
+  const day = date.getDay();
   const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-  date.setDate(diff);
-  date.setHours(0,0,0,0);
+  date.setDate(diff); date.setHours(0,0,0,0);
   return date;
 }
 
 function getWeekNumber(d) {
-  const date    = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum  = date.getUTCDay() || 7;
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = date.getUTCDay() || 7;
   date.setUTCDate(date.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
@@ -977,7 +953,7 @@ function filterLatestPerRecruiter(rows) {
   const groups = {};
   rows.forEach(row => {
     const key = `${(row.Recruiter||'').trim()}|||${(row.UpdateType||'').trim()}|||${(row.Date||'').trim()}`;
-    const ts  = new Date(row.Timestamp || 0).getTime();
+    const ts = new Date(row.Timestamp || 0).getTime();
     if (!groups[key]) groups[key] = { maxTs: ts, rows: [row] };
     else if (ts > groups[key].maxTs) groups[key] = { maxTs: ts, rows: [row] };
     else if (ts === groups[key].maxTs) groups[key].rows.push(row);
@@ -987,6 +963,9 @@ function filterLatestPerRecruiter(rows) {
   return result;
 }
 
+// Safe parse — handles missing Withdrawals column gracefully
+function safeInt(val) { return parseInt(val) || 0; }
+
 // ═══════════════════════════════════════════════
 // DAILY DATA LOAD
 // ═══════════════════════════════════════════════
@@ -995,7 +974,7 @@ async function loadData() {
   const selectedType = document.getElementById('typeFilter').value;
   if (!selectedDate) return;
 
-  const overlay   = document.getElementById('loadingOverlay');
+  const overlay = document.getElementById('loadingOverlay');
   const statusBar = document.getElementById('statusBar');
 
   const spinnerAlreadyShown = overlay.classList.contains('show');
@@ -1007,7 +986,7 @@ async function loadData() {
     if (selectedType !== 'Both') url += `&type=${selectedType}`;
 
     const response = await fetchWithTimeout(url);
-    const json     = await response.json();
+    const json = await response.json();
 
     if (json.status === 'ok') {
       const filtered = filterLatestPerRecruiter(json.data);
@@ -1032,11 +1011,11 @@ async function loadData() {
 // ═══════════════════════════════════════════════
 async function loadRangeData(mode) {
   const selector = mode === 'weekly' ? 'weekSelect' : 'monthSelect';
-  const val      = document.getElementById(selector).value;
+  const val = document.getElementById(selector).value;
   if (!val) return;
 
   const [startDate, endDate] = val.split('|');
-  const overlay   = document.getElementById('loadingOverlay');
+  const overlay = document.getElementById('loadingOverlay');
   const statusBar = document.getElementById('statusBar');
 
   const spinnerAlreadyShown = overlay.classList.contains('show');
@@ -1044,9 +1023,9 @@ async function loadRangeData(mode) {
   statusBar.textContent = '⏳ Fetching data, please wait...';
 
   try {
-    const url      = `${API_URL}?startDate=${startDate}&endDate=${endDate}&type=Morning`;
+    const url = `${API_URL}?startDate=${startDate}&endDate=${endDate}&type=Morning`;
     const response = await fetchWithTimeout(url);
-    const json     = await response.json();
+    const json = await response.json();
 
     if (json.status === 'ok') {
       const filtered = filterLatestPerRecruiter(json.data);
@@ -1070,14 +1049,18 @@ async function loadRangeData(mode) {
 // PROCESS DAILY DATA
 // ═══════════════════════════════════════════════
 function processDailyData(rows, selectedDate, selectedType) {
+  // Daily table header — includes Withdrawals
   document.getElementById('recTableHead').innerHTML = `<tr>
     <th>Recruiter</th><th>Account</th><th>Language</th><th>Start Date</th><th>Type</th>
-    <th>Offers</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
+    <th>Offers</th><th>❌ WD</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
     <th>Comment</th><th>Time</th>
   </tr>`;
   document.getElementById('tableLabel').textContent = 'Recruiter Details';
 
-  let totalOffers=0, totalPFB=0, totalOPS=0, totalPOC=0, totalHR=0;
+  // Hide Net card in daily
+  document.getElementById('netCard').style.display = 'none';
+
+  let totalOffers=0, totalPFB=0, totalOPS=0, totalPOC=0, totalHR=0, totalWD=0;
   let submittedNames = new Set(), noUpdateNames = new Set();
   const recruiterMap = {}, accountMap = {};
 
@@ -1085,8 +1068,9 @@ function processDailyData(rows, selectedDate, selectedType) {
     const name=row.Recruiter?.trim()||'', account=row.Account?.trim()||'';
     const startDate=(row.StartDate||'').toString().trim(), updateType=row.UpdateType?.trim()||'';
     const language=(row.Language||'English').toString().trim();
-    const offers=parseInt(row.Offers)||0, pendingfb=parseInt(row.PendingFB)||0;
-    const ops=parseInt(row.OPS)||0, poc=parseInt(row.POC)||0, hr=parseInt(row.HR)||0;
+    const offers=safeInt(row.Offers), pendingfb=safeInt(row.PendingFB);
+    const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row.HR);
+    const withdrawals=safeInt(row.Withdrawals);
     const comment=(row.Comment||'').trim(), ts=row.Timestamp||'';
     if (!name) return;
     submittedNames.add(name);
@@ -1094,31 +1078,32 @@ function processDailyData(rows, selectedDate, selectedType) {
     if (comment.toLowerCase()==='no update today' && account==='—') {
       noUpdateNames.add(name);
       if (!recruiterMap[name]) recruiterMap[name]=[];
-      recruiterMap[name].push({account:'—',startDate:'',language:'',updateType,offers:0,pendingfb:0,ops:0,poc:0,hr:0,comment:'No update today',ts});
+      recruiterMap[name].push({account:'—',startDate:'',language:'',updateType,offers:0,pendingfb:0,ops:0,poc:0,hr:0,withdrawals:0,comment:'No update today',ts});
       return;
     }
 
-    totalOffers+=offers; totalPFB+=pendingfb; totalOPS+=ops; totalPOC+=poc; totalHR+=hr;
+    totalOffers+=offers; totalPFB+=pendingfb; totalOPS+=ops; totalPOC+=poc; totalHR+=hr; totalWD+=withdrawals;
     if (!recruiterMap[name]) recruiterMap[name]=[];
-    recruiterMap[name].push({account,startDate,language,updateType,offers,pendingfb,ops,poc,hr,comment,ts});
+    recruiterMap[name].push({account,startDate,language,updateType,offers,pendingfb,ops,poc,hr,withdrawals,comment,ts});
 
     if (account && account!=='—') {
       const key=`${account.toLowerCase()}__${language.toLowerCase()}__${startDate}`;
-      // ✅ CHANGED: Added recruiters object to accountMap entries
-      if (!accountMap[key]) accountMap[key]={display:account,language:language,startDate:startDate,offer:0,pfb:0,ops:0,poc:0,hr:0,recruiters:{}};
+      if (!accountMap[key]) accountMap[key]={display:account,language,startDate,offer:0,pfb:0,ops:0,poc:0,hr:0,wd:0,recruiters:{}};
       accountMap[key].offer+=offers; accountMap[key].pfb+=pendingfb;
       accountMap[key].ops+=ops; accountMap[key].poc+=poc; accountMap[key].hr+=hr;
+      accountMap[key].wd+=withdrawals;
 
-      // ✅ NEW: Track per-recruiter contributions
-      if (!accountMap[key].recruiters[name]) accountMap[key].recruiters[name]={offers:0,pfb:0,ops:0,poc:0,hr:0};
+      if (!accountMap[key].recruiters[name]) accountMap[key].recruiters[name]={offers:0,pfb:0,ops:0,poc:0,hr:0,wd:0};
       accountMap[key].recruiters[name].offers+=offers;
       accountMap[key].recruiters[name].pfb+=pendingfb;
       accountMap[key].recruiters[name].ops+=ops;
       accountMap[key].recruiters[name].poc+=poc;
       accountMap[key].recruiters[name].hr+=hr;
+      accountMap[key].recruiters[name].wd+=withdrawals;
     }
   });
 
+  // Daily: Top contributor based on RAW offers
   let maxOffers=0, topNames=[];
   Object.keys(recruiterMap).forEach(name => {
     if (noUpdateNames.has(name)) return;
@@ -1127,7 +1112,7 @@ function processDailyData(rows, selectedDate, selectedType) {
     else if (total===maxOffers&&total>0) topNames.push(name);
   });
 
-  updateSummaryCards(submittedNames.size, noUpdateNames.size, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers);
+  updateSummaryCards(submittedNames.size, noUpdateNames.size, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, null, topNames, maxOffers);
   updateAccountBreakdown(accountMap);
 
   const missingNames=RECRUITER_NAMES.filter(n=>!submittedNames.has(n));
@@ -1144,11 +1129,12 @@ function processDailyData(rows, selectedDate, selectedType) {
     missSect.style.display='none'; allBanner.style.display='none';
   }
 
+  // Daily table body — includes Withdrawals column
   const tbody=document.getElementById('recTableBody');
   const sortedNames=Object.keys(recruiterMap).sort((a,b)=>a.localeCompare(b));
 
   if (sortedNames.length===0) {
-    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="13" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No submissions found.</td></tr>`;
   } else {
     let html='';
     sortedNames.forEach(name => {
@@ -1165,6 +1151,7 @@ function processDailyData(rows, selectedDate, selectedType) {
           <td class="rec-date">${isNoUpd?'—':formatStartDate(entry.startDate)}</td>
           <td>${typeBadge}</td>
           <td class="num ${entry.offers>0?'highlight':''}">${isNoUpd?'—':entry.offers}</td>
+          <td class="num ${entry.withdrawals>0?'highlight-wd':''}">${isNoUpd?'—':entry.withdrawals}</td>
           <td class="num ${entry.pendingfb>0?'highlight-fb':''}">${isNoUpd?'—':entry.pendingfb}</td>
           <td class="num">${isNoUpd?'—':entry.ops}</td>
           <td class="num">${isNoUpd?'—':entry.poc}</td>
@@ -1177,32 +1164,37 @@ function processDailyData(rows, selectedDate, selectedType) {
     tbody.innerHTML=html;
   }
 
-  generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers, selectedDate);
+  generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, topNames, maxOffers, selectedDate);
 }
 
 // ═══════════════════════════════════════════════
 // PROCESS AGGREGATED DATA (weekly/monthly)
 // ═══════════════════════════════════════════════
 function processAggregatedData(rows, startDate, endDate, mode) {
+  // Weekly/Monthly table header — includes Withdrawals + Net
   document.getElementById('recTableHead').innerHTML = `<tr>
     <th style="width:30px;"></th><th>Recruiter</th>
-    <th>Offers</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
+    <th>Offers</th><th>❌ WD</th><th>📊 Net</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
   </tr>`;
 
   const label = mode === 'weekly' ? 'Weekly' : 'Monthly';
   document.getElementById('tableLabel').textContent = `${label} Recruiter Summary (click row to expand)`;
 
-  let totalOffers=0, totalPFB=0, totalOPS=0, totalPOC=0, totalHR=0;
+  // Show Net card
+  document.getElementById('netCard').style.display = '';
+
+  let totalOffers=0, totalPFB=0, totalOPS=0, totalPOC=0, totalHR=0, totalWD=0;
   let submittedNames = new Set(), noUpdateNames = new Set();
   const recruiterAgg = {};
-  const accountMap   = {};
+  const accountMap = {};
 
   rows.forEach(row => {
     const name=row.Recruiter?.trim()||'', account=row.Account?.trim()||'';
     const language=(row.Language||'English').toString().trim();
     const rowStartDate=(row.StartDate||'').toString().trim();
-    const offers=parseInt(row.Offers)||0, pendingfb=parseInt(row.PendingFB)||0;
-    const ops=parseInt(row.OPS)||0, poc=parseInt(row.POC)||0, hr=parseInt(row.HR)||0;
+    const offers=safeInt(row.Offers), pendingfb=safeInt(row.PendingFB);
+    const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row.HR);
+    const withdrawals=safeInt(row.Withdrawals);
     const comment=(row.Comment||'').trim();
     if (!name) return;
     submittedNames.add(name);
@@ -1212,49 +1204,53 @@ function processAggregatedData(rows, startDate, endDate, mode) {
       return;
     }
 
-    totalOffers+=offers; totalPFB+=pendingfb; totalOPS+=ops; totalPOC+=poc; totalHR+=hr;
+    totalOffers+=offers; totalPFB+=pendingfb; totalOPS+=ops; totalPOC+=poc; totalHR+=hr; totalWD+=withdrawals;
 
-    if (!recruiterAgg[name]) recruiterAgg[name]={offers:0,pfb:0,ops:0,poc:0,hr:0,accounts:{}};
+    if (!recruiterAgg[name]) recruiterAgg[name]={offers:0,pfb:0,ops:0,poc:0,hr:0,wd:0,accounts:{}};
     recruiterAgg[name].offers+=offers;
     recruiterAgg[name].pfb+=pendingfb;
     recruiterAgg[name].ops+=ops;
     recruiterAgg[name].poc+=poc;
     recruiterAgg[name].hr+=hr;
+    recruiterAgg[name].wd+=withdrawals;
 
     if (account && account!=='—') {
       const accKey=`${account.toLowerCase()}__${language.toLowerCase()}__${rowStartDate}`;
       if (!recruiterAgg[name].accounts[accKey]) {
-        recruiterAgg[name].accounts[accKey]={display:account,language:language,startDate:rowStartDate,offers:0,pfb:0,ops:0,poc:0,hr:0};
+        recruiterAgg[name].accounts[accKey]={display:account,language,startDate:rowStartDate,offers:0,pfb:0,ops:0,poc:0,hr:0,wd:0};
       }
       recruiterAgg[name].accounts[accKey].offers+=offers;
       recruiterAgg[name].accounts[accKey].pfb+=pendingfb;
       recruiterAgg[name].accounts[accKey].ops+=ops;
       recruiterAgg[name].accounts[accKey].poc+=poc;
       recruiterAgg[name].accounts[accKey].hr+=hr;
+      recruiterAgg[name].accounts[accKey].wd+=withdrawals;
 
-      // ✅ CHANGED: Added recruiters object to accountMap entries
-      if (!accountMap[accKey]) accountMap[accKey]={display:account,language:language,startDate:rowStartDate,offer:0,pfb:0,ops:0,poc:0,hr:0,recruiters:{}};
+      if (!accountMap[accKey]) accountMap[accKey]={display:account,language,startDate:rowStartDate,offer:0,pfb:0,ops:0,poc:0,hr:0,wd:0,recruiters:{}};
       accountMap[accKey].offer+=offers; accountMap[accKey].pfb+=pendingfb;
       accountMap[accKey].ops+=ops; accountMap[accKey].poc+=poc; accountMap[accKey].hr+=hr;
+      accountMap[accKey].wd+=withdrawals;
 
-      // ✅ NEW: Track per-recruiter contributions
-      if (!accountMap[accKey].recruiters[name]) accountMap[accKey].recruiters[name]={offers:0,pfb:0,ops:0,poc:0,hr:0};
+      if (!accountMap[accKey].recruiters[name]) accountMap[accKey].recruiters[name]={offers:0,pfb:0,ops:0,poc:0,hr:0,wd:0};
       accountMap[accKey].recruiters[name].offers+=offers;
       accountMap[accKey].recruiters[name].pfb+=pendingfb;
       accountMap[accKey].recruiters[name].ops+=ops;
       accountMap[accKey].recruiters[name].poc+=poc;
       accountMap[accKey].recruiters[name].hr+=hr;
+      accountMap[accKey].recruiters[name].wd+=withdrawals;
     }
   });
 
-  let maxOffers=0, topNames=[];
+  // Weekly/Monthly: Top contributor based on NET offers
+  const totalNet = totalOffers - totalWD;
+  let maxNet=0, topNames=[];
   Object.keys(recruiterAgg).forEach(name => {
-    const total=recruiterAgg[name].offers;
-    if (total>maxOffers){maxOffers=total;topNames=[name];}
-    else if (total===maxOffers&&total>0) topNames.push(name);
+    const net = recruiterAgg[name].offers - recruiterAgg[name].wd;
+    if (net>maxNet){maxNet=net;topNames=[name];}
+    else if (net===maxNet&&net>0) topNames.push(name);
   });
 
-  updateSummaryCards(submittedNames.size, noUpdateNames.size, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers);
+  updateSummaryCards(submittedNames.size, noUpdateNames.size, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, totalNet, topNames, maxNet);
   updateAccountBreakdown(accountMap);
 
   document.getElementById('missingSection').style.display='none';
@@ -1264,14 +1260,14 @@ function processAggregatedData(rows, startDate, endDate, mode) {
 
   RECRUITER_NAMES.forEach(name => {
     if (noUpdateNames.has(name) && !recruiterAgg[name]) {
-      recruiterAgg[name]={offers:0,pfb:0,ops:0,poc:0,hr:0,accounts:{},noUpdate:true};
+      recruiterAgg[name]={offers:0,pfb:0,ops:0,poc:0,hr:0,wd:0,accounts:{},noUpdate:true};
     }
   });
 
   const allNames=[...new Set([...Object.keys(recruiterAgg)])].sort((a,b)=>a.localeCompare(b));
 
   if (allNames.length===0) {
-    tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No Morning submissions found for this period.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;color:rgba(255,255,255,0.25);padding:30px;">📭 No Morning submissions found for this period.</td></tr>`;
   } else {
     let html='';
     allNames.forEach((name,idx) => {
@@ -1279,11 +1275,15 @@ function processAggregatedData(rows, startDate, endDate, mode) {
       const hasAccounts=Object.keys(r.accounts||{}).length>0;
       const isNoUpd=r.noUpdate||false;
       const rowId=`agg-${idx}`;
+      const net = r.offers - r.wd;
+      const netClass = net < 0 ? 'highlight-net-neg' : (net > 0 ? 'highlight-net' : '');
 
       html+=`<tr class="agg-row" onclick="toggleExpand('${rowId}')">
         <td><button class="expand-btn" id="btn-${rowId}">${hasAccounts?'▶':''}</button></td>
         <td class="rec-name">${name}${isNoUpd?' <span class="no-upd">(No updates)</span>':''}</td>
         <td class="num ${r.offers>0?'highlight':''}">${r.offers}</td>
+        <td class="num ${r.wd>0?'highlight-wd':''}">${r.wd}</td>
+        <td class="num ${netClass}">${net}</td>
         <td class="num ${r.pfb>0?'highlight-fb':''}">${r.pfb}</td>
         <td class="num">${r.ops}</td>
         <td class="num">${r.poc}</td>
@@ -1293,10 +1293,14 @@ function processAggregatedData(rows, startDate, endDate, mode) {
       if (hasAccounts) {
         Object.values(r.accounts).forEach(acc => {
           const langNote = acc.language && acc.language !== 'English' ? ` [${acc.language}]` : '';
+          const accNet = acc.offers - acc.wd;
+          const accNetClass = accNet < 0 ? 'highlight-net-neg' : (accNet > 0 ? 'highlight-net' : '');
           html+=`<tr class="detail-row" data-parent="${rowId}">
             <td></td>
             <td class="acc-label">└─ ${acc.display}${langNote}</td>
             <td class="num ${acc.offers>0?'highlight':''}">${acc.offers}</td>
+            <td class="num ${acc.wd>0?'highlight-wd':''}">${acc.wd}</td>
+            <td class="num ${accNetClass}">${accNet}</td>
             <td class="num ${acc.pfb>0?'highlight-fb':''}">${acc.pfb}</td>
             <td class="num">${acc.ops}</td>
             <td class="num">${acc.poc}</td>
@@ -1306,10 +1310,15 @@ function processAggregatedData(rows, startDate, endDate, mode) {
       }
     });
 
+    const teamNet = totalOffers - totalWD;
+    const teamNetClass = teamNet < 0 ? 'highlight-net-neg' : 'highlight-net';
+
     html+=`<tr style="border-top:2px solid var(--fd-indigo);">
       <td></td>
       <td class="rec-name" style="color:var(--fd-indigo);">TEAM TOTALS</td>
       <td class="num highlight">${totalOffers}</td>
+      <td class="num highlight-wd">${totalWD}</td>
+      <td class="num ${teamNetClass}">${teamNet}</td>
       <td class="num highlight-fb">${totalPFB}</td>
       <td class="num" style="color:var(--fd-indigo);">${totalOPS}</td>
       <td class="num" style="color:var(--fd-indigo);">${totalPOC}</td>
@@ -1319,7 +1328,7 @@ function processAggregatedData(rows, startDate, endDate, mode) {
     tbody.innerHTML=html;
   }
 
-  generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, startDate, endDate, mode);
+  generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, startDate, endDate, mode);
 }
 
 // ═══════════════════════════════════════════════
@@ -1329,7 +1338,7 @@ function toggleExpand(rowId) {
   const btn = document.getElementById(`btn-${rowId}`);
   if (!btn || !btn.textContent.trim()) return;
   const details = document.querySelectorAll(`tr[data-parent="${rowId}"]`);
-  const isOpen  = btn.classList.contains('open');
+  const isOpen = btn.classList.contains('open');
   details.forEach(r => r.classList.toggle('show', !isOpen));
   btn.classList.toggle('open', !isOpen);
   btn.textContent = isOpen ? '▶' : '▼';
@@ -1338,24 +1347,38 @@ function toggleExpand(rowId) {
 // ═══════════════════════════════════════════════
 // SHARED HELPERS
 // ═══════════════════════════════════════════════
-function updateSummaryCards(submitted, noupdate, offers, pfb, ops, poc, hr, topNames, maxOffers) {
-  document.getElementById('s-submitted').textContent=submitted;
-  document.getElementById('s-noupdate').textContent=noupdate;
-  document.getElementById('s-offers').textContent=offers;
-  document.getElementById('s-pendingfb').textContent=pfb;
-  document.getElementById('s-ops').textContent=ops;
-  document.getElementById('s-poc').textContent=poc;
-  document.getElementById('s-hr').textContent=hr;
-  document.getElementById('s-top').textContent=
-    topNames.length?topNames.join(' · ')+(maxOffers>0?` (${maxOffers})`:''):'—';
+function updateSummaryCards(submitted, noupdate, offers, pfb, ops, poc, hr, wd, net, topNames, topVal) {
+  document.getElementById('s-submitted').textContent = submitted;
+  document.getElementById('s-noupdate').textContent = noupdate;
+  document.getElementById('s-offers').textContent = offers;
+  document.getElementById('s-pendingfb').textContent = pfb;
+  document.getElementById('s-ops').textContent = ops;
+  document.getElementById('s-poc').textContent = poc;
+  document.getElementById('s-hr').textContent = hr;
+  document.getElementById('s-withdrawals').textContent = wd;
+
+  // Net card — only shown in weekly/monthly
+  const netEl = document.getElementById('s-net');
+  if (net !== null && net !== undefined) {
+    netEl.textContent = net;
+    netEl.className = net < 0 ? 'c-value negative' : 'c-value';
+  }
+
+  // Top contributor
+  const topEl = document.getElementById('s-top');
+  if (topNames.length) {
+    const suffix = topVal > 0 ? ` (${topVal})` : '';
+    topEl.textContent = topNames.join(' · ') + suffix;
+  } else {
+    topEl.textContent = '—';
+  }
 }
 
-// ✅ CHANGED: Added recruiter tooltip to each account chip
 function updateAccountBreakdown(accountMap) {
   const grid = document.getElementById('breakdownGrid');
-  
-  const entries = Object.values(accountMap).filter(a => 
-    (a.offer + a.pfb + a.ops + a.poc + a.hr) > 0
+
+  const entries = Object.values(accountMap).filter(a =>
+    (a.offer + a.pfb + a.ops + a.poc + a.hr + a.wd) > 0
   );
 
   if (entries.length === 0) {
@@ -1406,9 +1429,12 @@ function updateAccountBreakdown(accountMap) {
       const offerClass = a.offer > 0 ? '' : 'zero';
       const offerLabel = `${a.offer} Offer${a.offer !== 1 ? 's' : ''}`;
 
+      // Withdrawal badge — only show if > 0
+      const wdBadge = a.wd > 0 ? `<span class="acc-withdraw-badge">❌ ${a.wd} WD</span>` : '';
+
       const escapedUpdate = updateText.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
 
-      // ✅ NEW: Build recruiter tooltip HTML
+      // Build recruiter tooltip HTML — includes withdrawals
       let tooltipHTML = '';
       if (a.recruiters && Object.keys(a.recruiters).length > 0) {
         tooltipHTML = `<div class="chip-tooltip"><div class="chip-tooltip-inner"><div class="tooltip-title">👥 Recruiter Breakdown</div>`;
@@ -1417,6 +1443,7 @@ function updateAccountBreakdown(accountMap) {
           const r = a.recruiters[recName];
           const metricParts = [];
           if (r.offers) metricParts.push(`${r.offers} Offer${r.offers > 1 ? 's' : ''}`);
+          if (r.wd) metricParts.push(`<span class="wd-metric">❌ ${r.wd} WD</span>`);
           if (r.pfb) metricParts.push(`${r.pfb} PFB`);
           if (r.ops) metricParts.push(`${r.ops} OPS`);
           if (r.poc) metricParts.push(`${r.poc} POC`);
@@ -1430,13 +1457,13 @@ function updateAccountBreakdown(accountMap) {
         });
         tooltipHTML += `</div></div>`;
       }
-      // ✅ END: Tooltip HTML
 
       html += `<div class="acc-chip-copy" onclick="copyChipUpdate(this, '${escapedUpdate}')" title="Click to copy hiring update">
         <span class="acc-name">${a.display}</span>
         ${langTag ? `<span class="acc-lang">${langTag}</span>` : ''}
         <span class="acc-updates">${displayText}</span>
         <span class="acc-offers-badge ${offerClass}">${offerLabel}</span>
+        ${wdBadge}
         <span class="copy-icon">📋</span>
         <span class="chip-copied">✅ Copied!</span>
         ${tooltipHTML}
@@ -1451,7 +1478,6 @@ function updateAccountBreakdown(accountMap) {
 
 function copyChipUpdate(chipEl, text) {
   if (!text) return;
-
   navigator.clipboard.writeText(text).then(() => {
     const badge = chipEl.querySelector('.chip-copied');
     badge.classList.add('flash');
@@ -1460,36 +1486,42 @@ function copyChipUpdate(chipEl, text) {
 }
 
 // ═══════════════════════════════════════════════
-// AGGREGATED EXPORT
+// AGGREGATED EXPORT — includes Withdrawals + Net
 // ═══════════════════════════════════════════════
-function generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, startDate, endDate, mode) {
+function generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, startDate, endDate, mode) {
   const d1 = new Date(startDate+'T00:00:00');
   const d2 = new Date(endDate+'T00:00:00');
 
-  const label = mode === 'weekly'
+  const labelText = mode === 'weekly'
     ? `Week ${getWeekNumber(d1)} · ${formatShort(d1)} – ${formatShort(d2)}, ${d1.getFullYear()}`
     : d1.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
 
-  let copyData = `Recruiter\tOffers\tPending FB\tOPS\tPOC\tHR\n`;
+  const totalNet = totalOffers - totalWD;
+
+  // Tab-separated for Excel
+  let copyData = `Recruiter\tOffers\tWithdrawals\tNet Offers\tPending FB\tOPS\tPOC\tHR\n`;
   allNames.forEach(name => {
     const r = recruiterAgg[name];
-    copyData += `${name}\t${r.offers}\t${r.pfb}\t${r.ops}\t${r.poc}\t${r.hr}\n`;
+    const net = r.offers - r.wd;
+    copyData += `${name}\t${r.offers}\t${r.wd}\t${net}\t${r.pfb}\t${r.ops}\t${r.poc}\t${r.hr}\n`;
   });
-  copyData += `TEAM TOTALS\t${totalOffers}\t${totalPFB}\t${totalOPS}\t${totalPOC}\t${totalHR}\n`;
+  copyData += `TEAM TOTALS\t${totalOffers}\t${totalWD}\t${totalNet}\t${totalPFB}\t${totalOPS}\t${totalPOC}\t${totalHR}\n`;
 
-  const sep = '─'.repeat(40);
-  let preview = `📊 ${mode === 'weekly' ? 'Weekly' : 'Monthly'} Summary — ${label}\n`;
+  // Preview
+  const sep = '─'.repeat(50);
+  let preview = `📊 ${mode === 'weekly' ? 'Weekly' : 'Monthly'} Summary — ${labelText}\n`;
   preview += `📋 Morning updates only\n${sep}\n\n`;
-  preview += `${'Recruiter'.padEnd(24)}Offers  PFB    OPS    POC    HR\n`;
-  preview += `${'─'.repeat(24)}${'─'.repeat(38)}\n`;
+  preview += `${'Recruiter'.padEnd(24)}${'Offers'.padEnd(8)}${'WD'.padEnd(6)}${'Net'.padEnd(7)}${'PFB'.padEnd(7)}${'OPS'.padEnd(7)}${'POC'.padEnd(7)}HR\n`;
+  preview += `${'─'.repeat(24)}${'─'.repeat(48)}\n`;
 
   allNames.forEach(name => {
     const r = recruiterAgg[name];
-    preview += `${name.padEnd(24)}${String(r.offers).padEnd(8)}${String(r.pfb).padEnd(7)}${String(r.ops).padEnd(7)}${String(r.poc).padEnd(7)}${r.hr}\n`;
+    const net = r.offers - r.wd;
+    preview += `${name.padEnd(24)}${String(r.offers).padEnd(8)}${String(r.wd).padEnd(6)}${String(net).padEnd(7)}${String(r.pfb).padEnd(7)}${String(r.ops).padEnd(7)}${String(r.poc).padEnd(7)}${r.hr}\n`;
   });
 
-  preview += `${'─'.repeat(62)}\n`;
-  preview += `${'TEAM TOTALS'.padEnd(24)}${String(totalOffers).padEnd(8)}${String(totalPFB).padEnd(7)}${String(totalOPS).padEnd(7)}${String(totalPOC).padEnd(7)}${totalHR}\n`;
+  preview += `${'─'.repeat(72)}\n`;
+  preview += `${'TEAM TOTALS'.padEnd(24)}${String(totalOffers).padEnd(8)}${String(totalWD).padEnd(6)}${String(totalNet).padEnd(7)}${String(totalPFB).padEnd(7)}${String(totalOPS).padEnd(7)}${String(totalPOC).padEnd(7)}${totalHR}\n`;
 
   document.getElementById('aggExportBox').textContent = preview;
   document.getElementById('aggExportBox').dataset.copyData = copyData;
@@ -1502,9 +1534,9 @@ function copyAggExport() {
 }
 
 // ═══════════════════════════════════════════════
-// TEAMS POST (daily only)
+// TEAMS POST (daily only) — includes Withdrawals
 // ═══════════════════════════════════════════════
-function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, topNames, maxOffers, dateStr) {
+function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, topNames, maxOffers, dateStr) {
   const d=new Date(dateStr+'T00:00:00');
   const readableDate=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const sep='─'.repeat(42);
@@ -1520,15 +1552,18 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
       const langSuffix = e.language && e.language !== 'English' ? ` [${e.language}]` : '';
       const label=e.startDate?`${e.account}${langSuffix} (${formatStartDate(e.startDate)})`:`${e.account}${langSuffix}`;
       const key=`${e.account.toLowerCase()}_${e.language?.toLowerCase()||'english'}_${e.startDate||''}`;
-      if(!accGroup[key])accGroup[key]={display:label,offer:0,pfb:0,ops:0,poc:0,hr:0,comments:[]};
+      if(!accGroup[key])accGroup[key]={display:label,offer:0,pfb:0,ops:0,poc:0,hr:0,wd:0,comments:[]};
       accGroup[key].offer+=e.offers;accGroup[key].pfb+=e.pendingfb;
       accGroup[key].ops+=e.ops;accGroup[key].poc+=e.poc;accGroup[key].hr+=e.hr;
+      accGroup[key].wd+=e.withdrawals;
       if(e.comment)accGroup[key].comments.push(e.comment);
     });
     const parts=[];
     Object.values(accGroup).forEach(a=>{
       const sp=[];
-      if(a.offer)sp.push(`${a.offer} Offer`);if(a.pfb)sp.push(`${a.pfb} Pending Feedback`);
+      if(a.offer)sp.push(`${a.offer} Offer`);
+      if(a.wd)sp.push(`${a.wd} Withdrawal`);
+      if(a.pfb)sp.push(`${a.pfb} Pending Feedback`);
       if(a.ops)sp.push(`${a.ops} OPS`);if(a.poc)sp.push(`${a.poc} POC`);if(a.hr)sp.push(`${a.hr} HR`);
       if(sp.length===0)return;
       let line=`${a.display}: ${sp.join(' · ')}`;
@@ -1542,7 +1577,9 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
   post+=`\n📊 BY ACCOUNT\n`;
   Object.values(accountMap).forEach(a=>{
     const parts=[];
-    if(a.offer)parts.push(`${a.offer} Offer`);if(a.pfb)parts.push(`${a.pfb} Pending Feedback`);
+    if(a.offer)parts.push(`${a.offer} Offer`);
+    if(a.wd)parts.push(`${a.wd} Withdrawal`);
+    if(a.pfb)parts.push(`${a.pfb} Pending Feedback`);
     if(a.ops)parts.push(`${a.ops} OPS`);if(a.poc)parts.push(`${a.poc} POC`);if(a.hr)parts.push(`${a.hr} HR`);
     const langSuffix = a.language && a.language !== 'English' ? ` [${a.language}]` : '';
     if(parts.length)post+=`  ${a.display}${langSuffix}: ${parts.join(' · ')}\n`;
@@ -1550,6 +1587,7 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
 
   post+=`\n📈 TOTALS\n`;
   if(totalOffers)post+=`  Offers              : ${totalOffers}\n`;
+  if(totalWD)post+=`  Withdrawals         : ${totalWD}\n`;
   if(totalPFB)post+=`  Pending Feedback    : ${totalPFB}\n`;
   if(totalOPS)post+=`  OPS                 : ${totalOPS}\n`;
   if(totalPOC)post+=`  POC                 : ${totalPOC}\n`;
@@ -1579,10 +1617,6 @@ function flashCopy(id) {
   setTimeout(()=>el.style.opacity='0',2500);
 }
 
-
-// ═══════════════════════════════════════════════
-// TOOLTIP: JS-controlled hover with delay
-// ═══════════════════════════════════════════════
 // ═══════════════════════════════════════════════
 // TOOLTIP: JS-controlled hover with delay
 // ═══════════════════════════════════════════════
@@ -1593,14 +1627,8 @@ function flashCopy(id) {
   function showTooltip(chip) {
     const tooltip = chip.querySelector('.chip-tooltip');
     if (!tooltip) return;
-
     clearTimeout(hideTimeout);
-
-    // Hide any other visible tooltip
-    if (activeTooltip && activeTooltip !== tooltip) {
-      activeTooltip.classList.remove('visible');
-    }
-
+    if (activeTooltip && activeTooltip !== tooltip) activeTooltip.classList.remove('visible');
     tooltip.classList.add('visible');
     activeTooltip = tooltip;
   }
@@ -1615,65 +1643,34 @@ function flashCopy(id) {
     }, 200);
   }
 
-  function cancelHide() {
-    clearTimeout(hideTimeout);
-  }
+  function cancelHide() { clearTimeout(hideTimeout); }
 
-  // Mouse enters the chip
   document.addEventListener('mouseenter', function(e) {
     const chip = e.target.closest('.acc-chip-copy');
-    if (chip) {
-      showTooltip(chip);
-      return;
-    }
-
-    // Mouse enters the tooltip or its inner scrollable area
+    if (chip) { showTooltip(chip); return; }
     const tooltip = e.target.closest('.chip-tooltip');
-    if (tooltip) {
-      cancelHide();
-    }
+    if (tooltip) cancelHide();
   }, true);
 
-  // Mouse leaves the chip
   document.addEventListener('mouseleave', function(e) {
     const chip = e.target.closest('.acc-chip-copy');
     if (chip) {
       const related = e.relatedTarget;
       const tooltip = chip.querySelector('.chip-tooltip');
-
-      // Don't hide if cursor moved into the tooltip
-      if (related && tooltip && (related === tooltip || tooltip.contains(related))) {
-        cancelHide();
-        return;
-      }
-
+      if (related && tooltip && (related === tooltip || tooltip.contains(related))) { cancelHide(); return; }
       scheduleHide(chip);
       return;
     }
-
-    // Mouse leaves the tooltip
     const tooltip = e.target.closest('.chip-tooltip');
     if (tooltip) {
-      const chip = tooltip.closest('.acc-chip-copy');
+      const parentChip = tooltip.closest('.acc-chip-copy');
       const related = e.relatedTarget;
-
-      // Don't hide if cursor went back to chip
-      if (related && chip && chip.contains(related)) {
-        cancelHide();
-        return;
-      }
-
-      // Don't hide if cursor is still inside tooltip children
-      if (related && tooltip.contains(related)) {
-        cancelHide();
-        return;
-      }
-
-      if (chip) scheduleHide(chip);
+      if (related && parentChip && parentChip.contains(related)) { cancelHide(); return; }
+      if (related && tooltip.contains(related)) { cancelHide(); return; }
+      if (parentChip) scheduleHide(parentChip);
     }
   }, true);
 })();
-
 
 </script>
 </body>
