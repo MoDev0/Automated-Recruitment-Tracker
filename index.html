@@ -208,7 +208,6 @@
 
   .recruiter-select:focus, .acc-select:focus { border-color: var(--fd-indigo); }
 
-  /* Language select styling */
   .lang-select {
     background: var(--fd-white);
     border: 1px solid var(--fd-border);
@@ -411,6 +410,35 @@
   .stage-input::-webkit-inner-spin-button,
   .stage-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
+  /* ── Withdrawal input styling ── */
+  .stage-item.withdrawal-item .stage-label {
+    color: var(--fd-coral);
+  }
+
+  .stage-item.withdrawal-item .stage-input {
+    background: rgba(255,141,150,0.08);
+    border-color: rgba(255,141,150,0.3);
+  }
+
+  .stage-item.withdrawal-item .stage-input:focus {
+    border-color: var(--fd-coral);
+    background: rgba(255,141,150,0.15);
+  }
+
+  body.dark-mode .stage-item.withdrawal-item .stage-input {
+    background: rgba(255,141,150,0.1);
+    border-color: rgba(255,141,150,0.25);
+  }
+
+  body.dark-mode .stage-item.withdrawal-item .stage-input:focus {
+    background: rgba(255,141,150,0.2);
+    border-color: var(--fd-coral);
+  }
+
+  body.dark-mode .stage-item.withdrawal-item .stage-label {
+    color: var(--fd-coral);
+  }
+
   .comment-input {
     width: 100%;
     background: transparent;
@@ -427,7 +455,6 @@
   .comment-input::placeholder { color: #ccc; }
   .comment-input:focus { border-bottom-color: rgba(75,75,249,0.5); color: var(--fd-midnight); }
 
-  /* ── ADD ACCOUNT BUTTON ── */
   .add-acc-btn {
     width: 100%;
     background: rgba(75,75,249,0.04);
@@ -448,7 +475,6 @@
     border-color: var(--fd-indigo);
   }
 
-  /* ── SUBMIT ── */
   .submit-btn {
     width: 100%;
     background: var(--fd-indigo);
@@ -479,7 +505,6 @@
   .status-msg.error   { color: #d4545e; }
   .status-msg.sending { color: var(--fd-indigo); }
 
-  /* ── SUCCESS CARD ── */
   .success-card {
     display: none;
     background: var(--fd-white);
@@ -520,7 +545,6 @@
     font-family: 'Segoe UI', sans-serif;
   }
 
-  /* Override notice styling */
   .override-notice {
     display: inline-block;
     background: #fffce6;
@@ -555,7 +579,6 @@
     .stage-input { width: 40px; padding: 5px 2px; }
   }
 
-  /* ✅ Theme Toggle Button */
   .theme-toggle {
     position: fixed;
     top: 16px;
@@ -585,11 +608,9 @@
     transition: transform 0.3s;
   }
 
-  .theme-toggle:hover .theme-toggle-icon {
-    transform: rotate(20deg);
-  }
+  .theme-toggle:hover .theme-toggle-icon { transform: rotate(20deg); }
 
-  /* ✅ Dark Mode — All Overrides */
+  /* ── Dark Mode ── */
   body.dark-mode {
     --fd-card: #0f0f35;
     --fd-card2: #13133d;
@@ -599,139 +620,56 @@
   }
 
   body.dark-mode .header .sub { color: var(--fd-lavender); }
-
-  body.dark-mode .ut-title,
-  body.dark-mode .form-label { color: var(--fd-lavender); }
-
+  body.dark-mode .ut-title, body.dark-mode .form-label { color: var(--fd-lavender); }
   body.dark-mode .ut-label { color: var(--fd-white); }
   body.dark-mode .ut-desc { color: var(--fd-lavender); }
   body.dark-mode .ut-lock-icon { color: var(--fd-lavender); }
   body.dark-mode .ut-lock-hint { color: rgba(255,255,255,0.25); }
   body.dark-mode .ut-date-display { color: var(--fd-mint); }
   body.dark-mode .ut-date-display .night-note { color: var(--fd-lavender); }
-
   body.dark-mode .ut-option.active { background: rgba(75,75,249,0.08); }
-
-  body.dark-mode .warning-banner {
-    background: rgba(255,141,150,0.08);
-    color: var(--fd-coral);
-  }
-
-  body.dark-mode .recruiter-select,
-  body.dark-mode .acc-select {
-    background: #13133d;
-    color: var(--fd-white);
-  }
-
-  body.dark-mode .recruiter-select option,
-  body.dark-mode .acc-select option {
-    background: #0f0f35;
-    color: var(--fd-white);
-  }
-
-  body.dark-mode .lang-select {
-    background: rgba(75,75,249,0.1);
-    color: var(--fd-white);
-  }
-
-  body.dark-mode .lang-select option {
-    background: #0f0f35;
-    color: var(--fd-white);
-  }
-
-  body.dark-mode .lang-custom-input {
-    background: rgba(75,75,249,0.1);
-    color: var(--fd-white);
-  }
-
+  body.dark-mode .warning-banner { background: rgba(255,141,150,0.08); color: var(--fd-coral); }
+  body.dark-mode .recruiter-select, body.dark-mode .acc-select { background: #13133d; color: var(--fd-white); }
+  body.dark-mode .recruiter-select option, body.dark-mode .acc-select option { background: #0f0f35; color: var(--fd-white); }
+  body.dark-mode .lang-select { background: rgba(75,75,249,0.1); color: var(--fd-white); }
+  body.dark-mode .lang-select option { background: #0f0f35; color: var(--fd-white); }
+  body.dark-mode .lang-custom-input { background: rgba(75,75,249,0.1); color: var(--fd-white); }
   body.dark-mode .lang-custom-input::placeholder { color: rgba(255,255,255,0.3); }
   body.dark-mode .lang-label { color: var(--fd-lavender); }
   body.dark-mode .start-date-label { color: var(--fd-lavender); }
-
-  body.dark-mode .start-date-input {
-    background: rgba(75,75,249,0.1);
-    color: var(--fd-white);
-  }
-
+  body.dark-mode .start-date-input { background: rgba(75,75,249,0.1); color: var(--fd-white); }
   body.dark-mode .start-date-input.error-input { background: rgba(255,141,150,0.1); }
-
-  body.dark-mode .no-update-wrap {
-    background: rgba(255,141,150,0.08);
-    border-color: rgba(255,141,150,0.2);
-  }
-
+  body.dark-mode .no-update-wrap { background: rgba(255,141,150,0.08); border-color: rgba(255,141,150,0.2); }
   body.dark-mode .no-update-wrap label { color: var(--fd-coral); }
-
   body.dark-mode .account-block { background: #13133d; }
-
   body.dark-mode .acc-custom-input { color: var(--fd-white); }
   body.dark-mode .acc-custom-input::placeholder { color: rgba(255,255,255,0.3); }
-
   body.dark-mode .stage-label { color: var(--fd-lavender); }
-
-  body.dark-mode .stage-input {
-    background: rgba(75,75,249,0.1);
-    color: var(--fd-white);
-  }
-
+  body.dark-mode .stage-input { background: rgba(75,75,249,0.1); color: var(--fd-white); }
   body.dark-mode .stage-input:focus { background: rgba(75,75,249,0.2); }
-
   body.dark-mode .comment-input { color: rgba(255,255,255,0.7); }
   body.dark-mode .comment-input::placeholder { color: rgba(255,255,255,0.2); }
   body.dark-mode .comment-input:focus { color: var(--fd-white); }
-
   body.dark-mode .inline-error { color: var(--fd-coral); }
-
-  body.dark-mode .add-acc-btn {
-    background: rgba(75,75,249,0.08);
-    color: var(--fd-lavender);
-  }
-
-  body.dark-mode .add-acc-btn:hover {
-    background: rgba(75,75,249,0.15);
-    border-color: var(--fd-lavender);
-  }
-
-  body.dark-mode .submit-btn {
-    background: var(--fd-mint);
-    color: var(--fd-midnight);
-  }
-
+  body.dark-mode .add-acc-btn { background: rgba(75,75,249,0.08); color: var(--fd-lavender); }
+  body.dark-mode .add-acc-btn:hover { background: rgba(75,75,249,0.15); border-color: var(--fd-lavender); }
+  body.dark-mode .submit-btn { background: var(--fd-mint); color: var(--fd-midnight); }
   body.dark-mode .status-msg.error { color: var(--fd-coral); }
   body.dark-mode .status-msg.sending { color: var(--fd-lavender); }
-
-  body.dark-mode .success-card {
-    background: #0f0f35;
-    border-color: var(--fd-mint);
-    box-shadow: none;
-  }
-
+  body.dark-mode .success-card { background: #0f0f35; border-color: var(--fd-mint); box-shadow: none; }
   body.dark-mode .success-card h2 { color: var(--fd-mint); }
   body.dark-mode .success-card .motivational { color: var(--fd-lavender); }
-
-  body.dark-mode .success-card .summary {
-    color: rgba(255,255,255,0.6);
-    background: rgba(75,75,249,0.06);
-  }
-
-  body.dark-mode .override-notice {
-    background: rgba(249,239,119,0.1);
-    border-color: rgba(249,239,119,0.3);
-    color: var(--fd-lemon);
-  }
-
+  body.dark-mode .success-card .summary { color: rgba(255,255,255,0.6); background: rgba(75,75,249,0.06); }
+  body.dark-mode .override-notice { background: rgba(249,239,119,0.1); border-color: rgba(249,239,119,0.3); color: var(--fd-lemon); }
   body.dark-mode .remove-acc-btn:hover { background: rgba(255,141,150,0.15); }
-
   body.dark-mode footer { color: rgba(255,255,255,0.2); }
-
-  body.dark-mode .theme-toggle {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  }
-
+  body.dark-mode .theme-toggle { box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
   body.dark-mode ::-webkit-scrollbar-track { background: transparent; }
 
-  /* ✅ NEW: Monday Confirmation Modal */
-  .monday-modal-overlay {
+  /* ══════════════════════════════════════════════ */
+  /* SHARED MODAL STYLES                           */
+  /* ══════════════════════════════════════════════ */
+  .modal-overlay {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -744,20 +682,20 @@
     -webkit-backdrop-filter: blur(4px);
   }
 
-  .monday-modal-overlay.show {
-    display: flex;
-  }
+  .modal-overlay.show { display: flex; }
 
-  .monday-modal {
+  .modal-box {
     background: var(--fd-white);
-    border: 2px solid var(--fd-coral);
     border-radius: 16px;
     padding: 32px 28px;
-    max-width: 440px;
+    max-width: 480px;
     width: 100%;
     text-align: center;
     box-shadow: 0 8px 40px rgba(9,9,45,0.25);
     animation: modalPop 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
   }
 
   @keyframes modalPop {
@@ -765,12 +703,9 @@
     100% { transform: scale(1); opacity: 1; }
   }
 
-  .monday-modal-icon {
-    font-size: 2.5rem;
-    margin-bottom: 16px;
-  }
+  .modal-icon { font-size: 2.5rem; margin-bottom: 16px; }
 
-  .monday-modal-text {
+  .modal-rtl-text {
     direction: rtl;
     text-align: center;
     font-size: 1rem;
@@ -780,7 +715,7 @@
     margin-bottom: 16px;
   }
 
-  .monday-modal-accounts {
+  .modal-rtl-sub {
     direction: rtl;
     text-align: center;
     font-size: 0.88rem;
@@ -790,7 +725,7 @@
     line-height: 1.6;
   }
 
-  .monday-modal-warning {
+  .modal-rtl-warning {
     direction: rtl;
     text-align: center;
     font-size: 0.85rem;
@@ -799,14 +734,30 @@
     margin-bottom: 24px;
   }
 
-  .monday-modal-buttons {
+  .modal-summary-box {
+    direction: ltr;
+    text-align: left;
+    background: var(--fd-light-grey);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 0.8rem;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  .modal-summary-box strong {
+    color: var(--fd-indigo);
+  }
+
+  .modal-buttons {
     display: flex;
     gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
   }
 
-  .monday-btn-yes {
+  .modal-btn-confirm {
     background: var(--fd-mint);
     color: var(--fd-midnight);
     border: none;
@@ -819,10 +770,10 @@
     transition: opacity 0.2s, transform 0.1s;
   }
 
-  .monday-btn-yes:hover { opacity: 0.85; }
-  .monday-btn-yes:active { transform: scale(0.96); }
+  .modal-btn-confirm:hover { opacity: 0.85; }
+  .modal-btn-confirm:active { transform: scale(0.96); }
 
-  .monday-btn-no {
+  .modal-btn-cancel {
     background: transparent;
     color: var(--fd-coral);
     border: 2px solid var(--fd-coral);
@@ -835,45 +786,167 @@
     transition: background 0.2s, transform 0.1s;
   }
 
-  .monday-btn-no:hover { background: rgba(255,141,150,0.08); }
-  .monday-btn-no:active { transform: scale(0.96); }
+  .modal-btn-cancel:hover { background: rgba(255,141,150,0.08); }
+  .modal-btn-cancel:active { transform: scale(0.96); }
 
-  /* Dark mode modal overrides */
-  body.dark-mode .monday-modal {
-    background: #0f0f35;
-    border-color: var(--fd-coral);
+  /* ── Monday & Final Confirm modal borders ── */
+  #mondayModal .modal-box {
+    border: 2px solid var(--fd-coral);
   }
 
-  body.dark-mode .monday-modal-text { color: var(--fd-white); }
-  body.dark-mode .monday-modal-accounts { color: var(--fd-lavender); }
-  body.dark-mode .monday-modal-warning { color: var(--fd-coral); }
+  #finalConfirmModal .modal-box {
+    border: 2px solid var(--fd-indigo);
+  }
 
-  body.dark-mode .monday-btn-no {
+  /* ══════════════════════════════════════════════ */
+  /* MIDDAY WARNING MODAL — Lemon theme            */
+  /* ══════════════════════════════════════════════ */
+  #middayWarningModal .modal-box {
+    border: 2px solid var(--fd-lemon);
+    background: #fffef5;
+  }
+
+  .midday-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--fd-coral);
+    background: transparent;
+    color: var(--fd-coral);
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.1s;
+    line-height: 1;
+  }
+
+  .midday-modal-close:hover {
+    background: rgba(255,141,150,0.12);
+  }
+
+  .midday-modal-close:active {
+    transform: scale(0.92);
+  }
+
+  .midday-modal-text {
+    direction: rtl;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #8a7a00;
+    line-height: 1.9;
+    margin-bottom: 24px;
+  }
+
+  .midday-modal-btn {
+    background: var(--fd-lemon);
+    color: var(--fd-midnight);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .midday-modal-btn:hover { opacity: 0.85; }
+  .midday-modal-btn:active { transform: scale(0.96); }
+
+  /* Dark mode — shared modals */
+  body.dark-mode .modal-box { background: #0f0f35; }
+  body.dark-mode .modal-rtl-text { color: var(--fd-white); }
+  body.dark-mode .modal-rtl-sub { color: var(--fd-lavender); }
+  body.dark-mode .modal-rtl-warning { color: var(--fd-coral); }
+  body.dark-mode .modal-summary-box { background: rgba(75,75,249,0.08); color: rgba(255,255,255,0.7); }
+  body.dark-mode .modal-summary-box strong { color: var(--fd-lavender); }
+  body.dark-mode .modal-btn-cancel { color: var(--fd-coral); border-color: var(--fd-coral); }
+  body.dark-mode .modal-btn-cancel:hover { background: rgba(255,141,150,0.12); }
+
+  /* Dark mode — Midday warning modal */
+  body.dark-mode #middayWarningModal .modal-box {
+    background: #0f0f35;
+    border-color: rgba(249,239,119,0.4);
+  }
+
+  body.dark-mode .midday-modal-text {
+    color: var(--fd-lemon);
+  }
+
+  body.dark-mode .midday-modal-close {
     color: var(--fd-coral);
     border-color: var(--fd-coral);
   }
 
-  body.dark-mode .monday-btn-no:hover { background: rgba(255,141,150,0.12); }
-  /* ✅ END: Monday Modal Styles */
-  </style>
+  body.dark-mode .midday-modal-close:hover {
+    background: rgba(255,141,150,0.15);
+  }
+</style>
 </head>
 <body>
 
-<!-- ✅ Dark Mode Toggle Button -->
 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
   <span class="theme-toggle-icon">🌙</span>
 </button>
 
-<!-- ✅ NEW: Monday Confirmation Modal -->
-<div class="monday-modal-overlay" id="mondayModal">
-  <div class="monday-modal">
-    <div class="monday-modal-icon">⚠️</div>
-    <div class="monday-modal-text" id="mondayModalText"></div>
-    <div class="monday-modal-accounts" id="mondayModalAccounts"></div>
-    <div class="monday-modal-warning">لو بتهبد انا عارفك وهجيبك 😤</div>
-    <div class="monday-modal-buttons">
-      <button class="monday-btn-yes" onclick="confirmMondaySubmit()">آه متأكد ✅</button>
-      <button class="monday-btn-no" onclick="cancelMondaySubmit()">آسف بالغلط 🙏</button>
+<!-- ══════════════════════════════════════════ -->
+<!-- MODAL 1: Monday Confirmation              -->
+<!-- ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="mondayModal">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-rtl-text" id="mondayModalText"></div>
+    <div class="modal-rtl-sub" id="mondayModalAccounts"></div>
+    <div class="modal-rtl-warning">لو بتهبد انا عارفك وهجيبك 😤</div>
+    <div class="modal-buttons">
+      <button class="modal-btn-confirm" onclick="confirmMondaySubmit()">آه متأكد ✅</button>
+      <button class="modal-btn-cancel" onclick="cancelMondaySubmit()">آسف بالغلط 🙏</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODAL 2: Final Confirmation (Morning)     -->
+<!-- ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="finalConfirmModal">
+  <div class="modal-box">
+    <div class="modal-icon">🤔</div>
+    <div class="modal-rtl-text" id="finalConfirmText"></div>
+    <div class="modal-rtl-sub" id="finalConfirmWithdrawNote"></div>
+    <div class="modal-summary-box" id="finalConfirmSummary"></div>
+    <div class="modal-rtl-warning" id="finalConfirmWarning"></div>
+    <div class="modal-buttons">
+      <button class="modal-btn-confirm" onclick="confirmFinalSubmit()">متأكد، ابعت ✅</button>
+      <button class="modal-btn-cancel" onclick="cancelFinalSubmit()">استني متبعتش 🔙</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODAL 3: Midday Warning (Lemon theme)     -->
+<!-- ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="middayWarningModal">
+  <div class="modal-box">
+    <button class="midday-modal-close" onclick="cancelMiddayWarning()" title="Go back">✕</button>
+    <div class="modal-icon">⚠️</div>
+    <div class="midday-modal-text">
+      ده <span dir="ltr" style="display:inline-block">Midday Update</span>
+      <br>
+      الـ <span dir="ltr" style="display:inline-block">Offers</span> والـ <span dir="ltr" style="display:inline-block">Withdrawals</span> اللي هنا
+      <br>
+      مش هيتحسبوا لو مرجعتش قولتهم تاني
+      <br>
+      في الـ <span dir="ltr" style="display:inline-block">Morning Briefing</span> بكرة
+    </div>
+    <div class="modal-buttons">
+      <button class="midday-modal-btn" onclick="confirmMiddayWarning()">Got it, Submit ✅</button>
     </div>
   </div>
 </div>
@@ -914,8 +987,8 @@
   </div>
 
   <div class="warning-banner" id="warningBanner">
-  ⚠️ Please note that (Offers / OPS) from yesterday's Updates call are discarded and you need to add them here again if they are still valid.
-</div>
+    ⚠️ Please note that (Offers / OPS) from yesterday's Updates call are discarded and you need to add them here again if they are still valid.
+  </div>
 
   <div class="ut-date-display" id="utDateDisplay"></div>
 </div>
@@ -975,42 +1048,32 @@ const LANGUAGES = ["English", "German", "Italian", "French", "Spanish", "Dutch"]
 
 let ACCOUNT_NAMES = [];
 
-// ✅ NEW: Pending submission data for Monday modal
+// Pending submission data for modals
 let pendingSubmitData = null;
 
 // ═══════════════════════════════════════════════
-// SMART FETCH: Timeout + Retry + Backoff
+// SMART FETCH
 // ═══════════════════════════════════════════════
 async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
   try {
     const response = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(timeout);
     return response;
   } catch (err) {
     clearTimeout(timeout);
-    if (err.name === 'AbortError') {
-      throw new Error('TIMEOUT');
-    }
+    if (err.name === 'AbortError') throw new Error('TIMEOUT');
     throw err;
   }
 }
 
 async function smartFetch(url, fetchOptions = {}, retryOpts = {}) {
-  const {
-    maxRetries = 3,
-    baseTimeout = 15000,
-    timeoutGrowth = 5000,
-    onRetry = null
-  } = retryOpts;
-
+  const { maxRetries = 3, baseTimeout = 15000, timeoutGrowth = 5000, onRetry = null } = retryOpts;
   let lastError = null;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     const timeout = baseTimeout + (attempt - 1) * timeoutGrowth;
-
     try {
       const response = await fetchWithTimeout(url, fetchOptions, timeout);
       const json = await response.json();
@@ -1019,28 +1082,21 @@ async function smartFetch(url, fetchOptions = {}, retryOpts = {}) {
       lastError = err;
       const isTimeout = err.message === 'TIMEOUT';
       const isNetwork = err.message?.includes('Failed to fetch') || err.name === 'TypeError';
-
       if (attempt < maxRetries && (isTimeout || isNetwork)) {
         const waitMs = attempt * 2000;
         if (onRetry) onRetry(attempt, maxRetries, waitMs, isTimeout ? 'timeout' : 'network');
         await new Promise(resolve => setTimeout(resolve, waitMs));
-      } else {
-        break;
-      }
+      } else { break; }
     }
   }
 
-  if (lastError?.message === 'TIMEOUT') {
-    throw new Error('Server is taking too long to respond. Please try again in a moment.');
-  } else if (lastError?.message?.includes('Failed to fetch') || lastError?.name === 'TypeError') {
-    throw new Error('Unable to reach the server. Please check your connection and try again.');
-  } else {
-    throw lastError || new Error('Unknown error occurred.');
-  }
+  if (lastError?.message === 'TIMEOUT') throw new Error('Server is taking too long to respond. Please try again in a moment.');
+  else if (lastError?.message?.includes('Failed to fetch') || lastError?.name === 'TypeError') throw new Error('Unable to reach the server. Please check your connection and try again.');
+  else throw lastError || new Error('Unknown error occurred.');
 }
 
 // ═══════════════════════════════════════════════
-// ROTATING SUCCESS MESSAGES
+// SUCCESS MESSAGES
 // ═══════════════════════════════════════════════
 const SUCCESS_MESSAGES = {
   noUpdate: [
@@ -1077,13 +1133,12 @@ function getSuccessMessage(recruiter, totalOffers, isNoUpdate) {
   else if (totalOffers === 1) pool = SUCCESS_MESSAGES.oneOffer;
   else if (totalOffers === 2) pool = SUCCESS_MESSAGES.twoOffers;
   else                        pool = SUCCESS_MESSAGES.threeOrMore;
-
   const msg = pool[Math.floor(Math.random() * pool.length)];
   return msg.replace(/{name}/g, recruiter).replace(/{count}/g, totalOffers);
 }
 
 // ═══════════════════════════════════════════════
-// TIME-BASED UPDATE TYPE
+// UPDATE TYPE
 // ═══════════════════════════════════════════════
 let currentUpdateType = 'Morning';
 let submissionDate    = '';
@@ -1091,13 +1146,12 @@ let submissionDate    = '';
 function initUpdateType() {
   const now  = new Date();
   const hour = now.getHours();
-
-  const morningOpt    = document.getElementById('utMorning');
-  const middayOpt     = document.getElementById('utMidday');
-  const morningLock   = document.getElementById('morningLock');
-  const morningHint   = document.getElementById('morningHint');
-  const middayLock    = document.getElementById('middayLock');
-  const middayHint    = document.getElementById('middayHint');
+  const morningOpt = document.getElementById('utMorning');
+  const middayOpt  = document.getElementById('utMidday');
+  const morningLock = document.getElementById('morningLock');
+  const morningHint = document.getElementById('morningHint');
+  const middayLock  = document.getElementById('middayLock');
+  const middayHint  = document.getElementById('middayHint');
   const warningBanner = document.getElementById('warningBanner');
   const morningTitle  = document.getElementById('morningTitle');
   const morningIcon   = document.getElementById('morningIcon');
@@ -1117,21 +1171,17 @@ function initUpdateType() {
     currentUpdateType = 'Morning';
     morningOpt.classList.add('active');
     document.getElementById('radioMorning').checked = true;
-
     middayOpt.classList.add('locked');
     middayLock.style.display = 'inline';
     middayHint.style.display = 'block';
     middayHint.textContent   = 'Opens at 1:00 PM';
     warningBanner.classList.add('show');
-
     morningIcon.textContent  = '☀️';
     morningTitle.textContent = 'Morning Briefing (Main Reference)';
-
   } else {
     currentUpdateType = 'Midday';
     middayOpt.classList.add('active');
     document.getElementById('radioMidday').checked = true;
-
     morningOpt.classList.add('locked');
     morningLock.style.display = 'inline';
     morningHint.style.display = 'block';
@@ -1145,7 +1195,6 @@ function initUpdateType() {
 function selectUpdateType(type) {
   const opt = document.getElementById(type === 'Morning' ? 'utMorning' : 'utMidday');
   if (opt.classList.contains('locked')) return;
-
   currentUpdateType = type;
   document.getElementById('utMorning').classList.toggle('active', type === 'Morning');
   document.getElementById('utMidday').classList.toggle('active', type === 'Midday');
@@ -1165,7 +1214,7 @@ function formatDateReadable(d) {
 }
 
 // ═══════════════════════════════════════════════
-// FEATURE 1: REMEMBER RECRUITER NAME
+// RECRUITER SELECT
 // ═══════════════════════════════════════════════
 const sel = document.getElementById('recruiterName');
 RECRUITER_NAMES.sort((a, b) => a.localeCompare(b)).forEach(name => {
@@ -1176,16 +1225,14 @@ RECRUITER_NAMES.sort((a, b) => a.localeCompare(b)).forEach(name => {
 });
 
 const savedRecruiter = localStorage.getItem('recruiterName');
-if (savedRecruiter && RECRUITER_NAMES.includes(savedRecruiter)) {
-  sel.value = savedRecruiter;
-}
+if (savedRecruiter && RECRUITER_NAMES.includes(savedRecruiter)) sel.value = savedRecruiter;
 
 sel.addEventListener('change', function() {
   if (this.value) localStorage.setItem('recruiterName', this.value);
 });
 
 // ═══════════════════════════════════════════════
-// FEATURE 3: PREVENT NEGATIVES + EMPTY DEFAULTS
+// PREVENT NEGATIVES
 // ═══════════════════════════════════════════════
 document.addEventListener('input', function(e) {
   if (e.target.classList.contains('stage-input')) {
@@ -1206,7 +1253,6 @@ document.addEventListener('focus', function(e) {
 initUpdateType();
 loadAccounts();
 
-// ✅ CHANGED: Uses smartFetch with retry
 async function loadAccounts() {
   const statusMsg = document.getElementById('statusMsg');
   try {
@@ -1214,16 +1260,8 @@ async function loadAccounts() {
       statusMsg.className   = 'status-msg sending';
       statusMsg.textContent = `⏳ ${reason === 'timeout' ? 'Server warming up' : 'Connection issue'} — Retry ${attempt}/${max - 1}...`;
     };
-
-    const json = await smartFetch(
-      `${API_URL}?action=accounts`,
-      {},
-      { maxRetries: 3, onRetry: retryHandler }
-    );
-
-    if (json.status === 'ok' && json.accounts) {
-      ACCOUNT_NAMES = json.accounts.sort((a, b) => a.localeCompare(b));
-    }
+    const json = await smartFetch(`${API_URL}?action=accounts`, {}, { maxRetries: 3, onRetry: retryHandler });
+    if (json.status === 'ok' && json.accounts) ACCOUNT_NAMES = json.accounts.sort((a, b) => a.localeCompare(b));
     statusMsg.textContent = '';
   } catch (err) {
     console.warn('Could not load accounts from API.', err);
@@ -1235,17 +1273,13 @@ async function loadAccounts() {
 
 function buildAccountOptions() {
   let html = '<option value="">— Select account —</option>';
-  ACCOUNT_NAMES.forEach(name => {
-    html += `<option value="${name}">${name}</option>`;
-  });
+  ACCOUNT_NAMES.forEach(name => { html += `<option value="${name}">${name}</option>`; });
   return html;
 }
 
 function buildLanguageOptions() {
   let html = '';
-  LANGUAGES.forEach(lang => {
-    html += `<option value="${lang}" ${lang === 'English' ? 'selected' : ''}>${lang}</option>`;
-  });
+  LANGUAGES.forEach(lang => { html += `<option value="${lang}" ${lang === 'English' ? 'selected' : ''}>${lang}</option>`; });
   html += '<option value="__other__">Other...</option>';
   return html;
 }
@@ -1253,23 +1287,14 @@ function buildLanguageOptions() {
 function handleLanguageSelect(selectEl) {
   const wrap = selectEl.closest('.lang-wrap');
   const customInput = wrap.querySelector('.lang-custom-input');
-
-  if (selectEl.value === '__other__') {
-    customInput.style.display = 'block';
-    customInput.focus();
-  } else {
-    customInput.style.display = 'none';
-    customInput.value = '';
-  }
+  if (selectEl.value === '__other__') { customInput.style.display = 'block'; customInput.focus(); }
+  else { customInput.style.display = 'none'; customInput.value = ''; }
 }
 
 function getLanguage(block) {
   const selectEl = block.querySelector('.lang-select');
   const customInput = block.querySelector('.lang-custom-input');
-  if (selectEl.value === '__other__') {
-    const custom = customInput.value.trim();
-    return custom || 'English';
-  }
+  if (selectEl.value === '__other__') { const custom = customInput.value.trim(); return custom || 'English'; }
   return selectEl.value;
 }
 
@@ -1281,9 +1306,7 @@ function addAccount() {
   div.innerHTML = `
     <div class="acc-top-row">
       <div class="acc-select-wrap">
-        <select class="acc-select">
-          ${buildAccountOptions()}
-        </select>
+        <select class="acc-select">${buildAccountOptions()}</select>
       </div>
       <button class="remove-acc-btn" onclick="removeAccount(this)" title="Remove">✕</button>
     </div>
@@ -1294,9 +1317,7 @@ function addAccount() {
       </div>
       <div class="lang-wrap">
         <span class="lang-label">Language</span>
-        <select class="lang-select" onchange="handleLanguageSelect(this)">
-          ${buildLanguageOptions()}
-        </select>
+        <select class="lang-select" onchange="handleLanguageSelect(this)">${buildLanguageOptions()}</select>
         <input class="lang-custom-input" type="text" placeholder="Type..." />
       </div>
     </div>
@@ -1307,10 +1328,18 @@ function addAccount() {
         <span class="stage-label">Offers</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
+
+       <div class="stage-item withdrawal-item">
+        <span class="stage-label"> Withdrawals</span>
+        <input class="stage-input withdrawal-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
+      </div>
+
       <div class="stage-item">
-        <span class="stage-label">Pending Feedback</span>
+        <span class="stage-label">Pending FB</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
+      
+     
       <div class="stage-item">
         <span class="stage-label">OPS</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
@@ -1323,6 +1352,7 @@ function addAccount() {
         <span class="stage-label">HR</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
+      
     </div>
     <input class="comment-input" type="text" placeholder="Optional comment..." />
   `;
@@ -1330,13 +1360,7 @@ function addAccount() {
   list.appendChild(div);
 }
 
-function handleAccountSelect(selectEl) {
-  // No custom option anymore — nothing to handle
-}
-
-function getAccountName(block) {
-  return block.querySelector('.acc-select').value;
-}
+function getAccountName(block) { return block.querySelector('.acc-select').value; }
 
 function removeAccount(btn) {
   const block = btn.closest('.account-block');
@@ -1351,31 +1375,22 @@ function toggleNoUpdate() {
   section.style.pointerEvents = checked ? 'none' : 'auto';
 }
 
-// ✅ CHANGED: Updated start date validation — allows today if Monday (with prompt)
 function isValidStartDate(dateStr) {
   if (!dateStr) return false;
   const d     = new Date(dateStr + 'T00:00:00');
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
   const day = d.getDay();
-
-  // Must be Monday only (day === 1)
   if (day !== 1) return false;
-
-  // Must be today or future (not past)
   if (d < today) return false;
-
   return true;
 }
 
-// ✅ NEW: Check if a start date is today AND today is Monday
 function isTodayMonday(dateStr) {
   if (!dateStr) return false;
   const d     = new Date(dateStr + 'T00:00:00');
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
   return d.getTime() === today.getTime() && today.getDay() === 1;
 }
 
@@ -1393,61 +1408,153 @@ function clearErrors() {
 }
 
 // ═══════════════════════════════════════════════
-// MONDAY MODAL LOGIC
+// MODAL 1: MONDAY CONFIRMATION
 // ═══════════════════════════════════════════════
-
-// ✅ NEW: Show the Monday confirmation modal
 function showMondayModal(recruiterName, accountNames, submitData) {
   pendingSubmitData = submitData;
 
   const modalText = document.getElementById('mondayModalText');
   const modalAccounts = document.getElementById('mondayModalAccounts');
 
-  // Build RTL text with LTR spans for English words
   modalText.innerHTML = `متأكد ان الـ <span dir="ltr" style="display:inline-block">Start Date</span> صح بتاريخ النهارده .. ولا بتهبد يا <span dir="ltr" style="display:inline-block">${recruiterName}</span>؟`;
 
-  // Build account list
   let accHTML = '';
-  accountNames.forEach(name => {
-    accHTML += `• <span dir="ltr" style="display:inline-block">${name}</span><br>`;
-  });
+  accountNames.forEach(name => { accHTML += `• <span dir="ltr" style="display:inline-block">${name}</span><br>`; });
   modalAccounts.innerHTML = accHTML;
 
   document.getElementById('mondayModal').classList.add('show');
 }
 
-// ✅ NEW: User confirmed — proceed with submission
 function confirmMondaySubmit() {
   document.getElementById('mondayModal').classList.remove('show');
+  if (pendingSubmitData) {
+    if (currentUpdateType === 'Midday') {
+      // Midday — check if needs midday warning, otherwise submit directly
+      proceedToMiddayOrSubmit(pendingSubmitData);
+    } else {
+      // Morning — show final confirmation
+      showFinalConfirmModal(pendingSubmitData);
+    }
+  }
+}
 
+function cancelMondaySubmit() {
+  document.getElementById('mondayModal').classList.remove('show');
+  document.getElementById('submitBtn').disabled = false;
+  if (pendingSubmitData && pendingSubmitData.mondayBlocks && pendingSubmitData.mondayBlocks.length > 0) {
+    const firstBlock = pendingSubmitData.mondayBlocks[0];
+    firstBlock.classList.add('error-block');
+    firstBlock.querySelector('.start-date-input').classList.add('error-input');
+    firstBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  pendingSubmitData = null;
+}
+
+// ═══════════════════════════════════════════════
+// MODAL 2: FINAL CONFIRMATION (Morning only)
+// ═══════════════════════════════════════════════
+function buildEntrySummaryHTML(entries) {
+  let html = '';
+  entries.forEach(e => {
+    if (e.account === '—') return;
+
+    const parts = [];
+    if (e.offers)       parts.push(`${e.offers} Offer${e.offers > 1 ? 's' : ''}`);
+    if (e.withdrawals)  parts.push(`${e.withdrawals} Withdrawal${e.withdrawals > 1 ? 's' : ''}`);
+    if (e.pendingfb)    parts.push(`${e.pendingfb} PFB`);
+    if (e.ops)          parts.push(`${e.ops} OPS`);
+    if (e.poc)          parts.push(`${e.poc} POC`);
+    if (e.hr)           parts.push(`${e.hr} HR`);
+
+    const langTag = e.language !== 'English' ? ` [${e.language}]` : '';
+    const numbersText = parts.length > 0 ? parts.join(' · ') : 'Comment only';
+
+    html += `<div style="margin-bottom:6px;">• <strong>${e.account}</strong>${langTag}<br>&nbsp;&nbsp;${numbersText}`;
+    if (e.comment && e.comment !== 'No update today') {
+      html += ` <em style="opacity:0.7;">"${e.comment}"</em>`;
+    }
+    html += '</div>';
+  });
+  return html;
+}
+
+function showFinalConfirmModal(submitData) {
+  pendingSubmitData = submitData;
+
+  const textEl    = document.getElementById('finalConfirmText');
+  const noteEl    = document.getElementById('finalConfirmWithdrawNote');
+  const summaryEl = document.getElementById('finalConfirmSummary');
+  const warningEl = document.getElementById('finalConfirmWarning');
+
+  textEl.innerHTML = `هيا دي كل الـ <span dir="ltr" style="display:inline-block">Updates</span> ولا فيه حاجه ناقصه؟ .. اتأكد قبل ما تبعت`;
+
+  noteEl.innerHTML = `لو معاك <span dir="ltr" style="display:inline-block">Offer Withdraw</span> قول متتكسفش عادي احنا أهل 🤝`;
+
+  if (!submitData.noUpdate && submitData.entries.length > 0) {
+    summaryEl.innerHTML = `<strong>📊 <span dir="ltr" style="display:inline-block">Updates</span> بتاعتك:</strong><br><br>` + buildEntrySummaryHTML(submitData.entries);
+    summaryEl.style.display = 'block';
+  } else {
+    summaryEl.innerHTML = '<strong>📊 No updates today</strong>';
+    summaryEl.style.display = 'block';
+  }
+
+  warningEl.innerHTML = `لو معاك <span dir="ltr" style="display:inline-block">Withdraw</span> ومقولتش هنا هعرف وهجيبك انتا حر 😤`;
+
+  document.getElementById('finalConfirmModal').classList.add('show');
+}
+
+function confirmFinalSubmit() {
+  document.getElementById('finalConfirmModal').classList.remove('show');
   if (pendingSubmitData) {
     executeSubmission(pendingSubmitData.entries, pendingSubmitData.recruiter, pendingSubmitData.totalOffers, pendingSubmitData.noUpdate);
     pendingSubmitData = null;
   }
 }
 
-// ✅ NEW: User cancelled — scroll to first affected block
-function cancelMondaySubmit() {
-  document.getElementById('mondayModal').classList.remove('show');
+function cancelFinalSubmit() {
+  document.getElementById('finalConfirmModal').classList.remove('show');
   document.getElementById('submitBtn').disabled = false;
-
-  if (pendingSubmitData && pendingSubmitData.mondayBlocks.length > 0) {
-    const firstBlock = pendingSubmitData.mondayBlocks[0];
-    firstBlock.classList.add('error-block');
-    firstBlock.querySelector('.start-date-input').classList.add('error-input');
-    firstBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
   pendingSubmitData = null;
+  document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ═══════════════════════════════════════════════
-// SUBMIT (Refactored for Monday modal flow)
+// MODAL 3: MIDDAY WARNING (Lemon theme)
+// ═══════════════════════════════════════════════
+function proceedToMiddayOrSubmit(submitData) {
+  // Check if any entries have offers or withdrawals
+  const hasOffersOrWithdrawals = submitData.entries.some(e => e.offers > 0 || e.withdrawals > 0);
+
+  if (hasOffersOrWithdrawals) {
+    pendingSubmitData = submitData;
+    document.getElementById('middayWarningModal').classList.add('show');
+  } else {
+    // No offers/withdrawals — submit directly, no warning needed
+    executeSubmission(submitData.entries, submitData.recruiter, submitData.totalOffers, submitData.noUpdate);
+  }
+}
+
+function confirmMiddayWarning() {
+  document.getElementById('middayWarningModal').classList.remove('show');
+  if (pendingSubmitData) {
+    executeSubmission(pendingSubmitData.entries, pendingSubmitData.recruiter, pendingSubmitData.totalOffers, pendingSubmitData.noUpdate);
+    pendingSubmitData = null;
+  }
+}
+
+function cancelMiddayWarning() {
+  document.getElementById('middayWarningModal').classList.remove('show');
+  document.getElementById('submitBtn').disabled = false;
+  pendingSubmitData = null;
+  document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══════════════════════════════════════════════
+// SUBMIT
 // ═══════════════════════════════════════════════
 async function submitForm() {
   clearErrors();
 
-  // Refresh date + update type at submit time
   submissionDate = formatDateISO(new Date());
   initUpdateType();
 
@@ -1478,6 +1585,7 @@ async function submitForm() {
       ops: 0,
       poc: 0,
       hr: 0,
+      withdrawals: 0,
       comment: 'No update today'
     });
   } else {
@@ -1485,23 +1593,24 @@ async function submitForm() {
     let hasData   = false;
     let hasError  = false;
     let firstErrorBlock = null;
-
     const seenCombos = new Set();
 
     blocks.forEach(block => {
       const accName    = getAccountName(block);
       const startDate  = block.querySelector('.start-date-input').value;
       const language   = getLanguage(block);
-      const inputs     = block.querySelectorAll('.stage-input');
+      const inputs     = block.querySelectorAll('.stage-input:not(.withdrawal-input)');
+      const withdrawalInput = block.querySelector('.withdrawal-input');
       const comment    = block.querySelector('.comment-input').value.trim();
 
-      const offers    = parseInt(inputs[0].value) || 0;
-      const pendingfb = parseInt(inputs[1].value) || 0;
-      const ops       = parseInt(inputs[2].value) || 0;
-      const poc       = parseInt(inputs[3].value) || 0;
-      const hr        = parseInt(inputs[4].value) || 0;
+      const offers      = parseInt(inputs[0].value) || 0;
+      const pendingfb   = parseInt(inputs[1].value) || 0;
+      const ops         = parseInt(inputs[2].value) || 0;
+      const poc         = parseInt(inputs[3].value) || 0;
+      const hr          = parseInt(inputs[4].value) || 0;
+      const withdrawals = parseInt(withdrawalInput.value) || 0;
 
-      const hasNumbers = (offers + pendingfb + ops + poc + hr > 0 || comment);
+      const hasNumbers = (offers + pendingfb + ops + poc + hr + withdrawals > 0 || comment);
 
       if (accName && hasNumbers) {
         if (!isValidStartDate(startDate)) {
@@ -1532,7 +1641,7 @@ async function submitForm() {
           account: accName,
           language: language,
           startdate: startDate,
-          offers, pendingfb, ops, poc, hr,
+          offers, pendingfb, ops, poc, hr, withdrawals,
           comment: comment
         });
       }
@@ -1552,7 +1661,7 @@ async function submitForm() {
     }
   }
 
-  // ✅ NEW: Check for Monday start dates before submitting
+  // ── Step 1: Check Monday start dates ──
   if (!noUpdate) {
     const mondayAccounts = [];
     const mondayBlocks   = [];
@@ -1561,16 +1670,18 @@ async function submitForm() {
     blocks.forEach(block => {
       const accName   = getAccountName(block);
       const startDate = block.querySelector('.start-date-input').value;
-      const inputs    = block.querySelectorAll('.stage-input');
+      const inputs    = block.querySelectorAll('.stage-input:not(.withdrawal-input)');
+      const withdrawalInput = block.querySelector('.withdrawal-input');
       const comment   = block.querySelector('.comment-input').value.trim();
 
-      const offers    = parseInt(inputs[0].value) || 0;
-      const pendingfb = parseInt(inputs[1].value) || 0;
-      const ops       = parseInt(inputs[2].value) || 0;
-      const poc       = parseInt(inputs[3].value) || 0;
-      const hr        = parseInt(inputs[4].value) || 0;
+      const offers      = parseInt(inputs[0].value) || 0;
+      const pendingfb   = parseInt(inputs[1].value) || 0;
+      const ops         = parseInt(inputs[2].value) || 0;
+      const poc         = parseInt(inputs[3].value) || 0;
+      const hr          = parseInt(inputs[4].value) || 0;
+      const withdrawals = parseInt(withdrawalInput.value) || 0;
 
-      const hasNumbers = (offers + pendingfb + ops + poc + hr > 0 || comment);
+      const hasNumbers = (offers + pendingfb + ops + poc + hr + withdrawals > 0 || comment);
 
       if (accName && hasNumbers && isTodayMonday(startDate)) {
         mondayAccounts.push(accName);
@@ -1581,21 +1692,25 @@ async function submitForm() {
     if (mondayAccounts.length > 0) {
       submitBtn.disabled = true;
       showMondayModal(recruiter, mondayAccounts, {
-        entries,
-        recruiter,
-        totalOffers,
-        noUpdate,
-        mondayBlocks
+        entries, recruiter, totalOffers, noUpdate, mondayBlocks
       });
       return;
     }
   }
 
-  // No Monday issue — submit directly
-  await executeSubmission(entries, recruiter, totalOffers, noUpdate);
+  // ── Step 2: Route based on update type ──
+  submitBtn.disabled = true;
+
+  if (currentUpdateType === 'Midday') {
+    proceedToMiddayOrSubmit({ entries, recruiter, totalOffers, noUpdate, mondayBlocks: [] });
+  } else {
+    showFinalConfirmModal({ entries, recruiter, totalOffers, noUpdate, mondayBlocks: [] });
+  }
 }
 
-// ✅ NEW: Extracted submission logic into separate function
+// ═══════════════════════════════════════════════
+// EXECUTE SUBMISSION
+// ═══════════════════════════════════════════════
 async function executeSubmission(entries, recruiter, totalOffers, noUpdate) {
   const statusMsg = document.getElementById('statusMsg');
   const submitBtn = document.getElementById('submitBtn');
@@ -1605,32 +1720,21 @@ async function executeSubmission(entries, recruiter, totalOffers, noUpdate) {
   statusMsg.textContent = '⏳ One moment... submitting your numbers';
 
   try {
-    // ✅ CHANGED: Uses smartFetch with retry
     const retryHandler = (attempt, max, waitMs, reason) => {
       statusMsg.className   = 'status-msg sending';
       statusMsg.textContent = `⏳ ${reason === 'timeout' ? 'Server is busy' : 'Connection issue'} — Retry ${attempt}/${max - 1}...`;
     };
 
-    const result = await smartFetch(
-      API_URL,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(entries)
-      },
-      { maxRetries: 3, baseTimeout: 20000, onRetry: retryHandler }
-    );
+    const result = await smartFetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(entries)
+    }, { maxRetries: 3, baseTimeout: 20000, onRetry: retryHandler });
 
-    if (result.status !== 'ok') {
-      throw new Error(result.message || 'Server rejected the submission');
-    }
+    if (result.status !== 'ok') throw new Error(result.message || 'Server rejected the submission');
 
     const overrideNotice = document.getElementById('overrideNotice');
-    if (result.override) {
-      overrideNotice.style.display = 'inline-block';
-    } else {
-      overrideNotice.style.display = 'none';
-    }
+    overrideNotice.style.display = result.override ? 'inline-block' : 'none';
 
     const successMsg = getSuccessMessage(recruiter, totalOffers, noUpdate);
     document.getElementById('successTitle').textContent        = 'Updates are sent!';
@@ -1641,11 +1745,12 @@ async function executeSubmission(entries, recruiter, totalOffers, noUpdate) {
       let summaryHTML = '<strong style="color:var(--fd-lavender);">📊 What you submitted:</strong><br><br>';
       entries.forEach(e => {
         const parts = [];
-        if (e.offers)    parts.push(`${e.offers} Offer${e.offers > 1 ? 's' : ''}`);
-        if (e.pendingfb) parts.push(`${e.pendingfb} PFB`);
-        if (e.ops)       parts.push(`${e.ops} OPS`);
-        if (e.poc)       parts.push(`${e.poc} POC`);
-        if (e.hr)        parts.push(`${e.hr} HR`);
+        if (e.offers)       parts.push(`${e.offers} Offer${e.offers > 1 ? 's' : ''}`);
+        if (e.withdrawals)  parts.push(`${e.withdrawals} Withdrawal${e.withdrawals > 1 ? 's' : ''}`);
+        if (e.pendingfb)    parts.push(`${e.pendingfb} PFB`);
+        if (e.ops)          parts.push(`${e.ops} OPS`);
+        if (e.poc)          parts.push(`${e.poc} POC`);
+        if (e.hr)           parts.push(`${e.hr} HR`);
         const langTag = e.language !== 'English' ? ` <span style="color:var(--fd-lemon);">[${e.language}]</span>` : '';
         summaryHTML += `• <strong>${e.account}</strong>${langTag}: ${parts.join(' · ') || 'Comment only'}`;
         if (e.comment && e.comment !== 'No update today') {
@@ -1695,7 +1800,9 @@ function resetForm() {
   initUpdateType();
 }
 
-// Dark Mode Toggle with LocalStorage
+// ═══════════════════════════════════════════════
+// DARK MODE
+// ═══════════════════════════════════════════════
 function toggleTheme() {
   document.body.classList.toggle('dark-mode');
   const isDark = document.body.classList.contains('dark-mode');
@@ -1703,7 +1810,6 @@ function toggleTheme() {
   document.querySelector('.theme-toggle-icon').textContent = isDark ? '☀️' : '🌙';
 }
 
-// Load saved theme on page load
 (function loadSavedTheme() {
   const saved = localStorage.getItem('fd-theme');
   if (saved === 'dark') {
