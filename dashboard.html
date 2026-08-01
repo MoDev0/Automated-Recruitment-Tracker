@@ -600,7 +600,7 @@
       <div class="c-value" id="s-poc">0</div>
     </div>
     <div class="card">
-      <div class="c-label">Total HR</div>
+      <div class="c-label">Total Client Call</div>
       <div class="c-value" id="s-hr">0</div>
     </div>
     <div class="card c-top">
@@ -629,7 +629,7 @@
       <thead id="recTableHead">
         <tr>
           <th>Recruiter</th><th>Account</th><th>Language</th><th>Start Date</th><th>Type</th>
-          <th>Offers</th><th>❌ WD</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
+          <th>Offers</th><th>❌ WD</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>Client Call</th>
           <th>Comment</th><th>Time</th>
         </tr>
       </thead>
@@ -963,7 +963,7 @@ function filterLatestPerRecruiter(rows) {
   return result;
 }
 
-// Safe parse — handles missing Withdrawals column gracefully
+// Safe parse — handles missing columns gracefully
 function safeInt(val) { return parseInt(val) || 0; }
 
 // ═══════════════════════════════════════════════
@@ -1052,7 +1052,7 @@ function processDailyData(rows, selectedDate, selectedType) {
   // Daily table header — includes Withdrawals
   document.getElementById('recTableHead').innerHTML = `<tr>
     <th>Recruiter</th><th>Account</th><th>Language</th><th>Start Date</th><th>Type</th>
-    <th>Offers</th><th>❌ WD</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
+    <th>Offers</th><th>❌ WD</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>Client Call</th>
     <th>Comment</th><th>Time</th>
   </tr>`;
   document.getElementById('tableLabel').textContent = 'Recruiter Details';
@@ -1069,7 +1069,7 @@ function processDailyData(rows, selectedDate, selectedType) {
     const startDate=(row.StartDate||'').toString().trim(), updateType=row.UpdateType?.trim()||'';
     const language=(row.Language||'English').toString().trim();
     const offers=safeInt(row.Offers), pendingfb=safeInt(row.PendingFB);
-    const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row.HR);
+    const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row['Client Call']);
     const withdrawals=safeInt(row.Withdrawals);
     const comment=(row.Comment||'').trim(), ts=row.Timestamp||'';
     if (!name) return;
@@ -1174,7 +1174,7 @@ function processAggregatedData(rows, startDate, endDate, mode) {
   // Weekly/Monthly table header — includes Withdrawals + Net
   document.getElementById('recTableHead').innerHTML = `<tr>
     <th style="width:30px;"></th><th>Recruiter</th>
-    <th>Offers</th><th>❌ WD</th><th>📊 Net</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>HR</th>
+    <th>Offers</th><th>❌ WD</th><th>📊 Net</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>Client Call</th>
   </tr>`;
 
   const label = mode === 'weekly' ? 'Weekly' : 'Monthly';
@@ -1193,7 +1193,7 @@ function processAggregatedData(rows, startDate, endDate, mode) {
     const language=(row.Language||'English').toString().trim();
     const rowStartDate=(row.StartDate||'').toString().trim();
     const offers=safeInt(row.Offers), pendingfb=safeInt(row.PendingFB);
-    const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row.HR);
+    const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row['Client Call']);
     const withdrawals=safeInt(row.Withdrawals);
     const comment=(row.Comment||'').trim();
     if (!name) return;
@@ -1413,14 +1413,14 @@ function updateAccountBreakdown(accountMap) {
       const updateParts = [];
       if (a.ops) updateParts.push(`${a.ops} Ops interviews`);
       if (a.poc) updateParts.push(`${a.poc} POC`);
-      if (a.hr) updateParts.push(`${a.hr} HR Interview`);
+      if (a.hr) updateParts.push(`${a.hr} Client Call`);
       if (a.pfb) updateParts.push(`${a.pfb} Pending Feedback`);
       const updateText = updateParts.join(' - ');
 
       const displayParts = [];
       if (a.ops) displayParts.push(`${a.ops} OPS`);
       if (a.poc) displayParts.push(`${a.poc} POC`);
-      if (a.hr) displayParts.push(`${a.hr} HR`);
+      if (a.hr) displayParts.push(`${a.hr} CC`);
       if (a.pfb) displayParts.push(`${a.pfb} PFB`);
       const displayText = displayParts.join(' · ') || 'No hiring updates';
 
@@ -1447,7 +1447,7 @@ function updateAccountBreakdown(accountMap) {
           if (r.pfb) metricParts.push(`${r.pfb} PFB`);
           if (r.ops) metricParts.push(`${r.ops} OPS`);
           if (r.poc) metricParts.push(`${r.poc} POC`);
-          if (r.hr) metricParts.push(`${r.hr} HR`);
+          if (r.hr) metricParts.push(`${r.hr} CC`);
           if (metricParts.length > 0) {
             tooltipHTML += `<div class="tooltip-row">
               <span class="tooltip-recruiter">👤 ${recName}</span>
@@ -1499,7 +1499,7 @@ function generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalO
   const totalNet = totalOffers - totalWD;
 
   // Tab-separated for Excel
-  let copyData = `Recruiter\tOffers\tWithdrawals\tNet Offers\tPending FB\tOPS\tPOC\tHR\n`;
+  let copyData = `Recruiter\tOffers\tWithdrawals\tNet Offers\tPending FB\tOPS\tPOC\tClient Call\n`;
   allNames.forEach(name => {
     const r = recruiterAgg[name];
     const net = r.offers - r.wd;
@@ -1511,7 +1511,7 @@ function generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalO
   const sep = '─'.repeat(50);
   let preview = `📊 ${mode === 'weekly' ? 'Weekly' : 'Monthly'} Summary — ${labelText}\n`;
   preview += `📋 Morning updates only\n${sep}\n\n`;
-  preview += `${'Recruiter'.padEnd(24)}${'Offers'.padEnd(8)}${'WD'.padEnd(6)}${'Net'.padEnd(7)}${'PFB'.padEnd(7)}${'OPS'.padEnd(7)}${'POC'.padEnd(7)}HR\n`;
+  preview += `${'Recruiter'.padEnd(24)}${'Offers'.padEnd(8)}${'WD'.padEnd(6)}${'Net'.padEnd(7)}${'PFB'.padEnd(7)}${'OPS'.padEnd(7)}${'POC'.padEnd(7)}Client Call\n`;
   preview += `${'─'.repeat(24)}${'─'.repeat(48)}\n`;
 
   allNames.forEach(name => {
@@ -1564,7 +1564,7 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
       if(a.offer)sp.push(`${a.offer} Offer`);
       if(a.wd)sp.push(`${a.wd} Withdrawal`);
       if(a.pfb)sp.push(`${a.pfb} Pending Feedback`);
-      if(a.ops)sp.push(`${a.ops} OPS`);if(a.poc)sp.push(`${a.poc} POC`);if(a.hr)sp.push(`${a.hr} HR`);
+      if(a.ops)sp.push(`${a.ops} OPS`);if(a.poc)sp.push(`${a.poc} POC`);if(a.hr)sp.push(`${a.hr} Client Call`);
       if(sp.length===0)return;
       let line=`${a.display}: ${sp.join(' · ')}`;
       if(a.comments.length)line+=` (${a.comments.join(', ')})`;
@@ -1580,7 +1580,7 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
     if(a.offer)parts.push(`${a.offer} Offer`);
     if(a.wd)parts.push(`${a.wd} Withdrawal`);
     if(a.pfb)parts.push(`${a.pfb} Pending Feedback`);
-    if(a.ops)parts.push(`${a.ops} OPS`);if(a.poc)parts.push(`${a.poc} POC`);if(a.hr)parts.push(`${a.hr} HR`);
+    if(a.ops)parts.push(`${a.ops} OPS`);if(a.poc)parts.push(`${a.poc} POC`);if(a.hr)parts.push(`${a.hr} Client Call`);
     const langSuffix = a.language && a.language !== 'English' ? ` [${a.language}]` : '';
     if(parts.length)post+=`  ${a.display}${langSuffix}: ${parts.join(' · ')}\n`;
   });
@@ -1591,7 +1591,7 @@ function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers,
   if(totalPFB)post+=`  Pending Feedback    : ${totalPFB}\n`;
   if(totalOPS)post+=`  OPS                 : ${totalOPS}\n`;
   if(totalPOC)post+=`  POC                 : ${totalPOC}\n`;
-  if(totalHR)post+=`  HR Interviews       : ${totalHR}\n`;
+  if(totalHR)post+=`  Client Calls        : ${totalHR}\n`;
   if(topNames.length){
     post+=`\n⭐ TOP CONTRIBUTOR${topNames.length>1?'S':''}\n`;
     post+=`  ${topNames.join(' · ')}`;
