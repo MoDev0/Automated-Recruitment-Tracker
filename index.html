@@ -1349,7 +1349,7 @@ function addAccount() {
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
       <div class="stage-item">
-        <span class="stage-label">HR</span>
+        <span class="stage-label">Client Call</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
       
@@ -1464,7 +1464,7 @@ function buildEntrySummaryHTML(entries) {
     if (e.pendingfb)    parts.push(`${e.pendingfb} PFB`);
     if (e.ops)          parts.push(`${e.ops} OPS`);
     if (e.poc)          parts.push(`${e.poc} POC`);
-    if (e.hr)           parts.push(`${e.hr} HR`);
+    if (e.hr) parts.push(`${e.hr} Client Call`);
 
     const langTag = e.language !== 'English' ? ` [${e.language}]` : '';
     const numbersText = parts.length > 0 ? parts.join(' · ') : 'Comment only';
@@ -1749,7 +1749,7 @@ async function executeSubmission(entries, recruiter, totalOffers, noUpdate) {
         if (e.pendingfb)    parts.push(`${e.pendingfb} PFB`);
         if (e.ops)          parts.push(`${e.ops} OPS`);
         if (e.poc)          parts.push(`${e.poc} POC`);
-        if (e.hr)           parts.push(`${e.hr} HR`);
+        if (e.hr) parts.push(`${e.hr} Client Call`);
         const langTag = e.language !== 'English' ? ` <span style="color:var(--fd-lemon);">[${e.language}]</span>` : '';
         summaryHTML += `• <strong>${e.account}</strong>${langTag}: ${parts.join(' · ') || 'Comment only'}`;
         if (e.comment && e.comment !== 'No update today') {
