@@ -148,11 +148,9 @@
   .card.c-top { border-color: var(--fd-lemon); }
   .card.c-top .c-value { color: var(--fd-lemon); font-size: 0.95rem; padding-top: 4px; line-height: 1.3; }
 
-  /* Withdrawals card */
   .card.c-withdrawals { border-color: var(--fd-coral); }
   .card.c-withdrawals .c-value { color: var(--fd-coral); }
 
-  /* Net Offers card */
   .card.c-net { border-color: var(--fd-indigo); }
   .card.c-net .c-value { color: var(--fd-indigo); }
   .card.c-net .c-value.negative { color: var(--fd-coral); }
@@ -163,225 +161,79 @@
   }
 
   .breakdown-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin-bottom: 8px;
+    display: flex; flex-direction: column; gap: 0; margin-bottom: 8px;
   }
 
-  .breakdown-date-group {
-    width: 100%;
-    margin-top: 14px;
-    margin-bottom: 6px;
-  }
-
-  .breakdown-date-group:first-child {
-    margin-top: 0;
-  }
+  .breakdown-date-group { width: 100%; margin-top: 14px; margin-bottom: 6px; }
+  .breakdown-date-group:first-child { margin-top: 0; }
 
   .breakdown-date-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.3);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(75,75,249,0.12);
-    margin-bottom: 8px;
+    font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.3);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding-bottom: 6px; border-bottom: 1px solid rgba(75,75,249,0.12); margin-bottom: 8px;
   }
 
   .acc-chip-copy {
-    background: var(--fd-card2);
-    border: 1px solid var(--fd-border);
-    border-radius: 12px;
-    padding: 8px 14px;
-    font-size: 0.78rem;
-    color: var(--fd-white);
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    position: relative;
-    user-select: none;
+    background: var(--fd-card2); border: 1px solid var(--fd-border);
+    border-radius: 12px; padding: 8px 14px; font-size: 0.78rem; color: var(--fd-white);
+    display: flex; gap: 10px; align-items: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s; position: relative; user-select: none;
   }
-
-  .acc-chip-copy:hover {
-    border-color: var(--fd-indigo);
-    background: rgba(75,75,249,0.08);
-  }
-
-  .acc-chip-copy:active {
-    transform: scale(0.98);
-  }
-
-  .acc-chip-copy .acc-name {
-    color: var(--fd-lavender);
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  .acc-chip-copy .acc-lang {
-    color: var(--fd-lemon);
-    font-size: 0.7rem;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .acc-chip-copy .acc-updates {
-    color: var(--fd-mint);
-    flex: 1;
-    font-weight: 600;
-  }
-
+  .acc-chip-copy:hover { border-color: var(--fd-indigo); background: rgba(75,75,249,0.08); }
+  .acc-chip-copy:active { transform: scale(0.98); }
+  .acc-chip-copy .acc-name { color: var(--fd-lavender); font-weight: 700; white-space: nowrap; }
+  .acc-chip-copy .acc-lang { color: var(--fd-lemon); font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+  .acc-chip-copy .acc-updates { color: var(--fd-mint); flex: 1; font-weight: 600; }
   .acc-chip-copy .acc-offers-badge {
-    background: rgba(139,240,187,0.1);
-    border: 1px solid rgba(139,240,187,0.25);
-    color: var(--fd-mint);
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 8px;
-    white-space: nowrap;
+    background: rgba(139,240,187,0.1); border: 1px solid rgba(139,240,187,0.25);
+    color: var(--fd-mint); font-size: 0.68rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 8px; white-space: nowrap;
   }
-
   .acc-chip-copy .acc-offers-badge.zero {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3);
   }
-
-  /* Withdrawal badge in account chips */
   .acc-chip-copy .acc-withdraw-badge {
-    background: rgba(255,141,150,0.1);
-    border: 1px solid rgba(255,141,150,0.25);
-    color: var(--fd-coral);
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 8px;
-    white-space: nowrap;
+    background: rgba(255,141,150,0.1); border: 1px solid rgba(255,141,150,0.25);
+    color: var(--fd-coral); font-size: 0.68rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 8px; white-space: nowrap;
   }
-
-  .acc-chip-copy .copy-icon {
-    color: rgba(255,255,255,0.25);
-    font-size: 0.75rem;
-    transition: color 0.2s;
-  }
-
-  .acc-chip-copy:hover .copy-icon {
-    color: var(--fd-indigo);
-  }
-
+  .acc-chip-copy .copy-icon { color: rgba(255,255,255,0.25); font-size: 0.75rem; transition: color 0.2s; }
+  .acc-chip-copy:hover .copy-icon { color: var(--fd-indigo); }
   .acc-chip-copy .chip-copied {
-    position: absolute;
-    top: -8px;
-    right: 10px;
-    background: var(--fd-mint);
-    color: var(--fd-midnight);
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 6px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
+    position: absolute; top: -8px; right: 10px; background: var(--fd-mint);
+    color: var(--fd-midnight); font-size: 0.65rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 6px; opacity: 0; transition: opacity 0.3s; pointer-events: none;
   }
+  .acc-chip-copy .chip-copied.flash { opacity: 1; }
 
-  .acc-chip-copy .chip-copied.flash {
-    opacity: 1;
-  }
-
-  /* Recruiter Tooltip on Hover */
   .chip-tooltip {
-    display: none;
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a1a4a;
-    border: 1px solid var(--fd-indigo);
-    border-radius: 10px;
-    padding: 0;
-    min-width: 220px;
-    max-width: 340px;
-    z-index: 50;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    pointer-events: auto;
-    overflow: visible;
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%); background: #1a1a4a; border: 1px solid var(--fd-indigo);
+    border-radius: 10px; padding: 0; min-width: 220px; max-width: 340px;
+    z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.4); pointer-events: auto; overflow: visible;
   }
-  .chip-tooltip-inner {
-    padding: 10px 14px;
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-
-  .chip-tooltip.visible {
-    display: block;
-  }
-
+  .chip-tooltip-inner { padding: 10px 14px; max-height: 50vh; overflow-y: auto; }
+  .chip-tooltip.visible { display: block; }
   .chip-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: var(--fd-indigo);
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 6px solid transparent; border-top-color: var(--fd-indigo);
   }
-
   .chip-tooltip::before {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 16px;
-    background: transparent;
+    content: ''; position: absolute; top: 100%; left: 0; width: 100%; height: 16px; background: transparent;
   }
-
   .tooltip-title {
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: var(--fd-indigo);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 6px;
-    border-bottom: 1px solid rgba(75,75,249,0.2);
-    padding-bottom: 4px;
+    font-size: 0.68rem; font-weight: 700; color: var(--fd-indigo);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;
+    border-bottom: 1px solid rgba(75,75,249,0.2); padding-bottom: 4px;
   }
-
   .tooltip-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 10px;
-    padding: 3px 0;
-    font-size: 0.73rem;
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 10px; padding: 3px 0; font-size: 0.73rem;
   }
-
-  .tooltip-row:not(:last-child) {
-    border-bottom: 1px solid rgba(75,75,249,0.08);
-  }
-
-  .tooltip-recruiter {
-    color: var(--fd-lavender);
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .tooltip-metrics {
-    color: var(--fd-mint);
-    font-weight: 600;
-    font-size: 0.7rem;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  /* Coral color for withdrawal metrics in tooltip */
-  .tooltip-metrics .wd-metric {
-    color: var(--fd-coral);
-  }
+  .tooltip-row:not(:last-child) { border-bottom: 1px solid rgba(75,75,249,0.08); }
+  .tooltip-recruiter { color: var(--fd-lavender); font-weight: 600; white-space: nowrap; }
+  .tooltip-metrics { color: var(--fd-mint); font-weight: 600; font-size: 0.7rem; text-align: right; white-space: nowrap; }
+  .tooltip-metrics .wd-metric { color: var(--fd-coral); }
 
   .divider { height: 1px; background: var(--fd-border); margin: 20px 0; }
   .main { padding: 20px 28px; }
@@ -392,9 +244,7 @@
     text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 12px;
     text-align: left; border-bottom: 1px solid var(--fd-border); white-space: nowrap;
   }
-  .rec-table td {
-    padding: 9px 12px; border-bottom: 1px solid rgba(75,75,249,0.1); vertical-align: top;
-  }
+  .rec-table td { padding: 9px 12px; border-bottom: 1px solid rgba(75,75,249,0.1); vertical-align: top; }
   .rec-table tr:hover td { background: rgba(75,75,249,0.06); }
   .rec-table .num { text-align: center; font-weight: 700; }
   .rec-table .num.highlight { color: var(--fd-mint); }
@@ -408,11 +258,9 @@
   .rec-acc { color: var(--fd-lavender); font-size: 0.78rem; }
   .rec-date { color: rgba(255,255,255,0.4); font-size: 0.72rem; }
 
-  /* ── EXPANDABLE ROWS ── */
   .expand-btn {
     background: none; border: none; color: var(--fd-indigo); cursor: pointer;
-    font-size: 0.82rem; padding: 0 6px; font-family: 'Segoe UI', sans-serif;
-    transition: transform 0.2s;
+    font-size: 0.82rem; padding: 0 6px; font-family: 'Segoe UI', sans-serif; transition: transform 0.2s;
   }
   .expand-btn.open { transform: rotate(90deg); }
   .agg-row { cursor: pointer; }
@@ -431,14 +279,12 @@
   .missing-list { display: flex; flex-wrap: wrap; gap: 6px; }
   .missing-chip {
     background: rgba(255,141,150,0.1); border: 1px solid rgba(255,141,150,0.2);
-    border-radius: 16px; padding: 4px 12px; font-size: 0.75rem;
-    color: var(--fd-coral); font-weight: 600;
+    border-radius: 16px; padding: 4px 12px; font-size: 0.75rem; color: var(--fd-coral); font-weight: 600;
   }
   .all-submitted {
     background: rgba(139,240,187,0.06); border: 1px solid rgba(139,240,187,0.2);
     border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
-    text-align: center; color: var(--fd-mint); font-weight: 600;
-    font-size: 0.85rem; display: none;
+    text-align: center; color: var(--fd-mint); font-weight: 600; font-size: 0.85rem; display: none;
   }
 
   .post-box {
@@ -456,8 +302,7 @@
   .copy-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
   .btn-action {
     border: none; cursor: pointer; font-size: 0.82rem; font-weight: 700;
-    border-radius: 8px; padding: 9px 18px; font-family: 'Segoe UI', sans-serif;
-    transition: opacity 0.18s;
+    border-radius: 8px; padding: 9px 18px; font-family: 'Segoe UI', sans-serif; transition: opacity 0.18s;
   }
   .btn-action:hover { opacity: 0.85; }
   .btn-lemon    { background: var(--fd-lemon);   color: var(--fd-midnight); }
@@ -479,14 +324,9 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-overlay p { color: var(--fd-lavender); font-size: 0.85rem; }
 
-  .no-data-msg {
-    text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.3);
-    font-size: 0.9rem;
-  }
+  .no-data-msg { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.3); font-size: 0.9rem; }
 
-  footer {
-    text-align: center; padding: 16px; font-size: 0.7rem; color: rgba(255,255,255,0.2);
-  }
+  footer { text-align: center; padding: 16px; font-size: 0.7rem; color: rgba(255,255,255,0.2); }
   footer span { color: var(--fd-indigo); font-weight: 700; }
 
   ::-webkit-scrollbar { width: 5px; }
@@ -499,15 +339,8 @@
     .summary-section, .main { padding: 14px 16px; }
     .status-bar { padding: 8px 16px; }
     .acc-chip-copy { flex-wrap: wrap; gap: 6px; }
-    .chip-tooltip {
-      left: 0;
-      transform: translateX(0);
-      min-width: 200px;
-    }
-    .chip-tooltip::after {
-      left: 20px;
-      transform: none;
-    }
+    .chip-tooltip { left: 0; transform: translateX(0); min-width: 200px; }
+    .chip-tooltip::after { left: 20px; transform: none; }
   }
 </style>
 </head>
@@ -542,7 +375,6 @@
       <button class="view-btn" data-view="monthly" onclick="switchView('monthly')">📆 Monthly</button>
     </div>
 
-    <!-- DAILY CONTROLS -->
     <input type="date" class="date-input" id="dateInput" />
     <select class="type-select" id="typeFilter">
       <option value="Morning">☀️ Morning</option>
@@ -554,7 +386,6 @@
       <option value="">Loading weeks...</option>
     </select>
 
-    <!-- MONTHLY CONTROLS -->
     <select class="month-select hidden" id="monthSelect" onchange="loadRangeData('monthly')">
       <option value="">Loading months...</option>
     </select>
@@ -641,7 +472,6 @@
 
   <div class="divider"></div>
 
-  <!-- DAILY: Teams Post -->
   <div id="dailyPostSection">
     <div class="section-label">Teams Post Preview</div>
     <div class="post-box" id="postBox">Load data first...</div>
@@ -649,11 +479,9 @@
       <button class="btn-action btn-lemon" onclick="copyText('postBox')">📋 Copy for Teams</button>
       <span class="copy-ok" id="copyOkPost">✅ Copied!</span>
     </div>
-
     <div class="divider"></div>
   </div>
 
-  <!-- WEEKLY/MONTHLY: Summary Export -->
   <div id="aggExportSection" class="hidden">
     <div class="section-label">📊 Export Summary for Excel</div>
     <div class="excel-export-box" id="aggExportBox">Load data first...</div>
@@ -725,7 +553,7 @@ const RECRUITER_NAMES = [
   "Nada Bassyouni","Yara Sabry","Habiba Waleed",
   "Mostafa Alaaeldin","Mahmoud Elshwadfey","Aya Mostafa","Ghaidaa Hussien",
   "Gamela Abdelqader","Farah Khalid","Ahmed Ashraf",
-  "Yassmin Ashraf","Nour Waleed"
+  "Yassmin Ashraf"
 ];
 
 let currentView  = 'daily';
@@ -733,37 +561,84 @@ let knownDates   = [];
 let pickersReady = false;
 
 // ═══════════════════════════════════════════════
-// FETCH WITH TIMEOUT
+// SMART FETCH WITH AUTO-RETRY
 // ═══════════════════════════════════════════════
-async function fetchWithTimeout(url, timeoutMs = 10000) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
-    return response;
-  } catch (err) {
-    clearTimeout(timeout);
-    if (err.name === 'AbortError') throw new Error('Request timed out. Please try again.');
-    throw err;
+async function smartDashFetch(url, maxRetries = 3) {
+  let lastError = null;
+  const statusBar = document.getElementById('statusBar');
+  const overlayText = document.querySelector('.loading-overlay p');
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const timeout = 25000 + (attempt - 1) * 10000; // 25s, 35s, 45s
+
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeout);
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timer);
+
+      const text = await response.text();
+
+      if (text.startsWith('<!DOCTYPE') || text.startsWith('<html') || text.startsWith('<HTML')) {
+        throw new Error('GOOGLE_ERROR_PAGE');
+      }
+
+      const json = JSON.parse(text);
+      return json;
+
+    } catch (err) {
+      lastError = err;
+      const isTimeout = err.name === 'AbortError';
+      const isGoogleError = err.message === 'GOOGLE_ERROR_PAGE';
+      const isParseError = err instanceof SyntaxError;
+      const isNetwork = err.message?.includes('Failed to fetch') || err.name === 'TypeError';
+
+      const retryable = isTimeout || isGoogleError || isParseError || isNetwork;
+
+      if (attempt < maxRetries && retryable) {
+        const reason = isTimeout ? 'Server warming up'
+                     : isGoogleError ? 'Google returned an error page'
+                     : isParseError ? 'Invalid response received'
+                     : 'Connection issue';
+        const msg = `⏳ ${reason} — Retry ${attempt} of ${maxRetries - 1}...`;
+        statusBar.textContent = msg;
+        if (overlayText) overlayText.textContent = msg;
+        await new Promise(r => setTimeout(r, attempt * 2000));
+      }
+    }
   }
+
+  if (overlayText) overlayText.textContent = '⏳ Fetching data, please wait...';
+
+  if (lastError?.name === 'AbortError') {
+    throw new Error('Server is taking too long. Please try again.');
+  } else if (lastError?.message === 'GOOGLE_ERROR_PAGE' || lastError instanceof SyntaxError) {
+    throw new Error('Google returned an invalid response. Please try again.');
+  } else if (lastError?.message?.includes('Failed to fetch') || lastError?.name === 'TypeError') {
+    throw new Error('Unable to reach server. Check your connection.');
+  }
+  throw lastError || new Error('Unknown error occurred.');
 }
 
-// ═══════════════════════════════════════════════
-// INIT
+/// ═══════════════════════════════════════════════
+// INIT (With server warm-up ping)
 // ═══════════════════════════════════════════════
 async function initDashboard() {
   const today = new Date();
   document.getElementById('dateInput').value = formatDateISO(today);
 
   const overlay = document.getElementById('loadingOverlay');
+  const overlayText = document.querySelector('.loading-overlay p');
   overlay.classList.add('show');
 
   try {
-    const [datesRes, dataRes] = await Promise.all([
-      fetchWithTimeout(`${API_URL}?action=getDates`).then(r => r.json()),
-      fetchWithTimeout(`${API_URL}?date=${formatDateISO(today)}&type=Morning`).then(r => r.json())
-    ]);
+    // Step 1: Wake up the server with a lightweight ping
+    overlayText.textContent = '⏳ Waking up server...';
+    await wakeUpServer();
+
+    // Step 2: Server is warm — fetch dates (should be fast now)
+    overlayText.textContent = '⏳ Loading available dates...';
+    const datesRes = await smartDashFetch(`${API_URL}?action=getDates`);
 
     if (datesRes.status === 'ok') {
       knownDates = datesRes.dates || [];
@@ -771,6 +646,10 @@ async function initDashboard() {
       buildMonthPicker(knownDates);
       pickersReady = true;
     }
+
+    // Step 3: Fetch today's data (server already warm)
+    overlayText.textContent = '⏳ Loading today\'s data...';
+    const dataRes = await smartDashFetch(`${API_URL}?date=${formatDateISO(today)}&type=Morning`);
 
     if (dataRes.status === 'ok') {
       const filtered = filterLatestPerRecruiter(dataRes.data);
@@ -785,9 +664,59 @@ async function initDashboard() {
     console.error(err);
   }
 
+  overlayText.textContent = '⏳ Fetching data, please wait...';
   overlay.classList.remove('show');
 }
 
+// ═══════════════════════════════════════════════
+// SERVER WARM-UP PING
+// ═══════════════════════════════════════════════
+async function wakeUpServer() {
+  const overlayText = document.querySelector('.loading-overlay p');
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 35000); // 35s generous timeout
+
+      const response = await fetch(`${API_URL}?action=getDates`, {
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+
+      const text = await response.text();
+
+      // If we got valid JSON back, server is warm
+      if (!text.startsWith('<!DOCTYPE') && !text.startsWith('<html') && !text.startsWith('<HTML')) {
+        try {
+          JSON.parse(text);
+          return; // Server is warm — exit
+        } catch (e) {
+          // Not valid JSON, retry
+        }
+      }
+
+      // Got HTML error page — server is waking up, retry
+      if (attempt < maxAttempts) {
+        overlayText.textContent = `⏳ Server is waking up — Attempt ${attempt + 1} of ${maxAttempts}...`;
+        await new Promise(r => setTimeout(r, 3000));
+      }
+
+    } catch (err) {
+      if (attempt < maxAttempts) {
+        const isTimeout = err.name === 'AbortError';
+        overlayText.textContent = isTimeout
+          ? `⏳ Server is cold — Warming up (Attempt ${attempt + 1} of ${maxAttempts})...`
+          : `⏳ Connection issue — Retrying (${attempt + 1} of ${maxAttempts})...`;
+        await new Promise(r => setTimeout(r, 3000));
+      }
+    }
+  }
+
+  // If all pings failed, continue anyway — smartDashFetch has its own retries
+  // The server might be warm enough by now
+}
 // ═══════════════════════════════════════════════
 // BUILD WEEK PICKER
 // ═══════════════════════════════════════════════
@@ -854,7 +783,6 @@ function switchView(view) {
   const missSect  = document.getElementById('missingSection');
   const allBanner = document.getElementById('allSubmittedBanner');
 
-  // Show/hide Net Offers card based on view
   document.getElementById('netCard').style.display = (view === 'daily') ? 'none' : '';
 
   if (view === 'daily') {
@@ -884,8 +812,7 @@ async function handleRefresh() {
 
   if (currentView !== 'daily') {
     try {
-      const res = await fetchWithTimeout(`${API_URL}?action=getDates`);
-      const json = await res.json();
+      const json = await smartDashFetch(`${API_URL}?action=getDates`);
       if (json.status === 'ok') {
         knownDates = json.dates || [];
         if (currentView === 'weekly') buildWeekPicker(knownDates);
@@ -963,7 +890,6 @@ function filterLatestPerRecruiter(rows) {
   return result;
 }
 
-// Safe parse — handles missing columns gracefully
 function safeInt(val) { return parseInt(val) || 0; }
 
 // ═══════════════════════════════════════════════
@@ -985,8 +911,7 @@ async function loadData() {
     let url = `${API_URL}?date=${selectedDate}`;
     if (selectedType !== 'Both') url += `&type=${selectedType}`;
 
-    const response = await fetchWithTimeout(url);
-    const json = await response.json();
+    const json = await smartDashFetch(url);
 
     if (json.status === 'ok') {
       const filtered = filterLatestPerRecruiter(json.data);
@@ -1024,8 +949,7 @@ async function loadRangeData(mode) {
 
   try {
     const url = `${API_URL}?startDate=${startDate}&endDate=${endDate}&type=Morning`;
-    const response = await fetchWithTimeout(url);
-    const json = await response.json();
+    const json = await smartDashFetch(url);
 
     if (json.status === 'ok') {
       const filtered = filterLatestPerRecruiter(json.data);
@@ -1049,15 +973,12 @@ async function loadRangeData(mode) {
 // PROCESS DAILY DATA
 // ═══════════════════════════════════════════════
 function processDailyData(rows, selectedDate, selectedType) {
-  // Daily table header — includes Withdrawals
   document.getElementById('recTableHead').innerHTML = `<tr>
     <th>Recruiter</th><th>Account</th><th>Language</th><th>Start Date</th><th>Type</th>
     <th>Offers</th><th>❌ WD</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>Client Call</th>
     <th>Comment</th><th>Time</th>
   </tr>`;
   document.getElementById('tableLabel').textContent = 'Recruiter Details';
-
-  // Hide Net card in daily
   document.getElementById('netCard').style.display = 'none';
 
   let totalOffers=0, totalPFB=0, totalOPS=0, totalPOC=0, totalHR=0, totalWD=0;
@@ -1103,7 +1024,6 @@ function processDailyData(rows, selectedDate, selectedType) {
     }
   });
 
-  // Daily: Top contributor based on RAW offers
   let maxOffers=0, topNames=[];
   Object.keys(recruiterMap).forEach(name => {
     if (noUpdateNames.has(name)) return;
@@ -1129,7 +1049,6 @@ function processDailyData(rows, selectedDate, selectedType) {
     missSect.style.display='none'; allBanner.style.display='none';
   }
 
-  // Daily table body — includes Withdrawals column
   const tbody=document.getElementById('recTableBody');
   const sortedNames=Object.keys(recruiterMap).sort((a,b)=>a.localeCompare(b));
 
@@ -1171,7 +1090,6 @@ function processDailyData(rows, selectedDate, selectedType) {
 // PROCESS AGGREGATED DATA (weekly/monthly)
 // ═══════════════════════════════════════════════
 function processAggregatedData(rows, startDate, endDate, mode) {
-  // Weekly/Monthly table header — includes Withdrawals + Net
   document.getElementById('recTableHead').innerHTML = `<tr>
     <th style="width:30px;"></th><th>Recruiter</th>
     <th>Offers</th><th>❌ WD</th><th>📊 Net</th><th>Pending FB</th><th>OPS</th><th>POC</th><th>Client Call</th>
@@ -1179,8 +1097,6 @@ function processAggregatedData(rows, startDate, endDate, mode) {
 
   const label = mode === 'weekly' ? 'Weekly' : 'Monthly';
   document.getElementById('tableLabel').textContent = `${label} Recruiter Summary (click row to expand)`;
-
-  // Show Net card
   document.getElementById('netCard').style.display = '';
 
   let totalOffers=0, totalPFB=0, totalOPS=0, totalPOC=0, totalHR=0, totalWD=0;
@@ -1241,7 +1157,6 @@ function processAggregatedData(rows, startDate, endDate, mode) {
     }
   });
 
-  // Weekly/Monthly: Top contributor based on NET offers
   const totalNet = totalOffers - totalWD;
   let maxNet=0, topNames=[];
   Object.keys(recruiterAgg).forEach(name => {
@@ -1357,14 +1272,12 @@ function updateSummaryCards(submitted, noupdate, offers, pfb, ops, poc, hr, wd, 
   document.getElementById('s-hr').textContent = hr;
   document.getElementById('s-withdrawals').textContent = wd;
 
-  // Net card — only shown in weekly/monthly
   const netEl = document.getElementById('s-net');
   if (net !== null && net !== undefined) {
     netEl.textContent = net;
     netEl.className = net < 0 ? 'c-value negative' : 'c-value';
   }
 
-  // Top contributor
   const topEl = document.getElementById('s-top');
   if (topNames.length) {
     const suffix = topVal > 0 ? ` (${topVal})` : '';
@@ -1429,12 +1342,10 @@ function updateAccountBreakdown(accountMap) {
       const offerClass = a.offer > 0 ? '' : 'zero';
       const offerLabel = `${a.offer} Offer${a.offer !== 1 ? 's' : ''}`;
 
-      // Withdrawal badge — only show if > 0
       const wdBadge = a.wd > 0 ? `<span class="acc-withdraw-badge">❌ ${a.wd} WD</span>` : '';
 
       const escapedUpdate = updateText.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
 
-      // Build recruiter tooltip HTML — includes withdrawals
       let tooltipHTML = '';
       if (a.recruiters && Object.keys(a.recruiters).length > 0) {
         tooltipHTML = `<div class="chip-tooltip"><div class="chip-tooltip-inner"><div class="tooltip-title">👥 Recruiter Breakdown</div>`;
@@ -1498,7 +1409,6 @@ function generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalO
 
   const totalNet = totalOffers - totalWD;
 
-  // Tab-separated for Excel
   let copyData = `Recruiter\tOffers\tWithdrawals\tNet Offers\tPending FB\tOPS\tPOC\tClient Call\n`;
   allNames.forEach(name => {
     const r = recruiterAgg[name];
@@ -1507,7 +1417,6 @@ function generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalO
   });
   copyData += `TEAM TOTALS\t${totalOffers}\t${totalWD}\t${totalNet}\t${totalPFB}\t${totalOPS}\t${totalPOC}\t${totalHR}\n`;
 
-  // Preview
   const sep = '─'.repeat(50);
   let preview = `📊 ${mode === 'weekly' ? 'Weekly' : 'Monthly'} Summary — ${labelText}\n`;
   preview += `📋 Morning updates only\n${sep}\n\n`;
