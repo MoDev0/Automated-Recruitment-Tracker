@@ -561,84 +561,67 @@ let knownDates   = [];
 let pickersReady = false;
 
 // ═══════════════════════════════════════════════
-// SMART FETCH WITH AUTO-RETRY
+// SIMPLE RESILIENT FETCH
 // ═══════════════════════════════════════════════
-async function smartDashFetch(url, maxRetries = 3) {
-  let lastError = null;
-  const statusBar = document.getElementById('statusBar');
+// One function. Retries on failure. Shows progress. That's it.
+async function apiFetch(url, retries = 2) {
   const overlayText = document.querySelector('.loading-overlay p');
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const timeout = 25000 + (attempt - 1) * 10000; // 25s, 35s, 45s
-
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeout);
+      const timer = setTimeout(() => controller.abort(), 30000); // 30s flat
+
       const response = await fetch(url, { signal: controller.signal });
       clearTimeout(timer);
 
       const text = await response.text();
 
+      // Google sometimes returns HTML error pages instead of JSON
       if (text.startsWith('<!DOCTYPE') || text.startsWith('<html') || text.startsWith('<HTML')) {
-        throw new Error('GOOGLE_ERROR_PAGE');
+        throw new Error('HTML_ERROR');
       }
 
-      const json = JSON.parse(text);
-      return json;
+      return JSON.parse(text);
 
     } catch (err) {
-      lastError = err;
-      const isTimeout = err.name === 'AbortError';
-      const isGoogleError = err.message === 'GOOGLE_ERROR_PAGE';
-      const isParseError = err instanceof SyntaxError;
-      const isNetwork = err.message?.includes('Failed to fetch') || err.name === 'TypeError';
-
-      const retryable = isTimeout || isGoogleError || isParseError || isNetwork;
-
-      if (attempt < maxRetries && retryable) {
-        const reason = isTimeout ? 'Server warming up'
-                     : isGoogleError ? 'Google returned an error page'
-                     : isParseError ? 'Invalid response received'
-                     : 'Connection issue';
-        const msg = `⏳ ${reason} — Retry ${attempt} of ${maxRetries - 1}...`;
-        statusBar.textContent = msg;
-        if (overlayText) overlayText.textContent = msg;
-        await new Promise(r => setTimeout(r, attempt * 2000));
+      if (attempt < retries) {
+        const msg = err.name === 'AbortError' ? 'Server slow — retrying...'
+                  : err.message === 'HTML_ERROR' ? 'Server busy — retrying...'
+                  : 'Connection issue — retrying...';
+        if (overlayText) overlayText.textContent = `⏳ ${msg}`;
+        document.getElementById('statusBar').textContent = `⏳ ${msg}`;
+        await new Promise(r => setTimeout(r, 2000)); // 2s wait between retries
+        continue;
       }
+
+      // Final failure — reset overlay and throw clean error
+      if (overlayText) overlayText.textContent = '⏳ Fetching data, please wait...';
+
+      if (err.name === 'AbortError') throw new Error('Server took too long. Hit Refresh to try again.');
+      if (err.message === 'HTML_ERROR') throw new Error('Server returned an error. Hit Refresh to try again.');
+      if (err instanceof SyntaxError) throw new Error('Invalid response from server. Hit Refresh to try again.');
+      throw new Error('Connection failed. Check your network and try again.');
     }
   }
-
-  if (overlayText) overlayText.textContent = '⏳ Fetching data, please wait...';
-
-  if (lastError?.name === 'AbortError') {
-    throw new Error('Server is taking too long. Please try again.');
-  } else if (lastError?.message === 'GOOGLE_ERROR_PAGE' || lastError instanceof SyntaxError) {
-    throw new Error('Google returned an invalid response. Please try again.');
-  } else if (lastError?.message?.includes('Failed to fetch') || lastError?.name === 'TypeError') {
-    throw new Error('Unable to reach server. Check your connection.');
-  }
-  throw lastError || new Error('Unknown error occurred.');
 }
 
-/// ═══════════════════════════════════════════════
-// INIT (With server warm-up ping)
+// ═══════════════════════════════════════════════
+// INIT — Simple, parallel, fast
 // ═══════════════════════════════════════════════
 async function initDashboard() {
   const today = new Date();
   document.getElementById('dateInput').value = formatDateISO(today);
 
   const overlay = document.getElementById('loadingOverlay');
-  const overlayText = document.querySelector('.loading-overlay p');
   overlay.classList.add('show');
 
   try {
-    // Step 1: Wake up the server with a lightweight ping
-    overlayText.textContent = '⏳ Waking up server...';
-    await wakeUpServer();
-
-    // Step 2: Server is warm — fetch dates (should be fast now)
-    overlayText.textContent = '⏳ Loading available dates...';
-    const datesRes = await smartDashFetch(`${API_URL}?action=getDates`);
+    // Both requests fire at the same time — fastest possible
+    const [datesRes, dataRes] = await Promise.all([
+      apiFetch(`${API_URL}?action=getDates`),
+      apiFetch(`${API_URL}?date=${formatDateISO(today)}&type=Morning`)
+    ]);
 
     if (datesRes.status === 'ok') {
       knownDates = datesRes.dates || [];
@@ -646,10 +629,6 @@ async function initDashboard() {
       buildMonthPicker(knownDates);
       pickersReady = true;
     }
-
-    // Step 3: Fetch today's data (server already warm)
-    overlayText.textContent = '⏳ Loading today\'s data...';
-    const dataRes = await smartDashFetch(`${API_URL}?date=${formatDateISO(today)}&type=Morning`);
 
     if (dataRes.status === 'ok') {
       const filtered = filterLatestPerRecruiter(dataRes.data);
@@ -660,63 +639,13 @@ async function initDashboard() {
         : `✅ Loaded ${count} row(s) for ${formatDateISO(today)} · Morning · ${new Date().toLocaleTimeString()}`;
     }
   } catch (err) {
-    document.getElementById('statusBar').textContent = `❌ ${err.message || 'Failed to initialize dashboard.'}`;
+    document.getElementById('statusBar').textContent = `❌ ${err.message}`;
     console.error(err);
   }
 
-  overlayText.textContent = '⏳ Fetching data, please wait...';
   overlay.classList.remove('show');
 }
 
-// ═══════════════════════════════════════════════
-// SERVER WARM-UP PING
-// ═══════════════════════════════════════════════
-async function wakeUpServer() {
-  const overlayText = document.querySelector('.loading-overlay p');
-  const maxAttempts = 3;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 35000); // 35s generous timeout
-
-      const response = await fetch(`${API_URL}?action=getDates`, {
-        signal: controller.signal
-      });
-      clearTimeout(timer);
-
-      const text = await response.text();
-
-      // If we got valid JSON back, server is warm
-      if (!text.startsWith('<!DOCTYPE') && !text.startsWith('<html') && !text.startsWith('<HTML')) {
-        try {
-          JSON.parse(text);
-          return; // Server is warm — exit
-        } catch (e) {
-          // Not valid JSON, retry
-        }
-      }
-
-      // Got HTML error page — server is waking up, retry
-      if (attempt < maxAttempts) {
-        overlayText.textContent = `⏳ Server is waking up — Attempt ${attempt + 1} of ${maxAttempts}...`;
-        await new Promise(r => setTimeout(r, 3000));
-      }
-
-    } catch (err) {
-      if (attempt < maxAttempts) {
-        const isTimeout = err.name === 'AbortError';
-        overlayText.textContent = isTimeout
-          ? `⏳ Server is cold — Warming up (Attempt ${attempt + 1} of ${maxAttempts})...`
-          : `⏳ Connection issue — Retrying (${attempt + 1} of ${maxAttempts})...`;
-        await new Promise(r => setTimeout(r, 3000));
-      }
-    }
-  }
-
-  // If all pings failed, continue anyway — smartDashFetch has its own retries
-  // The server might be warm enough by now
-}
 // ═══════════════════════════════════════════════
 // BUILD WEEK PICKER
 // ═══════════════════════════════════════════════
@@ -812,14 +741,14 @@ async function handleRefresh() {
 
   if (currentView !== 'daily') {
     try {
-      const json = await smartDashFetch(`${API_URL}?action=getDates`);
+      const json = await apiFetch(`${API_URL}?action=getDates`);
       if (json.status === 'ok') {
         knownDates = json.dates || [];
         if (currentView === 'weekly') buildWeekPicker(knownDates);
         if (currentView === 'monthly') buildMonthPicker(knownDates);
       }
     } catch (err) {
-      document.getElementById('statusBar').textContent = `❌ ${err.message || 'Failed to refresh dates.'}`;
+      document.getElementById('statusBar').textContent = `❌ ${err.message}`;
       console.error(err);
       overlay.classList.remove('show');
       return;
@@ -911,7 +840,7 @@ async function loadData() {
     let url = `${API_URL}?date=${selectedDate}`;
     if (selectedType !== 'Both') url += `&type=${selectedType}`;
 
-    const json = await smartDashFetch(url);
+    const json = await apiFetch(url);
 
     if (json.status === 'ok') {
       const filtered = filterLatestPerRecruiter(json.data);
@@ -924,7 +853,7 @@ async function loadData() {
       statusBar.textContent = `⚠️ Error: ${json.message || 'Unknown'}`;
     }
   } catch (err) {
-    statusBar.textContent = `❌ ${err.message || 'Failed to retrieve data.'}`;
+    statusBar.textContent = `❌ ${err.message}`;
     console.error(err);
   }
 
@@ -949,7 +878,7 @@ async function loadRangeData(mode) {
 
   try {
     const url = `${API_URL}?startDate=${startDate}&endDate=${endDate}&type=Morning`;
-    const json = await smartDashFetch(url);
+    const json = await apiFetch(url);
 
     if (json.status === 'ok') {
       const filtered = filterLatestPerRecruiter(json.data);
@@ -962,7 +891,7 @@ async function loadRangeData(mode) {
       statusBar.textContent = `⚠️ Error: ${json.message || 'Unknown'}`;
     }
   } catch (err) {
-    statusBar.textContent = `❌ ${err.message || 'Failed to retrieve data.'}`;
+    statusBar.textContent = `❌ ${err.message}`;
     console.error(err);
   }
 
@@ -1397,7 +1326,7 @@ function copyChipUpdate(chipEl, text) {
 }
 
 // ═══════════════════════════════════════════════
-// AGGREGATED EXPORT — includes Withdrawals + Net
+// AGGREGATED EXPORT
 // ═══════════════════════════════════════════════
 function generateAggExport(recruiterAgg, allNames, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, startDate, endDate, mode) {
   const d1 = new Date(startDate+'T00:00:00');
@@ -1443,7 +1372,7 @@ function copyAggExport() {
 }
 
 // ═══════════════════════════════════════════════
-// TEAMS POST (daily only) — includes Withdrawals
+// TEAMS POST
 // ═══════════════════════════════════════════════
 function generateTeamsPost(recruiterMap, noUpdateNames, accountMap, totalOffers, totalPFB, totalOPS, totalPOC, totalHR, totalWD, topNames, maxOffers, dateStr) {
   const d=new Date(dateStr+'T00:00:00');
@@ -1527,7 +1456,7 @@ function flashCopy(id) {
 }
 
 // ═══════════════════════════════════════════════
-// TOOLTIP: JS-controlled hover with delay
+// TOOLTIP
 // ═══════════════════════════════════════════════
 (function initTooltips() {
   let hideTimeout = null;
@@ -1582,5 +1511,3 @@ function flashCopy(id) {
 })();
 
 </script>
-</body>
-</html>
