@@ -53,7 +53,6 @@
     font-weight: 600;
   }
 
-  /* ── UPDATE TYPE SECTION ── */
   .update-type-section {
     background: var(--fd-card);
     border: 1px solid var(--fd-border);
@@ -145,7 +144,6 @@
     font-weight: 400;
   }
 
-  /* ── WARNING BANNER ── */
   .warning-banner {
     display: none;
     background: #fff5f5;
@@ -161,7 +159,6 @@
 
   .warning-banner.show { display: block; }
 
-  /* ── FORM CARD ── */
   .form-card {
     background: var(--fd-card);
     border: 1px solid var(--fd-border);
@@ -260,7 +257,6 @@
     white-space: nowrap;
   }
 
-  /* ── NO UPDATE ── */
   .no-update-wrap {
     display: flex;
     align-items: center;
@@ -275,7 +271,6 @@
   .no-update-wrap input { accent-color: var(--fd-coral); width: 16px; height: 16px; cursor: pointer; }
   .no-update-wrap label { font-size: 0.85rem; color: #d4545e; cursor: pointer; font-weight: 600; }
 
-  /* ── ACCOUNT BLOCKS ── */
   .account-section { margin-bottom: 16px; }
 
   .account-block {
@@ -410,7 +405,6 @@
   .stage-input::-webkit-inner-spin-button,
   .stage-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-  /* ── Withdrawal input styling ── */
   .stage-item.withdrawal-item .stage-label {
     color: var(--fd-coral);
   }
@@ -610,7 +604,6 @@
 
   .theme-toggle:hover .theme-toggle-icon { transform: rotate(20deg); }
 
-  /* ── Dark Mode ── */
   body.dark-mode {
     --fd-card: #0f0f35;
     --fd-card2: #13133d;
@@ -666,9 +659,6 @@
   body.dark-mode .theme-toggle { box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
   body.dark-mode ::-webkit-scrollbar-track { background: transparent; }
 
-  /* ══════════════════════════════════════════════ */
-  /* SHARED MODAL STYLES                           */
-  /* ══════════════════════════════════════════════ */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -789,7 +779,6 @@
   .modal-btn-cancel:hover { background: rgba(255,141,150,0.08); }
   .modal-btn-cancel:active { transform: scale(0.96); }
 
-  /* ── Monday & Final Confirm modal borders ── */
   #mondayModal .modal-box {
     border: 2px solid var(--fd-coral);
   }
@@ -798,9 +787,6 @@
     border: 2px solid var(--fd-indigo);
   }
 
-  /* ══════════════════════════════════════════════ */
-  /* MIDDAY WARNING MODAL — Lemon theme            */
-  /* ══════════════════════════════════════════════ */
   #middayWarningModal .modal-box {
     border: 2px solid var(--fd-lemon);
     background: #fffef5;
@@ -860,7 +846,6 @@
   .midday-modal-btn:hover { opacity: 0.85; }
   .midday-modal-btn:active { transform: scale(0.96); }
 
-  /* Dark mode — shared modals */
   body.dark-mode .modal-box { background: #0f0f35; }
   body.dark-mode .modal-rtl-text { color: var(--fd-white); }
   body.dark-mode .modal-rtl-sub { color: var(--fd-lavender); }
@@ -870,7 +855,6 @@
   body.dark-mode .modal-btn-cancel { color: var(--fd-coral); border-color: var(--fd-coral); }
   body.dark-mode .modal-btn-cancel:hover { background: rgba(255,141,150,0.12); }
 
-  /* Dark mode — Midday warning modal */
   body.dark-mode #middayWarningModal .modal-box {
     background: #0f0f35;
     border-color: rgba(249,239,119,0.4);
@@ -896,9 +880,7 @@
   <span class="theme-toggle-icon">🌙</span>
 </button>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- MODAL 1: Monday Confirmation              -->
-<!-- ══════════════════════════════════════════ -->
+<!-- MODAL 1: Monday Confirmation -->
 <div class="modal-overlay" id="mondayModal">
   <div class="modal-box">
     <div class="modal-icon">⚠️</div>
@@ -912,9 +894,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- MODAL 2: Final Confirmation (Morning)     -->
-<!-- ══════════════════════════════════════════ -->
+<!-- MODAL 2: Final Confirmation (Morning) -->
 <div class="modal-overlay" id="finalConfirmModal">
   <div class="modal-box">
     <div class="modal-icon">🤔</div>
@@ -929,9 +909,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- MODAL 3: Midday Warning (Lemon theme)     -->
-<!-- ══════════════════════════════════════════ -->
+<!-- MODAL 3: Midday Warning (Lemon theme) -->
 <div class="modal-overlay" id="middayWarningModal">
   <div class="modal-box">
     <button class="midday-modal-close" onclick="cancelMiddayWarning()" title="Go back">✕</button>
@@ -957,7 +935,7 @@
   <div class="date-badge" id="dateBadge"></div>
 </div>
 
-<!-- ── UPDATE TYPE ── -->
+<!-- UPDATE TYPE -->
 <div class="update-type-section" id="updateTypeSection">
   <div class="ut-title">📌 Update Type</div>
 
@@ -993,7 +971,7 @@
   <div class="ut-date-display" id="utDateDisplay"></div>
 </div>
 
-<!-- ── MAIN FORM ── -->
+<!-- MAIN FORM -->
 <div class="form-card" id="formCard">
   <label class="form-label">Your Name</label>
   <select class="recruiter-select" id="recruiterName">
@@ -1015,7 +993,7 @@
   <div class="status-msg" id="statusMsg"></div>
 </div>
 
-<!-- ── SUCCESS ── -->
+<!-- SUCCESS -->
 <div class="success-card" id="successCard">
   <div class="big-check">✅</div>
   <div class="override-notice" id="overrideNotice" style="display:none">🔄 Updated your previous submission</div>
@@ -1052,47 +1030,159 @@ let ACCOUNT_NAMES = [];
 let pendingSubmitData = null;
 
 // ═══════════════════════════════════════════════
-// SMART FETCH
+// RESILIENT FETCH (for submissions)
 // ═══════════════════════════════════════════════
-async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+async function apiFetch(url, options = {}, retries = 2) {
+  const statusMsg = document.getElementById('statusMsg');
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 30000);
+
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+
+      const text = await response.text();
+
+      if (text.startsWith('<!DOCTYPE') || text.startsWith('<html') || text.startsWith('<HTML')) {
+        throw new Error('HTML_ERROR');
+      }
+
+      return JSON.parse(text);
+
+    } catch (err) {
+      if (attempt < retries) {
+        const msg = err.name === 'AbortError' ? 'Server slow — retrying...'
+                  : err.message === 'HTML_ERROR' ? 'Server busy — retrying...'
+                  : 'Connection issue — retrying...';
+        statusMsg.className = 'status-msg sending';
+        statusMsg.textContent = `⏳ ${msg}`;
+        await new Promise(r => setTimeout(r, 2000));
+        continue;
+      }
+
+      if (err.name === 'AbortError') throw new Error('Server took too long. Please refresh and try again.');
+      if (err.message === 'HTML_ERROR') throw new Error('Server returned an error. Please refresh and try again.');
+      if (err instanceof SyntaxError) throw new Error('Invalid server response. Please refresh and try again.');
+      throw new Error('Connection failed. Check your network and try again.');
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// ACCOUNT LOADING (cached — instant after first visit)
+// ═══════════════════════════════════════════════
+function loadAccounts() {
+  const statusMsg = document.getElementById('statusMsg');
+
+  // Step 1: Load from cache instantly (if available)
+  const cached = localStorage.getItem('fd-accounts');
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (parsed.length > 0) {
+        ACCOUNT_NAMES = parsed;
+        addAccount();
+        refreshAccountsSilently();
+        return;
+      }
+      localStorage.removeItem('fd-accounts');
+    } catch (e) {
+      localStorage.removeItem('fd-accounts');
+    }
+  }
+
+  // Step 2: No cache — first visit, fetch with retries
+  statusMsg.className = 'status-msg sending';
+  statusMsg.textContent = '⏳ Loading accounts...';
+
+  fetchAccountsWithRetry(3).then(() => {
+    statusMsg.textContent = '';
+    addAccount();
+  }).catch(err => {
+    console.warn('Could not load accounts.', err);
+    statusMsg.className = 'status-msg error';
+    statusMsg.textContent = '⚠️ Could not load accounts. Please refresh.';
+    addAccount();
+  });
+}
+
+async function fetchAccountsWithRetry(maxAttempts) {
+  const statusMsg = document.getElementById('statusMsg');
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await fetchAccountsFromServer();
+      return; // Success — exit
+    } catch (err) {
+      if (attempt < maxAttempts) {
+        statusMsg.textContent = `⏳ Server busy — retry ${attempt}/${maxAttempts - 1}...`;
+        await new Promise(r => setTimeout(r, 2000));
+      } else {
+        throw err; // Final failure
+      }
+    }
+  }
+}
+
+async function fetchAccountsFromServer() {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const timer = setTimeout(() => controller.abort(), 30000);
+
   try {
-    const response = await fetch(url, { ...options, signal: controller.signal });
-    clearTimeout(timeout);
-    return response;
+    const response = await fetch(`${API_URL}?action=accounts`, { signal: controller.signal });
+    clearTimeout(timer);
+    const text = await response.text();
+
+    if (text.startsWith('<!DOCTYPE') || text.startsWith('<html') || text.startsWith('<HTML')) {
+      throw new Error('Server returned HTML instead of data');
+    }
+
+    const json = JSON.parse(text);
+
+    if (json.status === 'ok' && json.accounts && json.accounts.length > 0) {
+      ACCOUNT_NAMES = json.accounts.sort((a, b) => a.localeCompare(b));
+      localStorage.setItem('fd-accounts', JSON.stringify(ACCOUNT_NAMES));
+    } else {
+      throw new Error('Server returned empty or invalid account list');
+    }
   } catch (err) {
-    clearTimeout(timeout);
-    if (err.name === 'AbortError') throw new Error('TIMEOUT');
+    clearTimeout(timer);
     throw err;
   }
 }
 
-async function smartFetch(url, fetchOptions = {}, retryOpts = {}) {
-  const { maxRetries = 3, baseTimeout = 15000, timeoutGrowth = 5000, onRetry = null } = retryOpts;
-  let lastError = null;
+function refreshAccountsSilently() {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const timeout = baseTimeout + (attempt - 1) * timeoutGrowth;
-    try {
-      const response = await fetchWithTimeout(url, fetchOptions, timeout);
-      const json = await response.json();
-      return json;
-    } catch (err) {
-      lastError = err;
-      const isTimeout = err.message === 'TIMEOUT';
-      const isNetwork = err.message?.includes('Failed to fetch') || err.name === 'TypeError';
-      if (attempt < maxRetries && (isTimeout || isNetwork)) {
-        const waitMs = attempt * 2000;
-        if (onRetry) onRetry(attempt, maxRetries, waitMs, isTimeout ? 'timeout' : 'network');
-        await new Promise(resolve => setTimeout(resolve, waitMs));
-      } else { break; }
-    }
-  }
+  fetch(`${API_URL}?action=accounts`, { signal: controller.signal })
+    .then(r => r.text())
+    .then(text => {
+      clearTimeout(timer);
+      if (text.startsWith('<!DOCTYPE') || text.startsWith('<html') || text.startsWith('<HTML')) return;
+      
+      let json;
+      try { json = JSON.parse(text); } catch (e) { return; }
+      
+      if (json.status === 'ok' && json.accounts && json.accounts.length > 0) {
+        const fresh = json.accounts.sort((a, b) => a.localeCompare(b));
+        const cachedStr = localStorage.getItem('fd-accounts');
+        const freshStr = JSON.stringify(fresh);
 
-  if (lastError?.message === 'TIMEOUT') throw new Error('Server is taking too long to respond. Please try again in a moment.');
-  else if (lastError?.message?.includes('Failed to fetch') || lastError?.name === 'TypeError') throw new Error('Unable to reach the server. Please check your connection and try again.');
-  else throw lastError || new Error('Unknown error occurred.');
+        if (cachedStr !== freshStr) {
+          ACCOUNT_NAMES = fresh;
+          localStorage.setItem('fd-accounts', freshStr);
+          document.querySelectorAll('.acc-select').forEach(select => {
+            const currentVal = select.value;
+            select.innerHTML = buildAccountOptions();
+            if (currentVal) select.value = currentVal;
+          });
+        }
+      }
+    })
+    .catch(() => { clearTimeout(timer); });
 }
 
 // ═══════════════════════════════════════════════
@@ -1253,24 +1343,6 @@ document.addEventListener('focus', function(e) {
 initUpdateType();
 loadAccounts();
 
-async function loadAccounts() {
-  const statusMsg = document.getElementById('statusMsg');
-  try {
-    const retryHandler = (attempt, max, waitMs, reason) => {
-      statusMsg.className   = 'status-msg sending';
-      statusMsg.textContent = `⏳ ${reason === 'timeout' ? 'Server warming up' : 'Connection issue'} — Retry ${attempt}/${max - 1}...`;
-    };
-    const json = await smartFetch(`${API_URL}?action=accounts`, {}, { maxRetries: 3, onRetry: retryHandler });
-    if (json.status === 'ok' && json.accounts) ACCOUNT_NAMES = json.accounts.sort((a, b) => a.localeCompare(b));
-    statusMsg.textContent = '';
-  } catch (err) {
-    console.warn('Could not load accounts from API.', err);
-    statusMsg.className   = 'status-msg error';
-    statusMsg.textContent = '⚠️ Could not load accounts. Please refresh the page.';
-  }
-  addAccount();
-}
-
 function buildAccountOptions() {
   let html = '<option value="">— Select account —</option>';
   ACCOUNT_NAMES.forEach(name => { html += `<option value="${name}">${name}</option>`; });
@@ -1338,8 +1410,7 @@ function addAccount() {
         <span class="stage-label">Pending FB</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
-      
-     
+
       <div class="stage-item">
         <span class="stage-label">OPS</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
@@ -1352,7 +1423,6 @@ function addAccount() {
         <span class="stage-label">Client Call</span>
         <input class="stage-input" type="number" min="0" placeholder="0" onwheel="this.blur()"/>
       </div>
-      
     </div>
     <input class="comment-input" type="text" placeholder="Optional comment..." />
   `;
@@ -1429,10 +1499,8 @@ function confirmMondaySubmit() {
   document.getElementById('mondayModal').classList.remove('show');
   if (pendingSubmitData) {
     if (currentUpdateType === 'Midday') {
-      // Midday — check if needs midday warning, otherwise submit directly
       proceedToMiddayOrSubmit(pendingSubmitData);
     } else {
-      // Morning — show final confirmation
       showFinalConfirmModal(pendingSubmitData);
     }
   }
@@ -1491,7 +1559,8 @@ function showFinalConfirmModal(submitData) {
   noteEl.innerHTML = `لو معاك <span dir="ltr" style="display:inline-block">Offer Withdraw</span> قول متتكسفش عادي احنا أهل 🤝`;
 
   if (!submitData.noUpdate && submitData.entries.length > 0) {
-    summaryEl.innerHTML = `<strong>📊 Your current update:</strong><br><br>` + buildEntrySummaryHTML(submitData.entries);    summaryEl.style.display = 'block';
+    summaryEl.innerHTML = `<strong>📊 Your current update:</strong><br><br>` + buildEntrySummaryHTML(submitData.entries);
+    summaryEl.style.display = 'block';
   } else {
     summaryEl.innerHTML = '<strong>📊 No updates today</strong>';
     summaryEl.style.display = 'block';
@@ -1521,14 +1590,12 @@ function cancelFinalSubmit() {
 // MODAL 3: MIDDAY WARNING (Lemon theme)
 // ═══════════════════════════════════════════════
 function proceedToMiddayOrSubmit(submitData) {
-  // Check if any entries have offers or withdrawals
   const hasOffersOrWithdrawals = submitData.entries.some(e => e.offers > 0 || e.withdrawals > 0);
 
   if (hasOffersOrWithdrawals) {
     pendingSubmitData = submitData;
     document.getElementById('middayWarningModal').classList.add('show');
   } else {
-    // No offers/withdrawals — submit directly, no warning needed
     executeSubmission(submitData.entries, submitData.recruiter, submitData.totalOffers, submitData.noUpdate);
   }
 }
@@ -1660,7 +1727,6 @@ async function submitForm() {
     }
   }
 
-  // ── Step 1: Check Monday start dates ──
   if (!noUpdate) {
     const mondayAccounts = [];
     const mondayBlocks   = [];
@@ -1697,7 +1763,6 @@ async function submitForm() {
     }
   }
 
-  // ── Step 2: Route based on update type ──
   submitBtn.disabled = true;
 
   if (currentUpdateType === 'Midday') {
@@ -1719,16 +1784,11 @@ async function executeSubmission(entries, recruiter, totalOffers, noUpdate) {
   statusMsg.textContent = '⏳ One moment... submitting your numbers';
 
   try {
-    const retryHandler = (attempt, max, waitMs, reason) => {
-      statusMsg.className   = 'status-msg sending';
-      statusMsg.textContent = `⏳ ${reason === 'timeout' ? 'Server is busy' : 'Connection issue'} — Retry ${attempt}/${max - 1}...`;
-    };
-
-    const result = await smartFetch(API_URL, {
+    const result = await apiFetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(entries)
-    }, { maxRetries: 3, baseTimeout: 20000, onRetry: retryHandler });
+    });
 
     if (result.status !== 'ok') throw new Error(result.message || 'Server rejected the submission');
 
@@ -1816,6 +1876,22 @@ function toggleTheme() {
     document.querySelector('.theme-toggle-icon').textContent = '☀️';
   }
 })();
+
+// ═══════════════════════════════════════════════
+// AUTO-REFRESH ON STALE TAB
+// ═══════════════════════════════════════════════
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    const newDate = formatDateISO(new Date());
+    if (newDate !== submissionDate) {
+      submissionDate = newDate;
+      document.getElementById('dateBadge').textContent = formatDateReadable(new Date());
+    }
+    initUpdateType();
+    refreshAccountsSilently();
+  }
+});
+
 </script>
 </body>
 </html>
