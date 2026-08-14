@@ -872,6 +872,196 @@
   body.dark-mode .midday-modal-close:hover {
     background: rgba(255,141,150,0.15);
   }
+
+/* ═══════════════════════════════════════════════
+     ADMIN MESSAGE BANNER
+     ═══════════════════════════════════════════════ */
+  .admin-message {
+    display: none;
+    width: 100%;
+    max-width: 620px;
+    margin-top: 12px;
+    padding: 20px;
+    background: rgba(75, 75, 249, 0.06);
+    border: 2px solid var(--fd-indigo);
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: messagePulse 2.5s ease-in-out infinite;
+  }
+
+  .admin-message.show { display: block; }
+
+  @keyframes messagePulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(75, 75, 249, 0.2); }
+    50%      { box-shadow: 0 0 22px rgba(75, 75, 249, 0.5); }
+  }
+
+  .admin-msg-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .admin-msg-image {
+    max-width: 100%;
+    max-height: 300px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 12px;
+  }
+
+  .admin-msg-text {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--fd-midnight);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* ═══════════════════════════════════════════════
+     TARGETS CARD
+     ═══════════════════════════════════════════════ */
+  .targets-card {
+    display: none;
+    width: 100%;
+    max-width: 620px;
+    margin-top: 12px;
+    padding: 18px 20px;
+    background: rgba(139, 240, 187, 0.05);
+    border: 2px solid var(--fd-mint);
+    border-radius: 16px;
+    animation: targetSlide 0.4s ease-out;
+  }
+
+  .targets-card.show { display: block; }
+
+  @keyframes targetSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .targets-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--fd-mint);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .targets-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+  }
+
+  .targets-table tr { border-bottom: 1px solid rgba(139, 240, 187, 0.15); }
+  .targets-table tr:last-child { border-bottom: none; }
+
+  .targets-table td {
+    padding: 8px 6px;
+    font-size: 0.82rem;
+    vertical-align: middle;
+  }
+
+  .targets-table .target-account {
+    font-weight: 600;
+    color: var(--fd-midnight);
+  }
+
+  .targets-table .target-number {
+    text-align: right;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .target-badge {
+    display: inline-block;
+    background: var(--fd-mint);
+    color: var(--fd-midnight);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .targets-total {
+    background: rgba(139, 240, 187, 0.1);
+    border: 1px solid rgba(139, 240, 187, 0.25);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+  }
+
+  .targets-total-label {
+    color: var(--fd-midnight);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .targets-total-number {
+    color: var(--fd-indigo);
+    font-size: 1rem;
+  }
+
+  /* ═══════════════════════════════════════════════
+     DARK MODE — MESSAGE + TARGETS
+     ═══════════════════════════════════════════════ */
+  body.dark-mode .admin-message {
+    background: rgba(75, 75, 249, 0.08);
+    border-color: rgba(75, 75, 249, 0.5);
+  }
+
+  body.dark-mode .admin-msg-text {
+    color: var(--fd-white);
+  }
+
+  body.dark-mode .targets-card {
+    background: rgba(139, 240, 187, 0.04);
+    border-color: rgba(139, 240, 187, 0.35);
+  }
+
+  body.dark-mode .targets-title {
+    color: var(--fd-mint);
+  }
+
+  body.dark-mode .targets-table .target-account {
+    color: var(--fd-white);
+  }
+
+  body.dark-mode .targets-table tr {
+    border-bottom-color: rgba(139, 240, 187, 0.1);
+  }
+
+  body.dark-mode .target-badge {
+    background: rgba(139, 240, 187, 0.2);
+    color: var(--fd-mint);
+  }
+
+  body.dark-mode .targets-total {
+    background: rgba(139, 240, 187, 0.06);
+    border-color: rgba(139, 240, 187, 0.15);
+  }
+
+  body.dark-mode .targets-total-label {
+    color: var(--fd-white);
+  }
+
+  body.dark-mode .targets-total-number {
+    color: var(--fd-mint);
+  }
+
 </style>
 </head>
 <body>
@@ -971,12 +1161,27 @@
   <div class="ut-date-display" id="utDateDisplay"></div>
 </div>
 
+      <!-- ADMIN MESSAGE -->
+<div class="admin-message" id="adminMessage">
+  <span class="admin-msg-icon">📢</span>
+  <img class="admin-msg-image" id="adminMsgImage" style="display:none;" alt="Team message" />
+  <div class="admin-msg-text" id="adminMsgText"></div>
+</div>
 <!-- MAIN FORM -->
 <div class="form-card" id="formCard">
   <label class="form-label">Your Name</label>
   <select class="recruiter-select" id="recruiterName">
     <option value="">— Select your name —</option>
   </select>
+  <!-- PERSONALIZED TARGETS -->
+  <div class="targets-card" id="targetsCard">
+    <div class="targets-title">🎯 Your Targets This Week</div>
+    <table class="targets-table" id="targetsTable"></table>
+    <div class="targets-total" id="targetsTotal" style="display:none;">
+      <span class="targets-total-label">🏆 Total Target</span>
+      <span class="targets-total-number" id="targetsTotalNumber"></span>
+    </div>
+  </div>
 
   <div class="no-update-wrap">
     <input type="checkbox" id="noUpdateCheck" onchange="toggleNoUpdate()"/>
@@ -1025,6 +1230,10 @@ const RECRUITER_NAMES = [
 const LANGUAGES = ["English", "German", "Italian", "French", "Spanish", "Dutch","Hebrew"];
 
 let ACCOUNT_NAMES = [];
+
+let ADMIN_MESSAGE = '';
+let ADMIN_IMAGE = '';
+let RECRUITER_TARGETS = {};
 
 // Pending submission data for modals
 let pendingSubmitData = null;
@@ -1147,6 +1356,19 @@ async function fetchAccountsFromServer() {
     } else {
       throw new Error('Server returned empty or invalid account list');
     }
+
+    // ── NEW: Store and display message ──
+    ADMIN_MESSAGE = json.message || '';
+    ADMIN_IMAGE = json.messageImage || '';
+    displayAdminMessage(ADMIN_MESSAGE, ADMIN_IMAGE);
+
+    // ── NEW: Store targets and display for cached recruiter ──
+    RECRUITER_TARGETS = json.targets || {};
+    const cachedRecruiter = document.getElementById('recruiterName').value;
+    if (cachedRecruiter) {
+      displayTargets(cachedRecruiter);
+    }
+
   } catch (err) {
     clearTimeout(timer);
     throw err;
@@ -1180,6 +1402,17 @@ function refreshAccountsSilently() {
             if (currentVal) select.value = currentVal;
           });
         }
+      }
+
+      // ── NEW: Refresh message + targets silently ──
+      ADMIN_MESSAGE = json.message || '';
+      ADMIN_IMAGE = json.messageImage || '';
+      displayAdminMessage(ADMIN_MESSAGE, ADMIN_IMAGE);
+
+      RECRUITER_TARGETS = json.targets || {};
+      const currentRecruiter = document.getElementById('recruiterName').value;
+      if (currentRecruiter) {
+        displayTargets(currentRecruiter);
       }
     })
     .catch(() => { clearTimeout(timer); });
@@ -1225,6 +1458,97 @@ function getSuccessMessage(recruiter, totalOffers, isNoUpdate) {
   else                        pool = SUCCESS_MESSAGES.threeOrMore;
   const msg = pool[Math.floor(Math.random() * pool.length)];
   return msg.replace(/{name}/g, recruiter).replace(/{count}/g, totalOffers);
+}
+
+// ═══════════════════════════════════════════════
+// ADMIN MESSAGE
+// ═══════════════════════════════════════════════
+function displayAdminMessage(message, imageUrl) {
+  const container = document.getElementById('adminMessage');
+  const imgEl = document.getElementById('adminMsgImage');
+  const textEl = document.getElementById('adminMsgText');
+
+  const hasMessage = message && message.trim().length > 0;
+  const hasImage = imageUrl && imageUrl.trim().length > 0;
+
+  if (!hasMessage && !hasImage) {
+    container.classList.remove('show');
+    return;
+  }
+
+  if (hasImage) {
+    imgEl.src = imageUrl;
+    imgEl.style.display = 'block';
+    imgEl.onerror = () => { imgEl.style.display = 'none'; };
+  } else {
+    imgEl.style.display = 'none';
+    imgEl.src = '';
+  }
+
+  if (hasMessage) {
+    textEl.textContent = message;
+    textEl.style.display = 'block';
+  } else {
+    textEl.style.display = 'none';
+  }
+
+  container.classList.add('show');
+}
+
+// ═══════════════════════════════════════════════
+// PERSONALIZED TARGETS
+// ═══════════════════════════════════════════════
+function displayTargets(recruiterName) {
+  const card = document.getElementById('targetsCard');
+  const table = document.getElementById('targetsTable');
+  const totalWrap = document.getElementById('targetsTotal');
+  const totalNumber = document.getElementById('targetsTotalNumber');
+
+  if (!recruiterName || !RECRUITER_TARGETS || Object.keys(RECRUITER_TARGETS).length === 0) {
+    card.classList.remove('show');
+    return;
+  }
+
+  // Find targets for this recruiter (case-insensitive match)
+  const recruiterKey = Object.keys(RECRUITER_TARGETS).find(
+    key => key.toLowerCase().trim() === recruiterName.toLowerCase().trim()
+  );
+
+  if (!recruiterKey || RECRUITER_TARGETS[recruiterKey].length === 0) {
+    card.classList.remove('show');
+    return;
+  }
+
+  const targets = RECRUITER_TARGETS[recruiterKey];
+  let total = 0;
+  let html = '';
+
+  targets.forEach(t => {
+    total += t.target;
+    const offerWord = t.target === 1 ? 'offer' : 'offers';
+    html += `
+      <tr>
+        <td class="target-account">${t.account}</td>
+        <td class="target-number">
+          <span class="target-badge">${t.target} ${offerWord}</span>
+        </td>
+      </tr>
+    `;
+  });
+
+  table.innerHTML = html;
+
+  if (targets.length > 1) {
+    const totalWord = total === 1 ? 'offer' : 'offers';
+    totalNumber.textContent = `${total} ${totalWord}`;
+    totalWrap.style.display = 'flex';
+  } else {
+    totalWrap.style.display = 'none';
+  }
+
+  card.classList.remove('show');
+  void card.offsetWidth; // force reflow for animation replay
+  card.classList.add('show');
 }
 
 // ═══════════════════════════════════════════════
@@ -1319,6 +1643,7 @@ if (savedRecruiter && RECRUITER_NAMES.includes(savedRecruiter)) sel.value = save
 
 sel.addEventListener('change', function() {
   if (this.value) localStorage.setItem('recruiterName', this.value);
+  displayTargets(this.value);  // ← NEW: show targets for selected recruiter
 });
 
 // ═══════════════════════════════════════════════
@@ -1825,6 +2150,8 @@ async function executeSubmission(entries, recruiter, totalOffers, noUpdate) {
 
     document.getElementById('formCard').style.display          = 'none';
     document.getElementById('updateTypeSection').style.display = 'none';
+    document.getElementById('adminMessage').classList.remove('show');
+    document.getElementById('targetsCard').classList.remove('show');
     document.getElementById('successCard').style.display        = 'block';
 
   } catch (err) {
@@ -1857,6 +2184,13 @@ function resetForm() {
   document.getElementById('accountList').innerHTML = '';
   addAccount();
   initUpdateType();
+// Restore message + targets
+  displayAdminMessage(ADMIN_MESSAGE, ADMIN_IMAGE);
+  const currentRecruiter = document.getElementById('recruiterName').value;
+  if (currentRecruiter) {
+    displayTargets(currentRecruiter);
+  }
+
 }
 
 // ═══════════════════════════════════════════════
