@@ -763,6 +763,7 @@
 // PASSWORD GATE
 // ═══════════════════════════════════════════════
 const ADMIN_HASH = '8e9e3b02cdb1df5de112de2da01d472f4ae86dac0db759eca162791f040f5db2';
+
 document.addEventListener('DOMContentLoaded', () => {
   const pwInput = document.getElementById('pwInput');
   pwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkPassword(); });
@@ -881,7 +882,7 @@ async function initDashboard() {
       apiFetch(`${API_URL}?action=getDates`),
       apiFetch(`${API_URL}?date=${formatDateISO(today)}&type=Morning`)
     ]);
-    
+
     // Load current admin message
     loadCurrentMessage();
     if (datesRes.status === 'ok') {
@@ -1182,7 +1183,7 @@ function processDailyData(rows, selectedDate, selectedType) {
     const offers=safeInt(row.Offers), pendingfb=safeInt(row.PendingFB);
     const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row['Client Call']);
     const withdrawals=safeInt(row.Withdrawals);
-    const comment=(row.Comment||'').trim(), ts=row.Timestamp||'';
+    const comment=(row.Comment ?? '').toString().trim(), ts=row.Timestamp||'';
     if (!name) return;
     submittedNames.add(name);
 
@@ -1301,8 +1302,7 @@ function processAggregatedData(rows, startDate, endDate, mode) {
     const offers=safeInt(row.Offers), pendingfb=safeInt(row.PendingFB);
     const ops=safeInt(row.OPS), poc=safeInt(row.POC), hr=safeInt(row['Client Call']);
     const withdrawals=safeInt(row.Withdrawals);
-    const comment=(row.Comment||'').trim();
-    if (!name) return;
+    const comment=(row.Comment ?? '').toString().trim();    if (!name) return;
     submittedNames.add(name);
 
     if (comment.toLowerCase()==='no update today' && account==='—') {
